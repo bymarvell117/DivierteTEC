@@ -309,7 +309,7 @@
       if (type === 'shape') Object.assign(b, { w: 160, h: 160, shape: 'hexagon', color: 'var(--primary)', opacity: .8 });
       if (type === 'achievements') Object.assign(b, { w: 360, h: 320 });
       if (type === 'play') Object.assign(b, { w: 360, h: 70 });
-      if (type === 'media') Object.assign(b, { shape: 'rounded', radius: 14 });
+      if (type === 'media') Object.assign(b, { shape: 'slant' });
       // Coloca el bloque visible en el área de trabajo actual
       const stage = DT.$('[data-stage]', app);
       b.y = Math.max(0, Math.round(stage.scrollTop / scale() + 20));

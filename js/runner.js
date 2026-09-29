@@ -84,8 +84,26 @@
       if (list.length) return { entry: g.files.entry, list };
     }
     const b = DT.BUILTIN[gid];
-    if (b) return { entry: b.entry, builtin: true, list: Object.keys(b.files).map((p) => ({ path: p, blob: new Blob([b.files[p]], { type: mimeOf(p) }) })) };
+    if (b) return { entry: b.entry, builtin: true, list: Object.keys(b.files).map((p) => ({ path: p, blob: builtinBlob(b.files[p], p) })) };
     return null;
+  };
+
+  /* Archivo integrado → Blob (texto o binario en base64) */
+  const builtinBlob = (v, p) => {
+    if (typeof v === 'string') return new Blob([v], { type: mimeOf(p) });
+    const bin = atob(v.b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: v.type || mimeOf(p) });
+  };
+  /* URL de un recurso de un juego integrado, para usar su arte en las páginas */
+  const assetCache = {};
+  DT.assetURL = (gid, path) => {
+    const key = gid + ':' + path;
+    if (assetCache[key]) return assetCache[key];
+    const b = DT.BUILTIN[gid];
+    if (!b || !b.files[path]) return '';
+    return (assetCache[key] = URL.createObjectURL(builtinBlob(b.files[path], path)));
   };
 
   /* ---------- Jugar en el navegador ---------- */

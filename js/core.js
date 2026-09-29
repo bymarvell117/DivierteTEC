@@ -155,6 +155,10 @@ window.DT.views = window.DT.views || {};
   };
   DT.coverHTML = (g, cls) => {
     const c = g.cover || {};
+    if (c.asset && DT.assetURL) {
+      const [gid, ...rest] = c.asset.split(':');
+      return `<div class="cover ${cls || ''}"><img src="${DT.assetURL(gid, rest.join(':'))}" alt="${DT.esc(g.title)}" style="object-position:${c.pos || 'center'}"></div>`;
+    }
     if (c.mediaId) return `<div class="cover ${cls || ''}"><img data-media="${c.mediaId}" alt="${DT.esc(g.title)}"></div>`;
     return `<div class="cover gen ${cls || ''}" style="${DT.coverStyle(g)}"><span class="cover-glyph">${DT.esc(c.glyph || '🎮')}</span><span class="cover-title">${DT.esc(g.title)}</span></div>`;
   };

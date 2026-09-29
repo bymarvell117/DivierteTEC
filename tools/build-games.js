@@ -8,8 +8,11 @@ const GAMES = {
   'astro-runner': 'g_astro',
   'pixel-garden': 'g_garden',
   'neon-drift': 'g_neon',
-  'quantum-puzzle': 'g_quantum'
+  'quantum-puzzle': 'g_quantum',
+  'mecaquack': 'g_mecaquack'
 };
+const TEXT = /\.(html?|js|css|json|txt|svg)$/i;
+const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', mp3: 'audio/mpeg', ogg: 'audio/ogg', wav: 'audio/wav' };
 const root = path.join(__dirname, '..');
 
 for (const [dir, gid] of Object.entries(GAMES)) {
@@ -19,6 +22,8 @@ for (const [dir, gid] of Object.entries(GAMES)) {
     const full = path.join(d, f);
     const r = rel ? rel + '/' + f : f;
     if (fs.statSync(full).isDirectory()) return walk(full, r);
+    // Binarios (imágenes, audio) se guardan en base64
+    if (!TEXT.test(f)) { files[r] = { b64: fs.readFileSync(full).toString('base64'), type: MIME[f.split('.').pop().toLowerCase()] || 'application/octet-stream' }; return; }
     let text = fs.readFileSync(full, 'utf8');
     // El SDK local solo sirve fuera de la plataforma: dentro se inyecta el real
     if (/\.html?$/.test(f)) text = text.replace(/\s*<script[^>]*data-dt-sdk[^>]*><\/script>/g, '');

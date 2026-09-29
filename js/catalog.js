@@ -38,6 +38,7 @@
     av_ninja: { type: 'avatar', name: 'Ninja', rarity: 'epico', glyph: '🥷', desc: 'Silencioso y letal.', data: '🥷' },
     av_dragon: { type: 'avatar', name: 'Dragón', rarity: 'legendario', glyph: '🐉', desc: 'Solo para los más persistentes.', data: '🐉' },
     av_astro: { type: 'avatar', name: 'Astronauta', rarity: 'raro', glyph: '🧑‍🚀', desc: 'Explorador de mundos.', data: '🧑‍🚀' },
+    av_pato: { type: 'avatar', name: 'Mecaquack', rarity: 'legendario', glyph: '🦆', desc: 'El pato ingeniero que salvó el archipiélago.', data: '🦆' },
     av_gato: { type: 'avatar', name: 'Michi jardinero', rarity: 'epico', glyph: '🐈', desc: 'El gato que cuida Pixel Garden.', data: '🐈' },
     // Efectos (partículas que siguen al cursor)
     fx_sparkle: { type: 'effect', name: 'Destellos', rarity: 'raro', glyph: '✨', desc: 'Chispas doradas al mover el cursor.', data: 'sparkle' },
@@ -92,7 +93,7 @@
   DT.defaultStoreLayout = (g) => ({
     height: 760, bg: '',
     blocks: [
-      { id: 'b1', type: 'cover', x: 0, y: 0, w: 620, h: 350, z: 1, shape: 'rounded', radius: 14, shadow: true },
+      { id: 'b1', type: 'cover', x: 0, y: 0, w: 620, h: 350, z: 1, shape: 'slant', shadow: true },
       { id: 'b2', type: 'text', x: 650, y: 0, w: 350, h: 190, z: 2, html: `<h2>${DT.esc(g.title)}</h2><p>${DT.esc(g.short || '')}</p>` },
       { id: 'b3', type: 'play', x: 650, y: 200, w: 350, h: 70, z: 2 },
       { id: 'b4', type: 'shape', x: 650, y: 285, w: 150, h: 65, z: 1, shape: 'diamond', color: 'var(--primary)', opacity: .25 },
@@ -167,16 +168,42 @@
           { id: 'quantum_todo', name: 'Colapso total', desc: 'Resuelve los 10 niveles.', icon: '⚛️', goal: 0, reward: 'theme_space' },
           { id: 'quantum_sin_deshacer', name: 'Sin mirar atrás', desc: 'Resuelve 3 niveles seguidos sin deshacer.', icon: '🧑‍🚀', goal: 0, hidden: true, reward: 'av_astro' }
         ] },
-      { id: 'g_hackatec', title: 'Mi juego Hackatec', devId: 'u_dev', format: 'html', genre: 'Arcade', tags: ['Hackatec 2026', 'HTML5'],
-        short: 'El juego de la fase local de Hackatec. ¡Sube aquí los archivos HTML!', description: 'Borrador listo para recibir el juego de la fase local. Desde el panel de desarrollador sube el .html o la carpeta completa, prueba los logros y envíalo a revisión.',
-        cover: { c1: '#1a6fd8', c2: '#ff7a18', glyph: '🏆', angle: 120 }, createdAt: now - 1 * 3600000, status: 'draft',
+      { id: 'g_mecaquack', title: 'Mecaquack', devId: 'u_maravilla', format: 'html', genre: 'Aventura', tags: ['Aventura', 'Educativo', 'Ingeniería', 'Pixel art', 'Hackatec 2026'],
+        short: 'Un pato ingeniero recorre un archipiélago resolviendo retos de física y derrotando a los Tiburones de Tierra.', description: 'Los Tiburones de Tierra arrasaron el archipiélago y dispersaron a la parvada. Mecaquack, un pato ingeniero, recorre 10 islas resolviendo 19 retos de física, química y materiales (en fácil, normal o difícil), ensambla un dron-mochila para cruzar el océano, desbloquea 5 tecnologías y se enfrenta a Bombón, el chihuahua de agua salada. Juego de la fase local de InnovaTec Hackatec, hecho por el Equipo Maravilla del Instituto Tecnológico Superior de Irapuato.',
+        cover: { asset: 'g_mecaquack:img/cinematica4.png', c1: '#5b4fb3', c2: '#f39c12', glyph: '🦆', pos: '60% 40%' }, featured: true, createdAt: now - 2 * 3600000,
+        pricing: { mode: 'free' },
         achievements: [
-          { id: 'primer_nivel', name: 'Primer paso', desc: 'Completa el primer nivel.', icon: '🥉', hidden: false, goal: 0, reward: 'em_fire' },
-          { id: 'puntos_1000', name: 'Mil puntos', desc: 'Consigue 1000 puntos en una partida.', icon: '💯', hidden: false, goal: 1000, reward: 'av_alien' },
-          { id: 'sin_danio', name: 'Intocable', desc: 'Termina un nivel sin recibir daño.', icon: '🛡️', hidden: false, goal: 0, reward: 'frame_neon' },
-          { id: 'jefe_final', name: 'Jefe final', desc: 'Derrota al jefe final.', icon: '👑', hidden: false, goal: 0, reward: 'theme_lava' },
-          { id: 'secreto', name: '???', desc: 'Encuentra el secreto escondido.', icon: '🔮', hidden: true, goal: 0, reward: 'badge_hackatec' }
-        ] }
+          { id: 'meca_primer_reto', name: 'Primer invento', desc: 'Completa tu primer reto de ingeniería.', icon: '⚙️', goal: 0, reward: 'em_fire' },
+          { id: 'meca_dron', name: 'Ingeniero aéreo', desc: 'Ensambla el dron-mochila.', icon: '🚁', goal: 0, reward: 'frame_neon' },
+          { id: 'meca_tiburones', name: 'Cazatiburones', desc: 'Derrota 25 Tiburones de Tierra.', icon: '🦈', goal: 25, reward: 'fx_fire' },
+          { id: 'meca_dificil', name: 'Mente brillante', desc: 'Completa 5 retos en dificultad DIFÍCIL.', icon: '💀', goal: 5, reward: 'frame_gold' },
+          { id: 'meca_estrellas', name: 'Constelación', desc: 'Gana 100 estrellas en total.', icon: '⭐', goal: 100, reward: 'fx_stars' },
+          { id: 'meca_islas', name: 'Explorador del archipiélago', desc: 'Visita las 10 islas.', icon: '🗺️', goal: 0, reward: 'frame_ice' },
+          { id: 'meca_retos', name: 'Archipiélago completo', desc: 'Completa los 19 retos.', icon: '🏝️', goal: 0, reward: 'theme_lava' },
+          { id: 'meca_bombon', name: 'Adiós, Bombón', desc: 'Derrota al jefe final en su guarida de Selvarrón.', icon: '🐶', goal: 0, reward: 'av_pato' },
+          { id: 'meca_perfecto', name: 'Sin un rasguño', desc: 'Vence a Bombón sin perder vida.', icon: '🛡️', goal: 0, hidden: true, reward: 'badge_hackatec' },
+          { id: 'meca_moda', name: 'Pato a la moda', desc: 'Equipa sombrero, skin y estela al mismo tiempo.', icon: '🎩', goal: 0, hidden: true, reward: 'em_crown' }
+        ],
+        storeLayout: { height: 1620, bg: 'linear-gradient(160deg, #1b1340, #0d1b3d 55%, #2a1030)', blocks: [
+          { id: 'm1', type: 'media', asset: 'g_mecaquack:img/cinematica1.png', x: 0, y: 0, w: 1000, h: 430, z: 1, shape: 'slant', fit: 'cover' },
+          { id: 'm2', type: 'text', x: 40, y: 36, w: 600, h: 190, z: 3, html: '<h1 style="font-size:64px;letter-spacing:4px">MECAQUACK</h1><p style="font-size:20px">Una aventura de ingeniería en un archipiélago pixelado</p>', color: '#ffffff' },
+          { id: 'm3', type: 'play', x: 40, y: 250, w: 460, h: 70, z: 4 },
+          { id: 'm4', type: 'media', asset: 'g_mecaquack:img/pato.png', x: 840, y: 250, w: 118, h: 150, z: 4, shape: 'rect', fit: 'contain', rot: -8 },
+          { id: 'm5', type: 'shape', x: 0, y: 452, w: 420, h: 12, z: 2, shape: 'parallelogram', color: '#f39c12' },
+          { id: 'm6', type: 'text', x: 40, y: 484, w: 520, h: 250, z: 2, color: '#ece8ff', html: '<h2>La historia</h2><p>Sin previo aviso, los temidos Tiburones de Tierra emergieron de las profundidades y dispersaron a la parvada. Mecaquack, el pato ingeniero, toma su llave inglesa y el mapa del archipiélago: con la ingeniería como escudo, emprende la misión de rescatar a todos.</p>' },
+          { id: 'm7', type: 'media', asset: 'g_mecaquack:img/cinematica3.png', x: 590, y: 470, w: 390, h: 230, z: 2, shape: 'parallelogram', fit: 'cover', borderW: 3, borderC: '#f39c12', shadow: true },
+          { id: 'm8', type: 'media', asset: 'g_mecaquack:img/bombon.png', x: 690, y: 740, w: 280, h: 260, z: 2, shape: 'hexagon', fit: 'contain', bg: '#ffffff', borderW: 4, borderC: '#e74c3c', shadow: true },
+          { id: 'm9', type: 'text', x: 40, y: 760, w: 620, h: 230, z: 2, color: '#ece8ff', html: '<h2 style="color:#ff8a80">Jefe final: Bombón</h2><p>El chihuahua de agua salada custodia el archipiélago. Completa 10 retos para abrir su guarida en Selvarrón y derrótalo respondiendo 7 preguntas de ingeniería: cada acierto le quita vida, cada error te la quita a ti.</p>' },
+          { id: 'm10', type: 'text', x: 40, y: 1010, w: 540, h: 200, z: 2, color: '#ece8ff', html: '<h3>Qué te espera</h3><p>10 islas · 19 retos de física, química y materiales en 3 dificultades · dron-mochila para cruzar el océano · 5 tecnologías (escudo, flama, armadura, trampa y turbina) · tienda de skins, sombreros y estelas.</p>' },
+          { id: 'm11', type: 'text', x: 40, y: 1210, w: 540, h: 130, z: 2, color: '#c9c3ef', html: '<h3>Controles</h3><p>WASD mover · ESPACIO espada · E interactuar · B dron · V guardarropa · Q/F/G/H/T tecnologías · Esc pausa. En celular: joystick y botones en pantalla.</p>' },
+          { id: 'm12', type: 'media', asset: 'g_mecaquack:img/cinematica2.png', x: 40, y: 1360, w: 540, h: 230, z: 2, shape: 'slant', fit: 'cover', borderW: 3, borderC: '#6fb1ff' },
+          { id: 'm13', type: 'achievements', x: 620, y: 1030, w: 360, h: 560, z: 2 }
+        ] },
+        libraryLayout: { height: 330, bg: '', blocks: [
+          { id: 'ml1', type: 'media', asset: 'g_mecaquack:img/cinematica4.png', x: 0, y: 0, w: 1000, h: 330, z: 1, shape: 'slant', fit: 'cover' },
+          { id: 'ml2', type: 'text', x: 40, y: 190, w: 560, h: 110, z: 2, color: '#ffffff', html: '<h1 style="text-shadow:3px 3px 0 #000;letter-spacing:3px">MECAQUACK</h1>' }
+        ] },
+        news: [{ id: 'nm1', title: '¡Mecaquack llega a DivierteTEC!', body: 'Ahora con guardado de partida, guarida del jefe en Selvarrón, controles táctiles y 10 logros con recompensas.', date: now - 2 * 3600000 }] }
     ];
     // Logros de ejemplo para los juegos de catálogo
     const genericAch = (prefix) => [
@@ -192,8 +219,8 @@
       g.reviews = g.reviews || [];
       g.news = g.news || [];
       g.plays = g.status === 'approved' ? Math.floor(Math.random() * 900 + 100) : 0;
-      g.storeLayout = DT.defaultStoreLayout(g);
-      g.libraryLayout = DT.defaultLibraryLayout(g);
+      g.storeLayout = g.storeLayout || DT.defaultStoreLayout(g);
+      g.libraryLayout = g.libraryLayout || DT.defaultLibraryLayout(g);
       g.reviewNote = '';
     });
     const byId = Object.fromEntries(games.map((g) => [g.id, g]));
@@ -206,13 +233,14 @@
     byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 4,
+      version: 5,
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },
         { id: 'u_luna', name: 'luna_gamer', role: 'user', bio: 'Speedrunner casual.', status: 'active', createdAt: now - 90 * DAY },
         { id: 'u_troll', name: 'xX_troll_Xx', role: 'user', bio: '', status: 'active', createdAt: now - 3 * DAY },
         { id: 'u_dev', name: 'PixelForge Studio', role: 'dev', bio: 'Equipo estudiantil de videojuegos. Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now - 60 * DAY },
+        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now - 30 * DAY },
         { id: 'u_dev2', name: 'Nébula Games', role: 'dev', bio: 'Estudio independiente externo: arcades y puzles para el navegador.', status: 'active', verified: false, student: false, createdAt: now - 25 * DAY },
         { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Moderación de DivierteTEC.', status: 'active', createdAt: now - 120 * DAY }
       ],
@@ -222,7 +250,7 @@
           g_astro: { added: now - 10 * DAY, playtime: 0, lastPlayed: 0 },
           g_cronicas: { added: now - 8 * DAY, playtime: 0, lastPlayed: 0 }
         },
-        u_dev: { g_hackatec: { added: now, playtime: 0, lastPlayed: 0 } }
+        u_maravilla: { g_mecaquack: { added: now, playtime: 0, lastPlayed: 0 } }
       },
       achievements: {},   // userId -> gameId -> achId -> {unlockedAt, progress}
       platformAch: {},    // userId -> achId -> unlockedAt
@@ -238,7 +266,7 @@
       bannedWords: ['idiota', 'basura', 'estúpido'],
       /* ---- Economía (ver js/economy.js y docs/MODELO-DE-NEGOCIO.md) ---- */
       economy: { rateStudent: 0.12, rateExternal: 0.18, seedAllowance: 2000, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7 },
-      wallets: { u_player: 300, u_luna: 120, u_troll: 0, u_dev: 258, u_dev2: 48.13, u_admin: 0 },
+      wallets: { u_maravilla: 0, u_player: 300, u_luna: 120, u_troll: 0, u_dev: 258, u_dev2: 48.13, u_admin: 0 },
       purchases: { u_player: { g_cronicas: { date: now - 10 * DAY, paid: 129 } }, u_luna: { g_cronicas: { date: now - 6 * DAY, paid: 129 }, g_neon: { date: now - 2 * DAY, paid: 34.3 } } },
       passes: { u_luna: { since: now - 10 * DAY, until: now + 20 * DAY } },
       promos: [],

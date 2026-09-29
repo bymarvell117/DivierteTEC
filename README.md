@@ -8,12 +8,17 @@ C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 
 | Juego | Género | Precio en la demo | Controles |
 |---|---|---|---|
+| **Mecaquack** · Equipo Maravilla | Aventura educativa de ingeniería | Gratis · destacado | WASD, Espacio, E, B, V · táctil en celular |
 | **Astro Runner** | Runner espacial de baja gravedad | Gratis | Espacio / ↑ / tocar = saltar (doble salto) |
 | **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
 | **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
 | **Quantum Puzzle** | Puzle de entrelazamiento (10 niveles) | $25 · en revisión | Clic en partículas |
 
-Cada uno tiene 5 logros (uno oculto) con recompensas. El código fuente está en
+Mecaquack es el juego de la fase local de Hackatec del **Equipo Maravilla** (Instituto
+Tecnológico Superior de Irapuato), adaptado a la plataforma: 10 logros con recompensas,
+guardado de partida, guarida del jefe final en Selvarrón (se abre con 10 retos), controles
+táctiles, pausa y corrección de errores. Sus imágenes están en `games/mecaquack/img/`.
+Los otros juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
 `games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,
 ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 
@@ -35,7 +40,7 @@ Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar
 | Cuenta            | Rol            | Qué puedes mostrar                                        |
 |-------------------|----------------|-----------------------------------------------------------|
 | MARVELL117        | Usuario        | Tienda, biblioteca, jugar, reseñas, perfil y recompensas  |
-| PixelForge Studio | Desarrollador  | Subir juegos, logros, editor de páginas, estadísticas     |
+| Equipo Maravilla  | Desarrollador  | Subir juegos, logros, editor de páginas, estadísticas     |
 | Admin TEC         | Administrador  | Revisión de juegos, reportes, moderación, usuarios         |
 
 **Restablecer demo** (mismo menú) borra todo y vuelve a los datos de ejemplo.
@@ -43,8 +48,9 @@ Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar
 ## Flujo para la presentación
 
 1. **Bienvenida** (`#/`): animación de entrada y revelado al hacer scroll.
-2. Cambia a **PixelForge Studio** → *Desarrollador* → **Mi juego Hackatec** → *Archivos del juego*
-   → sube el `.html` o la carpeta del juego (o usa *HTML de prueba del SDK*).
+2. Juega **Mecaquack** desde la tienda (se juega al instante) y desbloquea sus logros.
+   Para mostrar la subida de juegos: cambia a **Equipo Maravilla** → *Desarrollador* → **Nuevo juego**
+   → *Archivos del juego* → sube un `.html` o una carpeta (o usa *HTML de prueba del SDK*).
 3. *Logros y recompensas*: ajusta los logros y copia el código del SDK.
 4. **Probar**: el juego corre en modo prueba con consola.
 5. *Páginas* → **Editar**: arrastra imágenes/GIFs/videos, cambia formas (triángulo,
@@ -64,6 +70,7 @@ index.html               Shell de la aplicación
 css/base.css             Paleta (blanco/gris/azul), modo oscuro y temas desbloqueables
 css/components.css       Componentes y vistas
 css/landing.css          Bienvenida animada
+css/angular.css          Capa de diseño angular (biseles, paralelogramos, franjas diagonales)
 js/core.js               Utilidades, iconos, modales, avisos
 js/catalog.js            Recompensas, logros de plataforma y datos de ejemplo
 js/store.js              Estado (localStorage) y archivos (IndexedDB)

@@ -101,10 +101,10 @@
     DT.$$('[data-asdev]', app).forEach((a) => a.addEventListener('click', (e) => {
       if (DT.me().role === 'user') {
         e.preventDefault();
-        DT.state().currentUserId = 'u_dev';
+        DT.state().currentUserId = 'u_maravilla';
         DT.applyTheme();
         DT.emit('user');
-        DT.toast('Cambiaste al rol <b>Desarrollador</b> (PixelForge Studio) para la demo.');
+        DT.toast('Cambiaste al rol <b>Desarrollador</b> (Equipo Maravilla) para la demo.');
         DT.go('#/dev');
       }
     }));

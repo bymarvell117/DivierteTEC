@@ -75,8 +75,10 @@
       case 'text':
         return `<div class="blk-text" style="${b.color ? 'color:' + DT.esc(b.color) + ';' : ''}${b.align ? 'text-align:' + DT.esc(b.align) + ';' : ''}${b.fontSize ? 'font-size:' + Number(b.fontSize) + 'px;' : ''}">${DT.sanitize(b.html)}</div>`;
       case 'media': {
-        if (!b.mediaId && !b.url) return `<div class="blk-empty">${DT.icon.image}<span>Sin imagen</span></div>`;
-        const src = b.mediaId ? `data-media="${DT.esc(b.mediaId)}"` : `src="${DT.esc(b.url)}"`;
+        if (!b.mediaId && !b.url && !b.asset) return `<div class="blk-empty">${DT.icon.image}<span>Sin imagen</span></div>`;
+        // asset = arte de un juego integrado ("g_id:ruta/imagen.png")
+        const assetSrc = b.asset ? DT.assetURL(b.asset.split(':')[0], b.asset.split(':').slice(1).join(':')) : '';
+        const src = b.mediaId ? `data-media="${DT.esc(b.mediaId)}"` : `src="${DT.esc(assetSrc || b.url)}"`;
         return b.mediaKind === 'video'
           ? `<video ${src} autoplay muted loop playsinline style="object-fit:${fit}"></video>`
           : `<img ${src} alt="" style="object-fit:${fit}" draggable="false">`;

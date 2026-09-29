@@ -40,6 +40,7 @@
     if (!found) found = { name: 'notFound', params: [] };
     current = found;
     document.body.dataset.route = found.name;
+    app.classList.toggle('enter', !keepScroll); // animación de entrada solo al navegar
     DT.renderTopbar();
     if (!canAccess(found.need)) {
       app.innerHTML = `<section class="page narrow empty-state"><div class="big-ico">${DT.icon.lock}</div>
@@ -91,7 +92,7 @@
             <button class="user-chip" data-rolemenu aria-haspopup="true">${DT.avatarHTML(me, 30)}<span class="role-tag role-${me.role}">${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Admin' }[me.role]}</span>${DT.icon.chevDown}</button>
             <div class="dropdown" data-dropdown hidden>
               <div class="dropdown-title">Cambiar de rol (demo)</div>
-              ${DT.state().users.filter((u) => ['u_player', 'u_dev', 'u_admin', 'u_dev2', 'u_luna'].includes(u.id)).map((u) => `
+              ${DT.state().users.filter((u) => ['u_player', 'u_maravilla', 'u_admin', 'u_dev', 'u_luna'].includes(u.id)).map((u) => `
                 <button class="dropdown-item ${u.id === me.id ? 'current' : ''}" data-switch="${u.id}">
                   ${DT.avatarHTML(u, 26)}<span><b>${DT.esc(u.name)}</b><small>${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}</small></span></button>`).join('')}
               <hr>
