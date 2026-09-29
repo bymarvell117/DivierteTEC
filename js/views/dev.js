@@ -117,7 +117,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         if (!title) { t.focus(); return; }
         const g = { id: 'g_' + DT.slug(title).slice(0, 20) + '_' + Math.random().toString(36).slice(2, 6), title, devId: me.id, format: m.el.querySelector('[data-format]').value,
           genre: 'Arcade', tags: [], short: '', description: '', status: 'draft', createdAt: Date.now(), files: null, reviews: [], news: [], plays: 0,
-          achievements: [], cover: { c1: '#1a6fd8', c2: '#0b2a55', glyph: '🎮' }, reviewNote: '' };
+          achievements: [], cover: { c1: '#1a6fd8', c2: '#0b2a55', glyph: '🎮' }, reviewNote: '', pricing: { mode: 'free', price: 0, inPass: false } };
         g.storeLayout = DT.defaultStoreLayout(g);
         g.libraryLayout = DT.defaultLibraryLayout(g);
         s.games.push(g);

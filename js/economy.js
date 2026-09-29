@@ -40,8 +40,9 @@
     if (!g) return null;
     if (g.devId === uid || (u && u.role === 'admin')) return 'dev';
     if ((S().purchases[uid] || {})[gid]) return 'purchase';
-    if (g.pricing.mode === 'free') return 'free';
-    if (g.pricing.inPass && DT.hasPass(uid)) return 'pass';
+    const pr = g.pricing || {};
+    if (!pr.mode || pr.mode === 'free') return 'free';
+    if (pr.inPass && DT.hasPass(uid)) return 'pass';
     return null;
   };
   DT.canAccess = (gid, uid) => !!DT.accessSource(gid, uid);
@@ -50,7 +51,7 @@
   DT.priceTag = (g) => {
     const src = DT.accessSource(g.id);
     const p = DT.priceOf(g);
-    const pass = g.pricing.inPass ? '<span class="pass-tag" title="Incluido en el Pase DivierteTEC">🎟️ Pase</span>' : '';
+    const pass = (g.pricing || {}).inPass ? '<span class="pass-tag" title="Incluido en el Pase DivierteTEC">🎟️ Pase</span>' : '';
     if (src === 'purchase') return `<span class="price owned-price">Comprado</span>${pass}`;
     if (p.mode === 'free') return `<span class="price">Gratis</span>${pass}`;
     if (p.mode === 'pwyw') return `<span class="price">Paga lo que quieras</span>${pass}`;
@@ -191,7 +192,7 @@
   DT.distributePassFund = () => {
     const pool = DT.passFund();
     if (pool <= 0) return [];
-    const passGames = S().games.filter((g) => g.pricing.inPass && g.status === 'approved');
+    const passGames = S().games.filter((g) => (g.pricing || {}).inPass && g.status === 'approved');
     const weight = {};
     passGames.forEach((g) => {
       const t = Object.values(S().library).reduce((a, lib) => a + ((lib[g.id] && lib[g.id].playtime) || 0), 0);

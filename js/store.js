@@ -11,9 +11,21 @@
 
   DT.state = () => state;
 
+  /* Completa los campos que toda ficha de juego necesita (juegos creados en versiones
+     anteriores podían quedar sin precio y romper la tienda y el Pase). */
+  DT.normalizeGame = (g) => {
+    if (!g) return g;
+    g.pricing = Object.assign({ mode: 'free', price: 0, inPass: false }, g.pricing || {});
+    ['tags', 'reviews', 'news', 'achievements'].forEach((k) => { if (!Array.isArray(g[k])) g[k] = []; });
+    g.cover = g.cover || { c1: '#1a6fd8', c2: '#0b2a55' };
+    g.plays = g.plays || 0;
+    return g;
+  };
+
   DT.load = () => {
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
     if (!state || state.version !== 8) { state = DT.seedState(); DT.save(); }
+    state.games.forEach(DT.normalizeGame); // repara juegos guardados con campos faltantes
     return state;
   };
 

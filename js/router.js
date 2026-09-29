@@ -49,7 +49,16 @@
       return;
     }
     const view = DT.views[found.name] || DT.views.notFound;
-    const r = view(app, ...found.params);
+    let r = null;
+    try { r = view(app, ...found.params); }
+    catch (err) {
+      console.error(err);
+      app.innerHTML = `<section class="page narrow empty-state"><div class="big-ico">${DT.icon.flag}</div><h2>Algo salió mal en esta página</h2>
+        <p>Los datos guardados en este navegador podrían estar incompletos. Puedes reintentar o restablecer la demo.</p>
+        <p class="muted small">${DT.esc(String((err && err.message) || err))}</p>
+        <div class="row" style="justify-content:center"><button class="btn primary" data-retry>Reintentar</button><button class="btn ghost" data-reset>Restablecer demo</button></div></section>`;
+      DT.$('[data-retry]', app).onclick = () => DT.render();
+    }
     current.cleanup = typeof r === 'function' ? r : null;
     DT.media.hydrate(app);
     if (keepScroll) scrollTo(0, y); else { scrollTo(0, 0); }

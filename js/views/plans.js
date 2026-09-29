@@ -7,7 +7,7 @@
     const me = DT.me();
     const pass = DT.state().passes[me.id];
     const active = DT.hasPass();
-    const passGames = DT.gamesPublic().filter((g) => g.pricing.inPass);
+    const passGames = DT.gamesPublic().filter((g) => (g.pricing || {}).inPass);
     const pct = (r) => Math.round(r * 100) + ' %';
 
     app.innerHTML = `
