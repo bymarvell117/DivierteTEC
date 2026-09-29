@@ -9,6 +9,7 @@ C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 | Juego | Género | Precio en la demo | Controles |
 |---|---|---|---|
 | **Mecaquack** · Equipo Maravilla | Aventura educativa de ingeniería | Gratis · destacado | WASD, Espacio, E, B, V · táctil en celular |
+| **Aerodron 3D** | Rally de drones en 3D (WebGL puro, sin librerías) | Gratis · destacado | ← → girar · ↑ ↓ altura · Espacio turbo · joystick táctil |
 | **Astro Runner** | Runner espacial de baja gravedad | Gratis | Espacio / ↑ / tocar = saltar (doble salto) |
 | **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
 | **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
@@ -18,7 +19,8 @@ Mecaquack es el juego de la fase local de Hackatec del **Equipo Maravilla** (Ins
 Tecnológico Superior de Irapuato), adaptado a la plataforma: 10 logros con recompensas,
 guardado de partida, guarida del jefe final en Selvarrón (se abre con 10 retos), controles
 táctiles, pausa y corrección de errores. Sus imágenes están en `games/mecaquack/img/`.
-Los otros juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
+Aerodron 3D tiene 6 logros (uno oculto) y un motor 3D propio en WebGL: terreno generado con
+ruido, agua animada, niebla, aerogeneradores y minimapa. Los demás juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
 `games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,
 ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Aerodron 3D</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1b2a5a; font-family: system-ui, "Segoe UI", sans-serif; color: #fff; user-select: none; touch-action: none; }
+  canvas#gl { display: block; width: 100%; height: 100%; }
+  .hud { position: fixed; pointer-events: none; text-shadow: 0 2px 6px #0009; }
+  #hud-left { top: 14px; left: 16px; }
+  #hud-left b { font-size: 30px; display: block; letter-spacing: 1px; }
+  #hud-left span { font-size: 13px; opacity: .85; display: block; }
+  #hud-right { top: 14px; right: 16px; text-align: right; }
+  #hud-right b { font-size: 22px; display: block; }
+  #energy { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(340px, 60vw); pointer-events: none; }
+  #energy .lbl { font: 700 11px system-ui; letter-spacing: 2px; text-align: center; margin-bottom: 4px; }
+  #energy .bar { height: 12px; background: #0008; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
+  #energy .bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff5a1f, #ffd23f 40%, #5bff8a); transition: width .2s; }
+  #compass { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; }
+  #arrow { width: 0; height: 0; margin: 0 auto; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 30px solid #ffd23f; filter: drop-shadow(0 2px 4px #000a); transition: transform .08s linear; }
+  #compass small { display: block; margin-top: 6px; font: 700 12px system-ui; text-shadow: 0 2px 4px #000; }
+  #minimap { position: fixed; right: 16px; bottom: 16px; width: 150px; height: 150px; border: 2px solid #ffffff55; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); }
+  #banner { position: fixed; top: 32%; left: 0; right: 0; text-align: center; font: 900 clamp(28px, 6vw, 60px) system-ui; letter-spacing: 3px; opacity: 0; transition: opacity .3s; pointer-events: none; text-shadow: 0 4px 20px #000a; }
+  #banner.show { opacity: 1; }
+  .ov { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 40%, #1b2a5a44, #0b1026bb); z-index: 20; }
+  .ov.hidden { display: none; }
+  .box { text-align: center; max-width: 560px; padding: 28px 32px; background: #101a3acc; border: 1px solid #6fb1ff66; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px)); }
+  .box h1 { margin: 0 0 6px; font-size: clamp(34px, 7vw, 60px); letter-spacing: 4px; background: linear-gradient(90deg, #6fb1ff, #ffd23f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .box p { color: #cdd8f5; line-height: 1.55; margin: 8px 0; }
+  .keys { display: grid; grid-template-columns: auto auto; gap: 4px 16px; justify-content: center; font-size: 14px; margin: 12px 0; color: #e8eeff; }
+  .keys kbd { background: #ffffff1c; padding: 1px 7px; border-bottom: 2px solid #ffffff44; font: 700 12px system-ui; }
+  button.go { font: 800 16px system-ui; letter-spacing: 2px; text-transform: uppercase; color: #0b1026; background: linear-gradient(90deg, #ffd23f, #ff9a3d); border: 0; padding: 14px 30px; margin-top: 10px; cursor: pointer; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+  button.go:hover { filter: brightness(1.1); transform: translateY(-2px); }
+  .stats { font-size: 15px; line-height: 1.9; }
+  #touch { display: none; }
+  body.touch #touch { display: block; }
+  #joy { position: fixed; left: 22px; bottom: 22px; width: 130px; height: 130px; border-radius: 50%; background: #ffffff14; border: 2px solid #ffffff44; touch-action: none; z-index: 10; }
+  #knob { position: absolute; left: 40px; top: 40px; width: 50px; height: 50px; border-radius: 50%; background: #ffd23fcc; pointer-events: none; }
+  #turbo, #pause { position: fixed; z-index: 10; border: 2px solid #ffffff66; color: #fff; font: 800 13px system-ui; background: #0b1026aa; touch-action: none; }
+  #turbo { right: 190px; bottom: 30px; width: 84px; height: 84px; border-radius: 50%; }
+  #pause { right: 190px; bottom: 126px; width: 48px; height: 48px; border-radius: 50%; }
+  body.touch #energy { bottom: 170px; }
+  @media (max-height: 520px) { .box { padding: 14px 22px; } .box h1 { font-size: 30px; } .box p, .keys { display: none; } body.touch #energy { bottom: 12px; } }
+  @media (max-width: 600px) { #minimap { width: 110px; height: 110px; } body.touch #turbo, body.touch #pause { right: 136px; } }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div class="hud" id="hud-left"><b id="h-ring">0 / 20</b><span>ANILLOS</span><span id="h-time">0.0 s</span><span id="h-best">Récord: —</span></div>
+<div class="hud" id="hud-right"><b id="h-speed">0 km/h</b><span id="h-alt">Altura 0 m</span><br><span id="h-lap">Vuelta 1</span></div>
+<div class="hud" id="compass"><div id="arrow"></div><small id="h-dist"></small></div>
+<div class="hud" id="energy"><div class="lbl">BATERÍA</div><div class="bar"><i id="h-energy"></i></div></div>
+<canvas id="minimap" width="150" height="150" class="hud"></canvas>
+<div id="banner"></div>
+
+<div id="touch"><div id="joy"><div id="knob"></div></div><button id="turbo">TURBO</button><button id="pause">❚❚</button></div>
+
+<div class="ov" id="ov-menu"><div class="box">
+  <h1>AERODRON 3D</h1>
+  <p>Pilota un dron de carreras sobre un archipiélago. Cruza los <b>20 anillos</b> en orden lo más rápido que puedas, recoge <b>baterías</b> verdes y evita chocar con el terreno y los aerogeneradores.</p>
+  <div class="keys"><span><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd></span><span>Girar</span>
+    <span><kbd>↑</kbd> <kbd>↓</kbd> / <kbd>W</kbd> <kbd>S</kbd></span><span>Subir / bajar</span>
+    <span><kbd>Espacio</kbd> / <kbd>Shift</kbd></span><span>Turbo (gasta batería)</span>
+    <span><kbd>P</kbd></span><span>Pausa</span></div>
+  <button class="go" id="btn-start">Despegar</button>
+</div></div>
+<div class="ov hidden" id="ov-over"><div class="box">
+  <h1 id="over-title">SIN BATERÍA</h1>
+  <div class="stats" id="over-stats"></div>
+  <button class="go" id="btn-retry">Volver a volar</button>
+</div></div>
+<div class="ov hidden" id="ov-pause"><div class="box"><h1>PAUSA</h1><button class="go" id="btn-resume">Continuar</button></div></div>
+<div class="ov hidden" id="ov-nogl"><div class="box"><h1>SIN WEBGL</h1><p>Tu navegador o tu tarjeta de video no tienen WebGL activado, así que no se puede mostrar el mundo 3D. Prueba con Chrome, Edge o Firefox actualizados.</p></div></div>
+
+<!-- Solo para jugar fuera de DivierteTEC; la plataforma inyecta el SDK real -->
+<script src="../../sdk/divierte-tec-sdk.js" data-dt-sdk></script>
+<script>
+/* AERODRON 3D — rally de drones en WebGL puro (sin librerías).
+   Motor mínimo: matrices, mallas low-poly con sombreado plano, niebla y cielo.
+   Logros con el SDK de DivierteTEC. */
+(function () {
+  'use strict';
+  var SDK = window.DivierteTEC || { unlock: function () {}, progress: function () {}, setStat: function () {} };
+  var $ = function (id) { return document.getElementById(id); };
+  var cv = $('gl');
+  var gl = cv.getContext('webgl', { antialias: true }) || cv.getContext('experimental-webgl');
+  if (!gl) { $('ov-menu').classList.add('hidden'); $('ov-nogl').classList.remove('hidden'); return; }
+
+  /* =================== MATEMÁTICAS =================== */
+  function mat() { var m = new Float32Array(16); m[0] = m[5] = m[10] = m[15] = 1; return m; }
+  function mul(a, b) {
+    var o = new Float32Array(16);
+    for (var c = 0; c < 4; c++) for (var r = 0; r < 4; r++) {
+      o[c * 4 + r] = a[r] * b[c * 4] + a[4 + r] * b[c * 4 + 1] + a[8 + r] * b[c * 4 + 2] + a[12 + r] * b[c * 4 + 3];
+    }
+    return o;
+  }
+  function perspective(fov, asp, n, f) {
+    var t = 1 / Math.tan(fov / 2), m = new Float32Array(16);
+    m[0] = t / asp; m[5] = t; m[10] = (f + n) / (n - f); m[11] = -1; m[14] = 2 * f * n / (n - f); return m;
+  }
+  function norm(v) { var l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }
+  function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function sub3(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function lookAt(e, c, up) {
+    var z = norm(sub3(e, c)), x = norm(cross(up, z)), y = cross(z, x), m = mat();
+    m[0] = x[0]; m[4] = x[1]; m[8] = x[2]; m[1] = y[0]; m[5] = y[1]; m[9] = y[2]; m[2] = z[0]; m[6] = z[1]; m[10] = z[2];
+    m[12] = -dot(x, e); m[13] = -dot(y, e); m[14] = -dot(z, e); return m;
+  }
+  /* Matriz de modelo: T · Ry(yaw) · Rx(pitch) · Rz(roll) · S */
+  function model(p, yaw, pitch, roll, s) {
+    var cy = Math.cos(yaw || 0), sy = Math.sin(yaw || 0), cx = Math.cos(pitch || 0), sx = Math.sin(pitch || 0), cz = Math.cos(roll || 0), sz = Math.sin(roll || 0);
+    var ry = mat(); ry[0] = cy; ry[2] = -sy; ry[8] = sy; ry[10] = cy;
+    var rx = mat(); rx[5] = cx; rx[6] = sx; rx[9] = -sx; rx[10] = cx;
+    var rz = mat(); rz[0] = cz; rz[1] = sz; rz[4] = -sz; rz[5] = cz;
+    var m = mul(ry, mul(rx, rz));
+    s = s || 1;
+    for (var i = 0; i < 12; i++) if (i % 4 !== 3) m[i] *= s;
+    m[12] = p[0]; m[13] = p[1]; m[14] = p[2];
+    return m;
+  }
+
+  /* =================== RUIDO Y TERRENO =================== */
+  function hash(x, y) { var h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return h - Math.floor(h); }
+  function vnoise(x, y) {
+    var ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
+    var u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+    var a = hash(ix, iy), b = hash(ix + 1, iy), c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  }
+  function fbm(x, y) { var s = 0, a = 0.5, f = 1; for (var i = 0; i < 5; i++) { s += vnoise(x * f, y * f) * a; f *= 2.03; a *= 0.5; } return s; }
+  var ISLANDS = [[0, 0, 70, 170], [340, -260, 105, 150], [-360, 240, 65, 190], [-320, -330, 55, 140], [380, 320, 85, 160], [60, 420, 40, 110]];
+  function heightAt(x, z) {
+    var h = (fbm(x / 230 + 7.3, z / 230 + 2.1) - 0.5) * 70 - 22;
+    for (var i = 0; i < ISLANDS.length; i++) {
+      var I = ISLANDS[i], d2 = (x - I[0]) * (x - I[0]) + (z - I[1]) * (z - I[1]);
+      h += I[2] * Math.exp(-d2 / (2 * I[3] * I[3]));
+    }
+    var r = Math.hypot(x, z);
+    if (r > 620) h -= (r - 620) * 0.35;
+    return Math.max(-30, h);
+  }
+  var WORLD = 1500, N = 150, STEP = WORLD / N, HALF = WORLD / 2;
+  var HM = new Float32Array((N + 1) * (N + 1));
+  for (var j = 0; j <= N; j++) for (var i = 0; i <= N; i++) HM[j * (N + 1) + i] = heightAt(i * STEP - HALF, j * STEP - HALF);
+  function ground(x, z) {
+    var fx = (x + HALF) / STEP, fz = (z + HALF) / STEP;
+    if (fx < 0 || fz < 0 || fx >= N || fz >= N) return -30;
+    var ix = Math.floor(fx), iz = Math.floor(fz), tx = fx - ix, tz = fz - iz;
+    var a = HM[iz * (N + 1) + ix], b = HM[iz * (N + 1) + ix + 1], c = HM[(iz + 1) * (N + 1) + ix], d = HM[(iz + 1) * (N + 1) + ix + 1];
+    return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz;
+  }
+  function colorFor(h, r) {
+    var j = (r - 0.5) * 0.06;
+    if (h < 3) return [0.89 + j, 0.81 + j, 0.56 + j];
+    if (h < 32) return [0.37 + j, 0.68 + j, 0.29 + j];
+    if (h < 62) return [0.24 + j, 0.48 + j, 0.22 + j];
+    if (h < 88) return [0.54 + j, 0.50 + j, 0.46 + j];
+    return [0.95 + j * 0.5, 0.96 + j * 0.5, 0.98];
+  }
+
+  /* =================== GEOMETRÍA =================== */
+  function Geo() { this.d = []; }
+  Geo.prototype.tri = function (a, b, c, col) {
+    var n = norm(cross(sub3(b, a), sub3(c, a)));
+    [a, b, c].forEach(function (p) { this.d.push(p[0], p[1], p[2], n[0], n[1], n[2], col[0], col[1], col[2]); }, this);
+  };
+  Geo.prototype.quad = function (a, b, c, d, col) { this.tri(a, b, c, col); this.tri(a, c, d, col); };
+  Geo.prototype.box = function (cx, cy, cz, sx, sy, sz, col) {
+    var x0 = cx - sx / 2, x1 = cx + sx / 2, y0 = cy - sy / 2, y1 = cy + sy / 2, z0 = cz - sz / 2, z1 = cz + sz / 2;
+    this.quad([x0, y1, z0], [x0, y1, z1], [x1, y1, z1], [x1, y1, z0], col);
+    this.quad([x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1], col);
+    this.quad([x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1], col);
+    this.quad([x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0], col);
+    this.quad([x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1], col);
+    this.quad([x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0], col);
+    return this;
+  };
+  Geo.prototype.cyl = function (cx, cy, cz, r0, r1, h, seg, col) {
+    for (var i = 0; i < seg; i++) {
+      var a = i / seg * Math.PI * 2, b = (i + 1) / seg * Math.PI * 2;
+      var p0 = [cx + Math.cos(a) * r0, cy, cz + Math.sin(a) * r0], p1 = [cx + Math.cos(b) * r0, cy, cz + Math.sin(b) * r0];
+      var q0 = [cx + Math.cos(a) * r1, cy + h, cz + Math.sin(a) * r1], q1 = [cx + Math.cos(b) * r1, cy + h, cz + Math.sin(b) * r1];
+      this.quad(p0, q0, q1, p1, col);
+      this.tri([cx, cy + h, cz], q1, q0, col);
+    }
+    return this;
+  };
+  Geo.prototype.torus = function (R, r, su, sv, col) {
+    function P(u, v) { var cu = Math.cos(u), sn = Math.sin(u), cvv = Math.cos(v); return [(R + r * cvv) * cu, (R + r * cvv) * sn, r * Math.sin(v)]; }
+    for (var i = 0; i < su; i++) for (var j = 0; j < sv; j++) {
+      var u0 = i / su * 6.2832, u1 = (i + 1) / su * 6.2832, v0 = j / sv * 6.2832, v1 = (j + 1) / sv * 6.2832;
+      this.quad(P(u0, v0), P(u1, v0), P(u1, v1), P(u0, v1), col);
+    }
+    return this;
+  };
+  Geo.prototype.octa = function (s, col) {
+    var t = [0, s * 1.4, 0], b = [0, -s * 1.4, 0], e = [[s, 0, 0], [0, 0, s], [-s, 0, 0], [0, 0, -s]];
+    for (var i = 0; i < 4; i++) { var a = e[i], c = e[(i + 1) % 4]; this.tri(t, c, a, col); this.tri(b, a, c, col); }
+    return this;
+  };
+  function upload(g) {
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(g.d), gl.STATIC_DRAW);
+    return { buf: buf, count: g.d.length / 9 };
+  }
+
+  /* =================== SHADERS =================== */
+  function prog(vs, fs) {
+    function sh(t, src) { var s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+    var p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    return p;
+  }
+  var P = prog(
+    'attribute vec3 aPos;attribute vec3 aNor;attribute vec3 aCol;uniform mat4 uVP;uniform mat4 uM;uniform float uTime;uniform float uWater;' +
+    'varying vec3 vCol;varying vec3 vNor;varying vec3 vW;' +
+    'void main(){vec4 w=uM*vec4(aPos,1.0);if(uWater>0.5){w.y+=sin(w.x*0.045+uTime*1.3)*0.7+cos(w.z*0.06+uTime*1.1)*0.6;}' +
+    'vW=w.xyz;vNor=(uM*vec4(aNor,0.0)).xyz;vCol=aCol;gl_Position=uVP*w;}',
+    'precision highp float;varying vec3 vCol;varying vec3 vNor;varying vec3 vW;' +
+    'uniform vec3 uLight;uniform vec3 uFog;uniform vec3 uCam;uniform vec3 uTint;uniform float uEmit;uniform float uFogN;uniform float uFogF;uniform float uWater;uniform float uTime;' +
+    'void main(){vec3 n=normalize(vNor);vec3 base=vCol*uTint;' +
+    'if(uWater>0.5){n=normalize(vec3(sin(vW.x*0.21+uTime*2.0)*0.09,1.0,cos(vW.z*0.17+uTime*1.6)*0.09));}' +
+    'float d=max(dot(n,uLight),0.0);vec3 c=base*(0.42+0.72*d);' +
+    'if(uWater>0.5){vec3 v=normalize(uCam-vW);vec3 h=normalize(v+uLight);c+=vec3(1.0,0.85,0.7)*pow(max(dot(n,h),0.0),70.0)*0.9;}' +
+    'c=mix(c,base*1.25,uEmit);float f=smoothstep(uFogN,uFogF,length(vW-uCam));gl_FragColor=vec4(mix(c,uFog,f),1.0);}'
+  );
+  var SKY = prog('attribute vec2 aP;varying float vY;void main(){vY=aP.y;gl_Position=vec4(aP,0.999,1.0);}',
+    'precision mediump float;varying float vY;uniform float uH;void main(){float t=clamp((vY-uH)*1.3,0.0,1.0);' +
+    'vec3 top=vec3(0.11,0.17,0.40);vec3 hor=vec3(1.0,0.66,0.52);vec3 low=vec3(0.86,0.62,0.62);' +
+    'vec3 c=vY>uH?mix(hor,top,pow(t,0.7)):low;gl_FragColor=vec4(c,1.0);}');
+  var skyBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var L = {}; ['aPos', 'aNor', 'aCol'].forEach(function (a) { L[a] = gl.getAttribLocation(P, a); });
+  ['uVP', 'uM', 'uTime', 'uWater', 'uLight', 'uFog', 'uCam', 'uTint', 'uEmit', 'uFogN', 'uFogF'].forEach(function (u) { L[u] = gl.getUniformLocation(P, u); });
+  var FOG = [0.86, 0.62, 0.62], LIGHT = norm([-0.5, 0.75, -0.35]);
+
+  /* =================== MALLAS =================== */
+  var terrainG = new Geo();
+  for (var tz = 0; tz < N; tz++) for (var tx = 0; tx < N; tx++) {
+    var x0 = tx * STEP - HALF, z0 = tz * STEP - HALF, x1 = x0 + STEP, z1 = z0 + STEP;
+    var h00 = HM[tz * (N + 1) + tx], h10 = HM[tz * (N + 1) + tx + 1], h01 = HM[(tz + 1) * (N + 1) + tx], h11 = HM[(tz + 1) * (N + 1) + tx + 1];
+    if (Math.max(h00, h10, h01, h11) < -6) continue; // fondo marino invisible
+    var r1 = hash(tx, tz), r2 = hash(tz, tx + 7);
+    terrainG.tri([x0, h00, z0], [x0, h01, z1], [x1, h11, z1], colorFor((h00 + h01 + h11) / 3, r1));
+    terrainG.tri([x0, h00, z0], [x1, h11, z1], [x1, h10, z0], colorFor((h00 + h11 + h10) / 3, r2));
+  }
+  var TERRAIN = upload(terrainG);
+  var waterG = new Geo(), WN = 60, WS = 2400 / WN;
+  for (var wz = 0; wz < WN; wz++) for (var wx = 0; wx < WN; wx++) {
+    var ax = wx * WS - 1200, az = wz * WS - 1200;
+    waterG.quad([ax, 0, az], [ax, 0, az + WS], [ax + WS, 0, az + WS], [ax + WS, 0, az], [0.16, 0.42, 0.66]);
+  }
+  var WATER = upload(waterG);
+  var DRONE = upload(new Geo()
+    .box(0, 0, 0, 2.2, 0.7, 3.2, [0.92, 0.94, 0.98])
+    .box(0, 0.5, 0.3, 1.3, 0.5, 1.6, [0.1, 0.44, 0.85])
+    .box(0, 0, 0, 5.6, 0.25, 0.35, [0.2, 0.22, 0.28])
+    .box(0, 0, 0, 0.35, 0.25, 5.6, [0.2, 0.22, 0.28])
+    .cyl(2.8, -0.2, 0, 0.35, 0.3, 0.6, 8, [0.15, 0.15, 0.18]).cyl(-2.8, -0.2, 0, 0.35, 0.3, 0.6, 8, [0.15, 0.15, 0.18])
+    .cyl(0, -0.2, 2.8, 0.35, 0.3, 0.6, 8, [0.15, 0.15, 0.18]).cyl(0, -0.2, -2.8, 0.35, 0.3, 0.6, 8, [0.15, 0.15, 0.18])
+    .box(0.5, 0.05, 1.65, 0.35, 0.2, 0.1, [0.2, 1, 0.4]).box(-0.5, 0.05, 1.65, 0.35, 0.2, 0.1, [1, 0.2, 0.2]));
+  var ROTOR = upload(new Geo().box(0, 0, 0, 2.4, 0.05, 0.28, [0.85, 0.87, 0.92]).box(0, 0, 0, 0.28, 0.05, 2.4, [0.85, 0.87, 0.92]));
+  var RING = upload(new Geo().torus(12, 1.1, 36, 7, [1, 1, 1]));
+  var BATT = upload(new Geo().octa(1.6, [0.36, 1, 0.55]).box(0, 0, 0, 0.8, 3.6, 0.8, [0.9, 1, 0.9]));
+  var TOWER = upload(new Geo().cyl(0, 0, 0, 1.1, 0.6, 30, 10, [0.95, 0.95, 0.97]).box(0, 30.5, 0.8, 1.6, 1.6, 3.2, [0.9, 0.9, 0.93]));
+  var BLADE1 = upload(new Geo().box(0, 5, 0, 0.5, 10, 0.2, [0.97, 0.97, 1]));
+  var cloudG = new Geo();
+  for (var k = 0; k < 5; k++) cloudG.box(k * 7 - 14, Math.sin(k) * 2, (k % 2) * 5, 12, 5 + (k % 3) * 2, 9, [1, 1, 1]);
+  var CLOUD = upload(cloudG);
+
+  /* =================== MUNDO: circuito, obstáculos, baterías, nubes =================== */
+  var RINGS = [];
+  for (var ri = 0; ri < 20; ri++) {
+    var t = ri / 20 * Math.PI * 2;
+    var rx = Math.cos(t) * 430 + Math.sin(t * 3) * 60, rz = Math.sin(t) * 360 + Math.cos(t * 2) * 50;
+    RINGS.push({ p: [rx, Math.max(ground(rx, rz), 0) + 26 + Math.sin(t * 4) * 10, rz] });
+  }
+  RINGS.forEach(function (r, i) {
+    var n = RINGS[(i + 1) % RINGS.length].p, pv = RINGS[(i + RINGS.length - 1) % RINGS.length].p;
+    r.yaw = Math.atan2(n[0] - pv[0], n[2] - pv[2]);
+    r.dir = [Math.sin(r.yaw), 0, Math.cos(r.yaw)];
+  });
+  var TOWERS = [], seed = 1;
+  function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+  for (var tt = 0; TOWERS.length < 26 && tt < 4000; tt++) {
+    var x = (rnd() - 0.5) * 1200, z = (rnd() - 0.5) * 1200, g = ground(x, z);
+    if (g < 6 || g > 60) continue;
+    if (RINGS.some(function (r) { return Math.hypot(r.p[0] - x, r.p[2] - z) < 45; })) continue;
+    if (TOWERS.some(function (o) { return Math.hypot(o.p[0] - x, o.p[2] - z) < 40; })) continue;
+    TOWERS.push({ p: [x, g - 1, z], yaw: rnd() * 6.28, spin: rnd() * 6 });
+  }
+  var BATTS = [];
+  RINGS.forEach(function (r, i) {
+    var n = RINGS[(i + 1) % RINGS.length].p;
+    var m = [(r.p[0] + n[0]) / 2 + (rnd() - 0.5) * 40, 0, (r.p[2] + n[2]) / 2 + (rnd() - 0.5) * 40];
+    m[1] = Math.max(ground(m[0], m[2]), 0) + 14 + rnd() * 18;
+    BATTS.push({ p: m, t: rnd() * 6, off: 0 });
+  });
+  var CLOUDS = [];
+  for (var c = 0; c < 18; c++) CLOUDS.push({ p: [(rnd() - 0.5) * 1400, 130 + rnd() * 60, (rnd() - 0.5) * 1400], yaw: rnd() * 6, s: 1 + rnd() * 1.4 });
+
+  /* =================== SONIDO =================== */
+  var ac = null, eng = null;
+  function audio() { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } return ac; }
+  function beep(f1, f2, dur, type, vol, delay) {
+    var a = audio(); if (!a) return;
+    var o = a.createOscillator(), g2 = a.createGain(), t0 = a.currentTime + (delay || 0);
+    o.type = type || 'square'; o.frequency.setValueAtTime(f1, t0); o.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+    g2.gain.setValueAtTime(vol || 0.05, t0); g2.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g2); g2.connect(a.destination); o.start(t0); o.stop(t0 + dur);
+  }
+  function engineOn() {
+    var a = audio(); if (!a || eng) return;
+    var o = a.createOscillator(), g3 = a.createGain(); o.type = 'sawtooth'; o.frequency.value = 90; g3.gain.value = 0.015;
+    o.connect(g3); g3.connect(a.destination); o.start(); eng = { o: o, g: g3 };
+  }
+
+  /* =================== ESTADO =================== */
+  function load(k, d) { try { var v = localStorage.getItem('aerodron_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem('aerodron_' + k, JSON.stringify(v)); } catch (e) { } }
+  var best = load('best', 0), totalBatt = load('batt', 0);
+  var state = 'menu', S;
+  function reset() {
+    var r0 = RINGS[0];
+    S = {
+      pos: [r0.p[0] - r0.dir[0] * 90, r0.p[1] + 4, r0.p[2] - r0.dir[2] * 90], yaw: r0.yaw, vy: 0, turn: 0, speed: 40,
+      energy: 100, ring: 0, lap: 1, lapT: 0, flightRings: 0, shake: 0, rasante: 0, rotor: 0, time: 0,
+      cam: null, prevSide: {}
+    };
+  }
+  reset();
+
+  /* =================== ENTRADA =================== */
+  var keys = {}, touchX = 0, touchY = 0, touchTurbo = false;
+  addEventListener('keydown', function (e) {
+    keys[e.code] = true;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.code) >= 0) e.preventDefault();
+    if (e.code === 'KeyP' || e.code === 'Escape') togglePause();
+    if ((e.code === 'Enter' || e.code === 'Space') && state !== 'play' && state !== 'pause') start();
+  });
+  addEventListener('keyup', function (e) { keys[e.code] = false; });
+  function held(a, b) { return keys[a] || keys[b]; }
+  $('btn-start').onclick = start; $('btn-retry').onclick = start; $('btn-resume').onclick = togglePause;
+  function togglePause() {
+    if (state === 'play') { state = 'pause'; $('ov-pause').classList.remove('hidden'); }
+    else if (state === 'pause') { state = 'play'; $('ov-pause').classList.add('hidden'); }
+  }
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.body.classList.add('touch');
+    var joy = $('joy'), knob = $('knob'), jid = null;
+    joy.addEventListener('pointerdown', function (e) { jid = e.pointerId; joy.setPointerCapture(jid); mv(e); });
+    function mv(e) {
+      if (e.pointerId !== jid) return;
+      var r = joy.getBoundingClientRect(), dx = (e.clientX - r.left - r.width / 2) / 55, dy = (e.clientY - r.top - r.height / 2) / 55, m = Math.hypot(dx, dy);
+      if (m > 1) { dx /= m; dy /= m; }
+      touchX = dx; touchY = dy; knob.style.transform = 'translate(' + dx * 40 + 'px,' + dy * 40 + 'px)';
+    }
+    joy.addEventListener('pointermove', mv);
+    function up(e) { if (e.pointerId !== jid) return; jid = null; touchX = touchY = 0; knob.style.transform = ''; }
+    joy.addEventListener('pointerup', up); joy.addEventListener('pointercancel', up);
+    $('turbo').addEventListener('pointerdown', function (e) { e.preventDefault(); touchTurbo = true; });
+    $('turbo').addEventListener('pointerup', function () { touchTurbo = false; });
+    $('turbo').addEventListener('pointerleave', function () { touchTurbo = false; });
+    $('pause').addEventListener('pointerdown', function (e) { e.preventDefault(); togglePause(); });
+  }
+
+  function start() {
+    reset(); state = 'play'; engineOn();
+    ['ov-menu', 'ov-over', 'ov-pause'].forEach(function (id) { $(id).classList.add('hidden'); });
+    banner('¡DESPEGUE!', '#ffd23f');
+    beep(220, 880, 0.5, 'triangle', 0.06);
+  }
+  var bannerT = 0;
+  function banner(txt, color) { var b = $('banner'); b.textContent = txt; b.style.color = color || '#fff'; b.classList.add('show'); bannerT = 1.8; }
+  function gameOver(title) {
+    state = 'over';
+    $('over-title').textContent = title;
+    $('over-stats').innerHTML = 'Anillos en este vuelo: <b>' + S.flightRings + '</b><br>Vueltas completas: <b>' + (S.lap - 1) + '</b><br>Mejor vuelta: <b>' + (best ? best.toFixed(1) + ' s' : '—') + '</b>';
+    $('ov-over').classList.remove('hidden');
+    beep(400, 60, 0.8, 'sawtooth', 0.08);
+    SDK.setStat('Anillos (mejor vuelo)', Math.max(load('bestRings', 0), S.flightRings)); save('bestRings', Math.max(load('bestRings', 0), S.flightRings));
+  }
+
+  /* =================== ACTUALIZACIÓN =================== */
+  function crash(msg) {
+    S.energy -= 14; S.shake = 0.5; S.speed = 18;
+    banner(msg, '#ff7b5a');
+    beep(180, 50, 0.4, 'sawtooth', 0.08);
+  }
+  function update(dt) {
+    S.time += dt; S.lapT += dt;
+    var turnIn = (held('ArrowLeft', 'KeyA') ? 1 : 0) - (held('ArrowRight', 'KeyD') ? 1 : 0) - touchX;
+    var upIn = (held('ArrowUp', 'KeyW') ? 1 : 0) - (held('ArrowDown', 'KeyS') ? 1 : 0) - touchY;
+    var turbo = (held('Space', 'ShiftLeft') || keys.ShiftRight || touchTurbo) && S.energy > 5;
+    S.turn += (Math.max(-1, Math.min(1, turnIn)) - S.turn) * Math.min(1, dt * 6);
+    S.yaw += S.turn * 1.55 * dt;
+    S.vy += (Math.max(-1, Math.min(1, upIn)) * 24 - S.vy) * Math.min(1, dt * 4);
+    var target = turbo ? 70 : 42;
+    S.speed += (target - S.speed) * Math.min(1, dt * (turbo ? 2 : 1.2));
+    var f = [Math.sin(S.yaw), 0, Math.cos(S.yaw)];
+    S.pos[0] += f[0] * S.speed * dt; S.pos[2] += f[2] * S.speed * dt; S.pos[1] += S.vy * dt;
+    S.pos[1] = Math.min(S.pos[1], 230);
+    // Límite del mundo: empuja de regreso
+    var r = Math.hypot(S.pos[0], S.pos[2]);
+    if (r > 700) { var push = (r - 700) * 0.02; S.yaw += Math.sign(Math.sin(Math.atan2(-S.pos[0], -S.pos[2]) - S.yaw)) * push * dt * 3; if (r > 760) { S.pos[0] *= 760 / r; S.pos[2] *= 760 / r; } }
+    // Energía
+    S.energy -= (1.0 + (turbo ? 5 : 0)) * dt;
+    // Choque con terreno o agua
+    var gnd = Math.max(ground(S.pos[0], S.pos[2]), 0);
+    if (S.pos[1] < gnd + 1.4) { S.pos[1] = gnd + 5; S.vy = 8; crash(gnd > 0.5 ? '¡TERRENO!' : '¡SPLASH!'); }
+    // Aerogeneradores
+    TOWERS.forEach(function (o) {
+      var dx = S.pos[0] - o.p[0], dz = S.pos[2] - o.p[2], d = Math.hypot(dx, dz);
+      if (d < 3.2 && S.pos[1] < o.p[1] + 33) { S.pos[0] = o.p[0] + dx / d * 8; S.pos[2] = o.p[2] + dz / d * 8; S.yaw += Math.PI * 0.6; crash('¡AEROGENERADOR!'); }
+    });
+    // Anillos: cruce del plano del anillo actual
+    var R = RINGS[S.ring], rel = sub3(S.pos, R.p), side = dot(rel, R.dir), lat = Math.sqrt(Math.max(0, dot(rel, rel) - side * side));
+    var prev = S.prevSide[S.ring];
+    if (prev !== undefined && prev < 0 && side >= 0 && lat < 12.5) passRing();
+    S.prevSide[S.ring] = side;
+    // Baterías
+    BATTS.forEach(function (b) {
+      if (b.off > 0) { b.off -= dt; return; }
+      b.t += dt;
+      if (Math.hypot(S.pos[0] - b.p[0], S.pos[1] - b.p[1], S.pos[2] - b.p[2]) < 7) {
+        b.off = 20; S.energy = Math.min(100, S.energy + 22); totalBatt++; save('batt', totalBatt);
+        SDK.progress('dron_baterias', totalBatt);
+        beep(900, 1600, 0.12, 'square', 0.05);
+      }
+    });
+    // Vuelo rasante sobre el agua
+    if (ground(S.pos[0], S.pos[2]) < -1 && S.pos[1] < 4.5) { S.rasante += dt; if (S.rasante >= 5) SDK.unlock('dron_rasante'); } else S.rasante = 0;
+    if (S.energy <= 0) { S.energy = 0; gameOver('SIN BATERÍA'); }
+    S.rotor += dt * (30 + S.speed);
+    if (S.shake > 0) S.shake -= dt;
+    if (eng) eng.o.frequency.value = 70 + S.speed * 2.2 + (turbo ? 40 : 0);
+  }
+  function passRing() {
+    S.flightRings++; S.energy = Math.min(100, S.energy + 10);
+    SDK.unlock('dron_despegue');
+    SDK.progress('dron_10', S.flightRings);
+    [660, 880, 1320].forEach(function (fr, i) { beep(fr, fr * 1.01, 0.12, 'triangle', 0.05, i * 0.07); });
+    S.ring++;
+    if (S.ring >= RINGS.length) {
+      var lt = S.lapT;
+      SDK.unlock('dron_circuito');
+      if (lt < 150) SDK.unlock('dron_record');
+      var rec = !best || lt < best;
+      if (rec) { best = lt; save('best', best); SDK.setStat('Mejor vuelta (s)', best.toFixed(1)); }
+      banner('VUELTA ' + S.lap + ' · ' + lt.toFixed(1) + ' s' + (rec ? ' · ¡RÉCORD!' : ''), '#5bff8a');
+      S.ring = 0; S.lap++; S.lapT = 0; S.prevSide = {};
+    } else banner('ANILLO ' + S.ring + ' / ' + RINGS.length, '#ffd23f');
+  }
+
+  /* =================== DIBUJO =================== */
+  var VP, camPos;
+  function resize() {
+    var dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    cv.width = Math.floor(cv.clientWidth * dpr); cv.height = Math.floor(cv.clientHeight * dpr);
+    gl.viewport(0, 0, cv.width, cv.height);
+  }
+  addEventListener('resize', resize); resize();
+  gl.enable(gl.DEPTH_TEST); // sin culling: la geometría low-poly mezcla orientaciones
+
+  function draw(mesh, M, tint, emit, water) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buf);
+    gl.vertexAttribPointer(L.aPos, 3, gl.FLOAT, false, 36, 0);
+    gl.vertexAttribPointer(L.aNor, 3, gl.FLOAT, false, 36, 12);
+    gl.vertexAttribPointer(L.aCol, 3, gl.FLOAT, false, 36, 24);
+    gl.uniformMatrix4fv(L.uM, false, M);
+    gl.uniform3fv(L.uTint, tint || [1, 1, 1]);
+    gl.uniform1f(L.uEmit, emit || 0);
+    gl.uniform1f(L.uWater, water ? 1 : 0);
+    gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
+  }
+  var IDENT = mat();
+  function render(t) {
+    var f = [Math.sin(S.yaw), 0, Math.cos(S.yaw)];
+    var want = [S.pos[0] - f[0] * 20, S.pos[1] + 7 - S.vy * 0.15, S.pos[2] - f[2] * 20];
+    if (!S.cam || state === 'menu') S.cam = state === 'menu' ? [Math.cos(t * 0.1) * 520, 160, Math.sin(t * 0.1) * 520] : want.slice();
+    else for (var i = 0; i < 3; i++) S.cam[i] += (want[i] - S.cam[i]) * 0.12;
+    var gc = Math.max(ground(S.cam[0], S.cam[2]), 0) + 3; if (S.cam[1] < gc) S.cam[1] = gc;
+    camPos = S.cam.slice();
+    if (S.shake > 0) { camPos[0] += (Math.random() - 0.5) * S.shake * 3; camPos[1] += (Math.random() - 0.5) * S.shake * 3; }
+    var look = state === 'menu' ? [0, 20, 0] : [S.pos[0] + f[0] * 12, S.pos[1] + 1, S.pos[2] + f[2] * 12];
+    var proj = perspective(state === 'play' ? 1.0 + (S.speed - 42) * 0.004 : 0.9, cv.width / cv.height, 0.5, 1800);
+    VP = mul(proj, lookAt(camPos, look, [0, 1, 0]));
+
+    gl.clearColor(FOG[0], FOG[1], FOG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // Cielo (horizonte aproximado según la inclinación de la cámara)
+    gl.useProgram(SKY); gl.depthMask(false);
+    var horiz = (function () { var p = mul(VP, model([camPos[0] + f[0] * 1000, camPos[1], camPos[2] + f[2] * 1000], 0, 0, 0, 1)); return p[13] / p[15]; })();
+    gl.uniform1f(gl.getUniformLocation(SKY, 'uH'), isFinite(horiz) ? horiz - 0.05 : 0);
+    var aP = gl.getAttribLocation(SKY, 'aP'); gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.enableVertexAttribArray(aP);
+    gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0); gl.drawArrays(gl.TRIANGLES, 0, 3); gl.disableVertexAttribArray(aP);
+    gl.depthMask(true);
+
+    gl.useProgram(P);
+    gl.enableVertexAttribArray(L.aPos); gl.enableVertexAttribArray(L.aNor); gl.enableVertexAttribArray(L.aCol);
+    gl.uniformMatrix4fv(L.uVP, false, VP);
+    gl.uniform3fv(L.uLight, LIGHT); gl.uniform3fv(L.uFog, FOG); gl.uniform3fv(L.uCam, camPos);
+    gl.uniform1f(L.uFogN, 300); gl.uniform1f(L.uFogF, 1100); gl.uniform1f(L.uTime, t);
+
+    draw(TERRAIN, IDENT);
+    draw(WATER, model([Math.round(camPos[0] / WS) * WS, 0, Math.round(camPos[2] / WS) * WS]), null, 0, true);
+    TOWERS.forEach(function (o) {
+      draw(TOWER, model(o.p, o.yaw));
+      var hub = [o.p[0] + Math.sin(o.yaw) * 2.6, o.p[1] + 30.5, o.p[2] + Math.cos(o.yaw) * 2.6];
+      for (var b = 0; b < 3; b++) draw(BLADE1, model(hub, o.yaw, 0, t * 1.4 + o.spin + b * 2.094));
+    });
+    CLOUDS.forEach(function (c) { c.p[0] += 0.03; if (c.p[0] > 760) c.p[0] = -760; draw(CLOUD, model(c.p, c.yaw, 0, 0, c.s), [1, 1, 1], 0.55); });
+    BATTS.forEach(function (b) { if (b.off <= 0) draw(BATT, model([b.p[0], b.p[1] + Math.sin(b.t * 2) * 1.2, b.p[2]], b.t * 2), [1, 1, 1], 0.5); });
+    // Anillos: el actual brilla en dorado, el siguiente en cian, los demás tenues
+    RINGS.forEach(function (r, i) {
+      var rel = (i - S.ring + RINGS.length) % RINGS.length;
+      if (state === 'play' && rel > 4) return;
+      var pulse = 0.55 + 0.35 * Math.sin(t * 6);
+      var tint = rel === 0 ? [1, 0.78, 0.2] : rel === 1 ? [0.3, 0.9, 1] : [0.75, 0.8, 0.95];
+      draw(RING, model(r.p, r.yaw), tint, rel === 0 ? pulse : 0.2);
+    });
+    // Dron
+    if (state !== 'menu') {
+      var dm = model(S.pos, S.yaw, -S.vy * 0.012, -S.turn * 0.45);
+      draw(DRONE, dm);
+      [[2.8, 0], [-2.8, 0], [0, 2.8], [0, -2.8]].forEach(function (o, i) {
+        var c = Math.cos(S.yaw), s = Math.sin(S.yaw);
+        var wp = [S.pos[0] + o[0] * c + o[1] * s, S.pos[1] + 0.55 - o[0] * Math.sin(-S.turn * 0.45) * 0.9, S.pos[2] - o[0] * s + o[1] * c];
+        draw(ROTOR, model(wp, S.rotor * (i % 2 ? 1 : -1), 0, 0), [1, 1, 1], 0.2);
+      });
+    }
+  }
+
+  /* =================== HUD Y MINIMAPA =================== */
+  var mm = $('minimap'), mctx = mm.getContext('2d'), mbg = document.createElement('canvas');
+  mbg.width = mbg.height = 150;
+  (function () {
+    var c = mbg.getContext('2d'), img = c.createImageData(150, 150);
+    for (var y = 0; y < 150; y++) for (var x = 0; x < 150; x++) {
+      var h = ground((x / 150 - 0.5) * WORLD, (y / 150 - 0.5) * WORLD), col = h < 0 ? [30, 80, 140] : colorFor(h, 0.5).map(function (v) { return v * 255; }), o = (y * 150 + x) * 4;
+      img.data[o] = col[0]; img.data[o + 1] = col[1]; img.data[o + 2] = col[2]; img.data[o + 3] = 230;
+    }
+    c.putImageData(img, 0, 0);
+  })();
+  function toMap(p) { return [(p[0] / WORLD + 0.5) * mm.width, (p[2] / WORLD + 0.5) * mm.height]; }
+  function hud() {
+    $('h-ring').textContent = (state === 'menu' ? 0 : S.ring) + ' / ' + RINGS.length;
+    $('h-time').textContent = S.lapT.toFixed(1) + ' s';
+    $('h-best').textContent = 'Récord: ' + (best ? best.toFixed(1) + ' s' : '—');
+    $('h-speed').textContent = Math.round(S.speed * 3.6) + ' km/h';
+    $('h-alt').textContent = 'Altura ' + Math.round(S.pos[1]) + ' m';
+    $('h-lap').textContent = 'Vuelta ' + S.lap;
+    $('h-energy').style.width = Math.max(0, S.energy) + '%';
+    var R = RINGS[S.ring].p, dx = R[0] - S.pos[0], dz = R[2] - S.pos[2];
+    var ang = Math.atan2(dx, dz) - S.yaw; ang = Math.atan2(Math.sin(ang), Math.cos(ang));
+    $('arrow').style.transform = 'rotate(' + (-ang) + 'rad)';
+    var dy = R[1] - S.pos[1];
+    $('h-dist').textContent = Math.round(Math.hypot(dx, dz)) + ' m' + (dy > 8 ? ' · SUBE ▲' : dy < -8 ? ' · BAJA ▼' : '');
+    mctx.clearRect(0, 0, 150, 150); mctx.drawImage(mbg, 0, 0, mm.width, mm.height);
+    RINGS.forEach(function (r, i) { var q = toMap(r.p); mctx.fillStyle = i === S.ring ? '#ffd23f' : '#ffffffaa'; mctx.fillRect(q[0] - (i === S.ring ? 3 : 1.5), q[1] - (i === S.ring ? 3 : 1.5), i === S.ring ? 6 : 3, i === S.ring ? 6 : 3); });
+    var d = toMap(S.pos);
+    mctx.save(); mctx.translate(d[0], d[1]); mctx.rotate(-S.yaw + Math.PI);
+    mctx.fillStyle = '#ff3e5a'; mctx.beginPath(); mctx.moveTo(0, -6); mctx.lineTo(4, 5); mctx.lineTo(-4, 5); mctx.fill(); mctx.restore();
+  }
+
+  /* =================== BUCLE =================== */
+  var last = performance.now();
+  function loop(now) {
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (state === 'play') update(dt);
+    if (bannerT > 0) { bannerT -= dt; if (bannerT <= 0) $('banner').classList.remove('show'); }
+    if (eng) eng.g.gain.value = state === 'play' ? 0.015 : 0.0;
+    render(now / 1000);
+    hud();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.__aerodron = { get S() { return S; }, RINGS: RINGS, start: start, passRing: passRing }; // para pruebas
+})();
+</script>
+</body>
+</html>

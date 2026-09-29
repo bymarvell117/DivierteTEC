@@ -203,7 +203,20 @@
           { id: 'ml1', type: 'media', asset: 'g_mecaquack:img/cinematica4.png', x: 0, y: 0, w: 1000, h: 330, z: 1, shape: 'slant', fit: 'cover' },
           { id: 'ml2', type: 'text', x: 40, y: 190, w: 560, h: 110, z: 2, color: '#ffffff', html: '<h1 style="text-shadow:3px 3px 0 #000;letter-spacing:3px">MECAQUACK</h1>' }
         ] },
-        news: [{ id: 'nm1', title: '¡Mecaquack llega a DivierteTEC!', body: 'Ahora con guardado de partida, guarida del jefe en Selvarrón, controles táctiles y 10 logros con recompensas.', date: now - 2 * 3600000 }] }
+        news: [{ id: 'nm1', title: '¡Mecaquack llega a DivierteTEC!', body: 'Ahora con guardado de partida, guarida del jefe en Selvarrón, controles táctiles y 10 logros con recompensas.', date: now - 2 * 3600000 }] },
+      { id: 'g_aerodron', title: 'Aerodron 3D', devId: 'u_dev2', format: 'html', genre: 'Carreras', tags: ['3D', 'WebGL', 'Vuelo', 'Contrarreloj'],
+        short: 'Rally de drones en 3D: cruza 20 anillos sobre un archipiélago low-poly antes de quedarte sin batería.', description: 'Juego 3D hecho con WebGL puro, sin librerías: terreno generado con ruido, agua animada, aerogeneradores, nubes y cielo de atardecer. Pilota tu dron por un circuito de 20 anillos, recoge baterías, usa el turbo con cuidado y bate tu récord de vuelta. Controles: ← → girar, ↑ ↓ subir y bajar, Espacio turbo; joystick en pantallas táctiles.',
+        cover: { c1: '#ff9a6a', c2: '#1b2a5a', glyph: '🚁', angle: 170 }, featured: true, createdAt: now - 30 * 60000,
+        pricing: { mode: 'free' },
+        achievements: [
+          { id: 'dron_despegue', name: 'Despegue', desc: 'Cruza tu primer anillo.', icon: '🚁', goal: 0, reward: 'em_gg' },
+          { id: 'dron_10', name: 'Piloto', desc: 'Cruza 10 anillos en un mismo vuelo.', icon: '🎯', goal: 10, reward: 'frame_ice' },
+          { id: 'dron_circuito', name: 'Circuito completo', desc: 'Completa los 20 anillos del circuito.', icon: '🏁', goal: 0, reward: 'fx_sparkle' },
+          { id: 'dron_record', name: 'Contrarreloj', desc: 'Completa el circuito en menos de 150 segundos.', icon: '⏱️', goal: 0, reward: 'theme_cyber' },
+          { id: 'dron_baterias', name: 'Recargado', desc: 'Recoge 30 baterías en total.', icon: '🔋', goal: 30, reward: 'av_alien' },
+          { id: 'dron_rasante', name: 'Vuelo rasante', desc: 'Vuela 5 segundos a menos de 3 m del agua.', icon: '🌊', goal: 0, hidden: true, reward: 'em_rocket' }
+        ],
+        news: [{ id: 'na1', title: 'Aerodron 3D: el primer juego 3D de DivierteTEC', body: 'Mundo 3D en WebGL que corre directo en tu navegador, sin instalar nada.', date: now - 30 * 60000 }] },
     ];
     // Logros de ejemplo para los juegos de catálogo
     const genericAch = (prefix) => [
@@ -233,7 +246,7 @@
     byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 5,
+      version: 6,
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },

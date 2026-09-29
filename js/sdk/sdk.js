@@ -111,7 +111,18 @@
         return orig.apply(console, arguments);
       };
     });
-    window.addEventListener('error', function (e) { post({ type: 'console', level: 'error', text: (e.message || 'Error') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '') }); });
+    /* document.open() borra los listeners de la ventana, así que se vuelven a
+       conectar desde el propio documento del juego (ver __dtAttach más abajo) */
+    function attachListeners() {
+      window.addEventListener('error', function (e) { post({ type: 'console', level: 'error', text: (e.message || 'Error') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '') }); });
+      window.addEventListener('unhandledrejection', function (e) { post({ type: 'console', level: 'error', text: 'Promesa rechazada: ' + (e.reason && e.reason.message || e.reason) }); });
+      window.addEventListener('message', function (e) {
+        var m = e.data;
+        if (m && m.__dt === 1 && m.type === 'unlocked' && window.DivierteTEC) window.DivierteTEC.__markUnlocked(m.id);
+      });
+    }
+    window.__dtAttach = attachListeners;
+    attachListeners();
 
     /* --- utilidades de rutas --- */
     var EXTERNAL = /^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i;
@@ -138,10 +149,6 @@
 
       /* SDK real, conectado a la plataforma */
       (0, eval)(SDK_SRC)(function (msg) { post(msg); });
-      window.addEventListener('message', function (e) {
-        var m = e.data;
-        if (m && m.__dt === 1 && m.type === 'unlocked' && window.DivierteTEC) window.DivierteTEC.__markUnlocked(m.id);
-      });
 
       var files = {};  // ruta → {buf, type}
       var lower = {};  // ruta en minúsculas → ruta real (tolerancia a mayúsculas)
@@ -227,6 +234,10 @@
         window.Audio = function (u) { return u === undefined ? new OAudio() : new OAudio(mapRuntime(u)); };
         window.Audio.prototype = OAudio.prototype;
       }
+
+      var hook = doc.createElement('script');
+      hook.textContent = 'window.__dtAttach&&window.__dtAttach();';
+      doc.head.insertBefore(hook, doc.head.firstChild);
 
       window.DivierteTEC.__setReady(d.info);
       post({ type: 'booted' });
