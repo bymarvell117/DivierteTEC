@@ -5,7 +5,7 @@
 (function (DT) {
   'use strict';
 
-  const KEY = 'divierteTEC_state_v8';
+  const KEY = 'divierteTEC_state_v9';
   let state = null;
   const listeners = new Set();
 
@@ -15,7 +15,9 @@
      anteriores podían quedar sin precio y romper la tienda y el Pase). */
   DT.normalizeGame = (g) => {
     if (!g) return g;
-    g.pricing = Object.assign({ mode: 'free', price: 0, inPass: false }, g.pricing || {});
+    g.pricing = Object.assign({ mode: 'pwyw', price: 20, min: 0, inPass: false }, g.pricing || {});
+    // Pilar de la plataforma: los juegos gratuitos funcionan con «Paga lo que quieras» desde $0
+    if (g.pricing.mode === 'free') Object.assign(g.pricing, { mode: 'pwyw', min: 0, price: g.pricing.price || 20 });
     ['tags', 'reviews', 'news', 'achievements'].forEach((k) => { if (!Array.isArray(g[k])) g[k] = []; });
     g.cover = g.cover || { c1: '#1a6fd8', c2: '#0b2a55' };
     g.plays = g.plays || 0;
@@ -24,7 +26,7 @@
 
   DT.load = () => {
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
-    if (!state || state.version !== 8) { state = DT.seedState(); DT.save(); }
+    if (!state || state.version !== 9) { state = DT.seedState(); DT.save(); }
     state.games.forEach(DT.normalizeGame); // repara juegos guardados con campos faltantes
     return state;
   };
@@ -74,11 +76,11 @@
 
   DT.avatarOf = (u) => {
     const eq = DT.equipped(u.id);
-    return eq.avatar || (u.role === 'admin' ? '🛡️' : u.role === 'dev' ? '🛠️' : '🎮');
+    return eq.avatar || (u.role === 'admin' ? 'shield' : u.role === 'dev' ? 'wrench' : 'gamepad');
   };
   DT.avatarHTML = (u, size) => {
     const eq = DT.equipped(u.id);
-    return `<span class="avatar ${eq.frame ? 'frame-' + DT.esc(eq.frame) : ''}" style="--s:${size || 40}px"><span>${DT.esc(DT.avatarOf(u))}</span></span>`;
+    return `<span class="avatar ${eq.frame ? 'frame-' + DT.esc(eq.frame) : ''}" style="--s:${size || 40}px">${DT.art.avatar(DT.avatarOf(u))}</span>`;
   };
 
   DT.log = (text) => { state.log.unshift({ date: Date.now(), actor: state.currentUserId, text }); state.log = state.log.slice(0, 200); };

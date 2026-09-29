@@ -190,8 +190,8 @@
           <label>Opacidad<input type="number" data-p="opacity" value="${b.opacity == null ? 1 : b.opacity}" min="0" max="1" step="0.05"></label>
         </div>
         <div class="row nowrap">
-          <button class="btn ghost sm" data-z="up" title="Traer al frente">⬆ Frente</button>
-          <button class="btn ghost sm" data-z="down" title="Enviar atrás">⬇ Atrás</button>
+          <button class="btn ghost sm" data-z="up" title="Traer al frente">${DT.icon.arrowUp} Frente</button>
+          <button class="btn ghost sm" data-z="down" title="Enviar atrás">${DT.icon.arrowDown} Atrás</button>
           <button class="btn ghost sm" data-dup title="Duplicar">${DT.icon.copy}</button>
           <button class="btn danger sm" data-delblk title="Eliminar">${DT.icon.trash}</button>
         </div>
@@ -368,6 +368,7 @@
     document.addEventListener('keydown', onKey);
     const beforeUnload = (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } };
     addEventListener('beforeunload', beforeUnload);
+    DT.setLeaveGuard({ label: 'la página de ' + which + ' de ' + g.title, isDirty: () => dirty, save: () => { save(); return true; }, discard: () => { dirty = false; } });
 
     draw();
     return () => {

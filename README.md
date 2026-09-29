@@ -8,10 +8,10 @@ C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 
 | Juego | Género | Precio en la demo | Controles |
 |---|---|---|---|
-| **Mecaquack** · Equipo Maravilla | Aventura educativa de ingeniería | Gratis · destacado | WASD, Espacio, E, B, V · táctil en celular |
-| **Aerodron 3D** | Rally de drones en 3D (WebGL puro, sin librerías) | Gratis · destacado | ← → girar · ↑ ↓ altura · Espacio turbo · joystick táctil |
-| **Furia TEC** | Pelea 3D con las mascotas de los Tecnológicos de Guanajuato: cooperativo y Kombate 1 vs 1 | Gratis · destacado | J1: A/D, W salta, S, F/G/H ligero·medio·pesado, T especial · J2: flechas, J/K/L, I · mando de Xbox con vibración |
-| **Astro Runner** | Runner espacial de baja gravedad | Gratis | Espacio / ↑ / tocar = saltar (doble salto) |
+| **Mecaquack** · Equipo Maravilla | Aventura educativa de ingeniería | Paga lo que quieras · destacado | WASD, Espacio, E, B, V · táctil en celular |
+| **Aerodron 3D** | Rally de drones en 3D (WebGL puro, sin librerías) | Paga lo que quieras · destacado | ← → girar · ↑ ↓ altura · Espacio turbo · joystick táctil |
+| **Furia TEC** | Pelea 3D con las mascotas de los Tecnológicos de Guanajuato: cooperativo y Kombate 1 vs 1 | Paga lo que quieras · destacado | J1: A/D, W salta, S, F/G/H ligero·medio·pesado, T especial · J2: flechas, J/K/L, I · mando de Xbox con vibración |
+| **Astro Runner** | Runner espacial de baja gravedad | Paga lo que quieras | Espacio / ↑ / tocar = saltar (doble salto) |
 | **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
 | **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
 | **Quantum Puzzle** | Puzle de entrelazamiento (10 niveles) | $25 · en revisión | Clic en partículas |
@@ -39,9 +39,24 @@ Los demás juegos tienen 5 logros cada uno (uno oculto). El código fuente está
 `games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,
 ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 
+## Novedades de la fase 7
+
+- **Bienvenida enfocada en jugar:** botón **JUGAR AHORA** que abre Furia TEC al instante, fila «Juega en 1 clic», infografía
+  «Cada partida impulsa a un estudio mexicano» y la red de los Tecnológicos de Guanajuato.
+- **Paga lo que quieras** es el modelo de todos los juegos gratuitos: se juegan sin pagar y se aporta lo que se quiera al estudio.
+- **Reseñas con 2 horas de juego:** estrellas, recomendación, horas jugadas, votos «útil», edición y resumen infográfico.
+  Para la demo: menú de usuario → *Simular +1 h de juego*. Los juegos descargables registran tiempo con el lanzador de la biblioteca.
+- **Borradores automáticos** en el panel del juego y ventana **¿Seguro que quieres salir?** (Salir sin guardar · Guardar y salir · Cancelar).
+- **Criterios de aprobación TecNM** en el panel de admin (automáticos + revisión manual; *Aprobar* se habilita al cumplirlos),
+  pestaña de referencia y autoevaluación para el estudio. Basados en principios públicos del TecNM; no sustituyen sus lineamientos oficiales.
+- **Retirar juegos publicados:** el estudio (y la administración, con motivo) puede retirar un juego de la tienda; quien ya lo tiene lo conserva.
+- **Arte propio sin emojis** (`js/art.js`): portadas ilustradas en SVG, portadas generativas, avatares, stickers, insignias e íconos.
+- **Animaciones** (`js/fx.js`): inclinación 3D, entrada escalonada, ondas, confeti, apertura del juego en círculo y contadores.
+- **Corrección:** los juegos creados sin precio vaciaban la tienda y rompían el Pase; ahora el estado guardado se repara solo.
+
 ## Modelo de negocio
 
-Comisión escalonada (0 % en los primeros $2,000 de estudios estudiantiles, luego 12 %;
+**Paga lo que quieras** como pilar para los juegos gratuitos, comisión escalonada (0 % en los primeros $2,000 de estudios estudiantiles, luego 12 %;
 18 % para externos), **Pase DivierteTEC** de $59/mes que reparte el 70 % entre los estudios
 por tiempo jugado, destacados patrocinados y propinas. Todo con dinero simulado.
 Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
@@ -89,6 +104,8 @@ css/components.css       Componentes y vistas
 css/landing.css          Bienvenida animada
 css/angular.css          Capa de diseño angular (biseles, paralelogramos, franjas diagonales)
 js/core.js               Utilidades, iconos, modales, avisos
+js/art.js                Arte SVG propio: portadas, avatares, stickers, insignias, íconos
+js/fx.js                 Animaciones de la interfaz (inclinación, confeti, entradas)
 js/catalog.js            Recompensas, logros de plataforma y datos de ejemplo
 js/store.js              Estado (localStorage) y archivos (IndexedDB)
 js/theme.js              Temas y efectos de partículas

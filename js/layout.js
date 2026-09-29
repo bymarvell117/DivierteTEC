@@ -102,9 +102,9 @@
           const got = mine[a.id] && mine[a.id].unlockedAt;
           const hidden = a.hidden && !got;
           const r = a.reward && DT.reward(a.reward);
-          return `<div class="ach-row ${got ? 'got' : ''}"><span class="ach-ico">${hidden ? '❔' : DT.esc(a.icon || '🏆')}</span>
+          return `<div class="ach-row ${got ? 'got' : ''}"><span class="ach-ico">${hidden ? DT.icon.question : DT.ic(a.icon)}</span>
             <div><b>${hidden ? 'Logro oculto' : DT.esc(a.name)}</b><small>${hidden ? 'Sigue jugando para descubrirlo.' : DT.esc(a.desc || '')}</small></div>
-            ${r && !hidden ? `<span class="ach-reward" title="${DT.esc(r.name)}">${DT.esc(r.glyph)}</span>` : ''}</div>`;
+            ${r && !hidden ? `<span class="ach-reward" title="${DT.esc(r.name)}">${DT.art.badge(r)}</span>` : ''}</div>`;
         }).join('') || '<p class="muted">Este juego aún no tiene logros.</p>'}</div>`;
       }
       case 'play':

@@ -75,7 +75,7 @@
 
   const playButton = (g, compact) => {
     // Juegos del Pase con la suscripción vencida: se conservan en la biblioteca, pero hay que renovar o comprar
-    if (!DT.canAccess(g.id)) return `<a class="btn primary ${compact ? 'square' : 'big'}" href="#/planes" title="Tu Pase venció">🎟️${compact ? '' : ' RENOVAR PASE'}</a>`;
+    if (!DT.canAccess(g.id)) return `<a class="btn primary ${compact ? 'square' : 'big'}" href="#/planes" title="Tu Pase venció">${DT.icon.ticket}${compact ? '' : ' RENOVAR PASE'}</a>`;
     if (g.format === 'html') return `<button class="btn play ${compact ? 'square' : 'big'}" data-act="play" data-gid="${g.id}">${DT.icon.play}${compact ? '' : ' JUGAR'}</button>`;
     const inst = (DT.lib()[g.id] || {}).installed;
     return `<button class="btn ${inst ? 'play' : 'primary'} ${compact ? 'square' : 'big'}" data-act="download" data-gid="${g.id}">${DT.icon.download}${compact ? '' : inst ? ' REINSTALAR' : ' INSTALAR'}</button>`;
@@ -93,7 +93,9 @@
         ${playButton(g)}
         <div class="lib-stat"><small>ÚLTIMA SESIÓN</small><b>${DT.timeAgo(e.lastPlayed)}</b></div>
         <div class="lib-stat"><small>TIEMPO JUGADO</small><b>${DT.fmtTime(e.playtime)}</b></div>
+        ${g.format !== 'html' && e.installed ? `<button class="btn ${e.sessionStart ? 'danger' : 'success'} sm" data-act="session" data-gid="${g.id}">${DT.icon.clock} ${e.sessionStart ? 'Terminar sesión de juego' : 'Iniciar sesión de juego'}</button>` : ''}
         <div class="lib-stat"><small>LOGROS</small><b>${s.got} / ${s.total}</b><div class="bar"><i style="width:${s.pct}%"></i></div></div>
+        <div class="lib-stat" title="Se necesitan 2 horas de juego para reseñar"><small>RESEÑA</small><b>${DT.canReview(g.id) ? 'Disponible' : DT.fmtTime(Math.max(0, DT.REVIEW_MIN - (e.playtime || 0))) + ' restantes'}</b><div class="bar"><i style="width:${Math.min(100, (e.playtime || 0) / DT.REVIEW_MIN * 100)}%"></i></div></div>
         <span class="spacer"></span>
         <a class="btn ghost sm" href="#/juego/${g.id}">Página de la tienda</a>
         ${me.id === g.devId ? `<a class="btn ghost sm" href="#/dev/editor/${g.id}/biblioteca">${DT.icon.edit} Editar</a>` : ''}
@@ -112,7 +114,7 @@
             const hidden = a.hidden && !got;
             const r = a.reward && DT.reward(a.reward);
             return `<div class="ach-row big ${got ? 'got' : ''}">
-              <span class="ach-ico">${hidden ? '❔' : DT.esc(a.icon || '🏆')}</span>
+              <span class="ach-ico">${hidden ? DT.icon.question : DT.ic(a.icon)}</span>
               <div><b>${hidden ? 'Logro oculto' : DT.esc(a.name)}</b><small>${hidden ? '???' : DT.esc(a.desc)}</small>
               ${a.goal && !got ? `<div class="bar"><i style="width:${Math.min(100, (m.progress || 0) / a.goal * 100)}%"></i></div><small>${m.progress || 0} / ${a.goal}</small>` : ''}
               ${got ? `<small class="ok">Desbloqueado ${DT.timeAgo(m.unlockedAt)}</small>` : ''}</div>
@@ -129,7 +131,7 @@
     const g = gid && DT.game(gid);
     app.innerHTML = `<div class="library">${sidebar(owned, gid)}
       <div class="lib-main">${owned.length ? (g && lib[gid] ? detail(g) : home(owned)) : `
-        <div class="empty-state"><div class="big-ico">📚</div><h2>Tu biblioteca está vacía</h2><p>Agrega juegos gratis desde la tienda.</p><a class="btn primary" href="#/tienda">Ir a la tienda</a></div>`}</div></div>`;
+        <div class="empty-state"><div class="big-ico">${DT.icon.book}</div><h2>Tu biblioteca está vacía</h2><p>Agrega juegos gratis desde la tienda.</p><a class="btn primary" href="#/tienda">Ir a la tienda</a></div>`}</div></div>`;
 
     if (g && lib[gid]) DT.renderLayout(DT.$('[data-layout]', app), g.libraryLayout, g, { uid: DT.me().id, playHTML: DT.playButtonsHTML });
 

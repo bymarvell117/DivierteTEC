@@ -11,14 +11,14 @@
     const r = DT.reward(rid);
     if (!r) return '';
     const rar = DT.RARITY[r.rarity] || DT.RARITY.comun;
-    return `<span class="reward-chip" style="--rar:${rar.color}">${DT.esc(r.glyph)} ${DT.esc(r.name)} <small>${DT.REWARD_TYPES[r.type] || ''}</small></span>`;
+    return `<span class="reward-chip" style="--rar:${rar.color}"><span class="rw-mini">${DT.art.badge(r)}</span>${DT.esc(r.name)} <small>${DT.REWARD_TYPES[r.type] || ''}</small></span>`;
   };
   R.chip = rewardChip;
 
   const achToast = (icon, title, name, rewards, test) => {
     DT.toast(`<div class="ach-toast">
-      <div class="ach-toast-icon">${DT.esc(icon || '🏆')}</div>
-      <div><small>${test ? '🧪 PRUEBA · ' : ''}${DT.esc(title)}</small><strong>${DT.esc(name)}</strong>
+      <div class="ach-toast-icon">${DT.ic(icon)}</div>
+      <div><small>${test ? 'PRUEBA · ' : ''}${DT.esc(title)}</small><strong>${DT.esc(name)}</strong>
       ${rewards.length ? `<div class="ach-toast-rewards">${rewards.map(rewardChip).join('')}</div>` : ''}</div>
     </div>`, { kind: 'achievement', ms: 5200 });
   };

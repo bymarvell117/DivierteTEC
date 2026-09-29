@@ -104,6 +104,7 @@ window.DT.views = window.DT.views || {};
     el.innerHTML = html;
     host.appendChild(el);
     requestAnimationFrame(() => el.classList.add('show'));
+    if (opts.kind === 'achievement' && DT.fx) setTimeout(() => DT.fx.burstAt(el.querySelector('.ach-toast-icon') || el, { count: 55, power: 7 }), 250);
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, opts.ms || 3200);
     return el;
   };
@@ -118,8 +119,20 @@ window.DT.views = window.DT.views || {};
       ${opts.actions ? `<footer class="modal-foot">${opts.actions}</footer>` : ''}
     </div>`;
     const close = () => { wrap.classList.remove('show'); setTimeout(() => wrap.remove(), 200); document.removeEventListener('keydown', onKey); if (opts.onClose) opts.onClose(); };
-    const onKey = (e) => { if (e.key === 'Escape') close(); };
-    wrap.addEventListener('click', (e) => { if (e.target === wrap || e.target.closest('[data-close]')) close(); });
+    /* opts.guard(): si devuelve true, se pide confirmación antes de cerrar (p. ej. formularios con texto) */
+    const tryClose = () => {
+      if (!opts.guard || !opts.guard()) return close();
+      const box = wrap.querySelector('.modal');
+      if (box.querySelector('.modal-confirm')) return;
+      const bar = document.createElement('div');
+      bar.className = 'modal-confirm';
+      bar.innerHTML = `<span>${DT.icon.warn} ¿Descartar lo que escribiste?</span><button class="btn ghost sm" data-keep>Seguir editando</button><button class="btn danger sm" data-discard>Descartar</button>`;
+      box.appendChild(bar);
+      bar.querySelector('[data-keep]').onclick = (ev) => { ev.stopPropagation(); bar.remove(); };
+      bar.querySelector('[data-discard]').onclick = (ev) => { ev.stopPropagation(); close(); };
+    };
+    const onKey = (e) => { if (e.key === 'Escape') tryClose(); };
+    wrap.addEventListener('click', (e) => { if (e.target === wrap || e.target.closest('[data-close]')) tryClose(); });
     document.addEventListener('keydown', onKey);
     document.body.appendChild(wrap);
     requestAnimationFrame(() => wrap.classList.add('show'));
@@ -148,7 +161,7 @@ window.DT.views = window.DT.views || {};
     m.el.querySelector('[data-ok]').onclick = () => { done = true; res(m.el.querySelector('[data-in]').value); m.close(); };
   });
 
-  /* Portada generada (gradiente + glifo) para juegos sin imagen subida */
+  /* Gradiente base de la portada (también se usa en figuras decorativas) */
   DT.coverStyle = (g) => {
     const c = g.cover || {};
     return `background:linear-gradient(${c.angle || 135}deg, ${c.c1 || '#1a6fd8'}, ${c.c2 || '#0b2a55'})`;
@@ -160,7 +173,7 @@ window.DT.views = window.DT.views || {};
       return `<div class="cover ${cls || ''}"><img src="${DT.assetURL(gid, rest.join(':'))}" alt="${DT.esc(g.title)}" style="object-position:${c.pos || 'center'}"></div>`;
     }
     if (c.mediaId) return `<div class="cover ${cls || ''}"><img data-media="${c.mediaId}" alt="${DT.esc(g.title)}"></div>`;
-    return `<div class="cover gen ${cls || ''}" style="${DT.coverStyle(g)}"><span class="cover-glyph">${DT.esc(c.glyph || '🎮')}</span><span class="cover-title">${DT.esc(g.title)}</span></div>`;
+    return `<div class="cover art ${cls || ''}">${DT.art.cover(g)}<span class="cover-title">${DT.esc(g.title)}</span></div>`;
   };
 
   DT.formatLabel = { html: 'HTML5 · Navegador', cpp: 'C++ · Nativo', exe: 'Ejecutable instalable' };

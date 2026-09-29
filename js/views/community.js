@@ -6,12 +6,12 @@
     const s = DT.state();
     const feed = [];
     s.games.filter((g) => g.status === 'approved').forEach((g) => {
-      g.reviews.filter((r) => !r.hidden).forEach((r) => feed.push({ date: r.date, html: `${DT.avatarHTML(DT.user(r.userId) || { id: '' }, 36)}<div><b>${DT.esc((DT.user(r.userId) || {}).name)}</b> reseñó <a href="#/juego/${g.id}">${DT.esc(g.title)}</a> ${r.up ? '👍' : '👎'}<p>${DT.esc(DT.censor(r.text))}</p></div>` }));
+      g.reviews.filter((r) => !r.hidden).forEach((r) => feed.push({ date: r.date, html: `${DT.avatarHTML(DT.user(r.userId) || { id: '' }, 36)}<div><b>${DT.esc((DT.user(r.userId) || {}).name)}</b> reseñó <a href="#/juego/${g.id}">${DT.esc(g.title)}</a> ${r.up ? DT.icon.thumbUp : DT.icon.thumbDown}${r.stars ? DT.starsHTML(r.stars) : ''}<p>${DT.stickerize(DT.esc(DT.censor(r.text)))}</p></div>` }));
       (g.news || []).forEach((n) => feed.push({ date: n.date, html: `${DT.coverHTML(g, 'mini')}<div><b>${DT.esc(g.title)}</b> publicó una novedad<p><b>${DT.esc(n.title)}</b> — ${DT.esc(n.body)}</p></div>` }));
     });
     Object.entries(s.achievements).forEach(([uid, games]) => Object.entries(games).forEach(([gid, achs]) => Object.entries(achs).forEach(([aid, v]) => {
       const g = DT.game(gid); const a = g && g.achievements.find((x) => x.id === aid); const u = DT.user(uid);
-      if (v.unlockedAt && a && u) feed.push({ date: v.unlockedAt, html: `${DT.avatarHTML(u, 36)}<div><b>${DT.esc(u.name)}</b> desbloqueó <b>${DT.esc(a.icon)} ${DT.esc(a.hidden ? 'un logro secreto' : a.name)}</b> en <a href="#/juego/${gid}">${DT.esc(g.title)}</a></div>` });
+      if (v.unlockedAt && a && u) feed.push({ date: v.unlockedAt, html: `${DT.avatarHTML(u, 36)}<div><b>${DT.esc(u.name)}</b> desbloqueó <b>${DT.ic(a.icon)} ${DT.esc(a.hidden ? 'un logro secreto' : a.name)}</b> en <a href="#/juego/${gid}">${DT.esc(g.title)}</a></div>` });
     })));
     feed.sort((a, b) => b.date - a.date);
 
@@ -30,7 +30,7 @@
           </div>
           <div class="card">
             <h3>${DT.icon.trophy} Cazadores de logros</h3>
-            <ol class="board">${board.map((b, i) => `<li><span class="rank r${i + 1}">${i + 1}</span>${DT.avatarHTML(b.u, 34)}<a href="#/perfil/${b.u.id}">${DT.esc(b.u.name)}</a><span class="spacer"></span><small class="muted">${b.rewards} 🎁</small><b>${b.score} 🏆</b></li>`).join('')}</ol>
+            <ol class="board">${board.map((b, i) => `<li><span class="rank r${i + 1}">${i + 1}</span>${DT.avatarHTML(b.u, 34)}<a href="#/perfil/${b.u.id}">${DT.esc(b.u.name)}</a><span class="spacer"></span><small class="muted">${b.rewards} ${DT.icon.gift}</small><b>${b.score} ${DT.icon.trophy}</b></li>`).join('')}</ol>
           </div>
         </div>
       </section>`;

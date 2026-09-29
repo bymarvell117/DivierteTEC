@@ -18,12 +18,25 @@
     const rar = DT.RARITY[r.rarity] || DT.RARITY.comun;
     const src = owned ? '' : DT.rewardSources(rid)[0] || 'Recompensa de evento';
     return `<div class="reward-card ${owned ? '' : 'locked'} ${equipped ? 'equipped' : ''}" style="--rar:${rar.color}">
-      <div class="reward-glyph ${r.type === 'frame' ? 'frame-demo' : ''}">${r.type === 'frame' ? `<span class="avatar frame-${r.data}" style="--s:54px"><span>${DT.esc(DT.avatarOf(DT.me()))}</span></span>` : DT.esc(r.glyph)}</div>
+      <div class="reward-glyph ${r.type === 'frame' ? 'frame-demo' : ''}">${r.type === 'frame' ? `<span class="avatar frame-${r.data}" style="--s:54px">${DT.art.avatar(DT.avatarOf(DT.me()))}</span>` : DT.art.badge(r)}</div>
       <b>${DT.esc(r.name)}</b>
       <small style="color:${rar.color}">${rar.name}</small>
       <p>${owned ? DT.esc(r.desc || '') : `${DT.icon.lock} ${DT.esc(src)}`}</p>
       ${owned && canEquip ? `<button class="btn ${equipped ? 'ghost' : 'primary'} sm" data-equip="${rid}">${equipped ? 'Quitar' : 'Equipar'}</button>` : ''}
     </div>`;
+  };
+
+  /* Infografía: colección por rareza y por tipo */
+  const collection = (inv, all) => {
+    const ids = Object.keys(DT.REWARDS);
+    const rows = Object.entries(DT.RARITY).map(([k, r]) => {
+      const tot = ids.filter((id) => all[id].rarity === k).length, got = ids.filter((id) => all[id].rarity === k && inv.includes(id)).length;
+      return `<div class="coll-row"><span style="color:${r.color}">${r.name}</span><div class="coll-bar"><i style="width:${tot ? got / tot * 100 : 0}%;background:${r.color}"></i></div><b>${got}/${tot}</b></div>`;
+    }).join('');
+    const got = ids.filter((id) => inv.includes(id)).length, pct = Math.round(got / ids.length * 100), C = 2 * Math.PI * 40;
+    const types = Object.entries(DT.REWARD_TYPES).map(([t, n]) => `<span class="coll-type">${DT.ic({ theme: 'palette', frame: 'frame', avatar: 'smile', effect: 'sparkle', emoji: 'heart', badge: 'medal' }[t])}<b>${ids.filter((id) => all[id].type === t && inv.includes(id)).length}</b><small>${n}</small></span>`).join('');
+    return `<div class="card collection"><svg viewBox="0 0 100 100" class="coll-ring"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--surface-3)" stroke-width="12"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--primary)" stroke-width="12" stroke-dasharray="${C * pct / 100} ${C}" transform="rotate(-90 50 50)"/><text x="50" y="55" text-anchor="middle" font-size="20" font-weight="900" fill="currentColor">${pct}%</text></svg>
+      <div class="coll-body"><h3>Tu colección</h3>${rows}<div class="coll-types">${types}</div></div></div>`;
   };
 
   DT.views.profile = (app, uid) => {
@@ -57,7 +70,8 @@
         return `<h3 class="section-title">${title}</h3><div class="reward-grid">${themeCards}</div>`;
       }
       let extra = '';
-      if (type === 'avatar') extra = DT.FREE_AVATARS.map((a) => `<div class="reward-card ${eq.avatar === a ? 'equipped' : ''}" style="--rar:#8a9bb0"><div class="reward-glyph">${a}</div><b>Básico</b><small>Gratis</small>${mine ? `<button class="btn ${eq.avatar === a ? 'ghost' : 'primary'} sm" data-freeav="${a}">${eq.avatar === a ? 'En uso' : 'Equipar'}</button>` : ''}</div>`).join('');
+      if (type === 'avatar') extra = DT.FREE_AVATARS.map((a) => `<div class="reward-card ${eq.avatar === a ? 'equipped' : ''}" style="--rar:#8a9bb0"><div class="reward-glyph"><span class="avatar" style="--s:54px">${DT.art.avatar(a)}</span></div><b>${DT.AVATAR_NAMES[a] || 'Básico'}</b><small>Gratis</small>${mine ? `<button class="btn ${eq.avatar === a ? 'ghost' : 'primary'} sm" data-freeav="${a}">${eq.avatar === a ? 'En uso' : 'Equipar'}</button>` : ''}</div>`).join('');
+      if (type === 'emoji') extra = DT.FREE_STICKERS.map((k) => `<div class="reward-card" style="--rar:#8a9bb0"><div class="reward-glyph">${DT.art.sticker(k)}</div><b>${DT.STICKER_NAMES[k]}</b><small>Gratis</small><p>Disponible para todos.</p></div>`).join('');
       return `<h3 class="section-title">${title}</h3><div class="reward-grid">${extra}${ids.map((id) => {
         const r = all[id];
         const owned = inv.includes(id);
@@ -72,7 +86,7 @@
         <div class="profile-head card">
           ${DT.avatarHTML(u, 110)}
           <div class="profile-info">
-            <h1>${DT.esc(u.name)} ${badges.map((b) => `<span class="badge-ico" title="${DT.esc(all[b].name)}">${all[b].glyph}</span>`).join('')}</h1>
+            <h1>${DT.esc(u.name)} ${badges.map((b) => `<span class="badge-ico" title="${DT.esc(all[b].name)}">${DT.art.badge(all[b])}</span>`).join('')}</h1>
             <p class="muted">${{ user: 'Jugador', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}${u.verified ? ' · Estudio verificado ✔' : ''} · Miembro ${DT.timeAgo(u.createdAt)}</p>
             <p data-bio>${DT.esc(u.bio || '')}</p>
             ${mine ? `<button class="btn ghost sm" data-editbio>${DT.icon.edit} Editar biografía</button>` : `<button class="btn ghost sm" data-reportuser>${DT.icon.flag} Reportar</button>`}
@@ -85,21 +99,23 @@
           </div>
         </div>
 
+        ${collection(inv, all)}
+
         ${devGames.length ? `<h3 class="section-title">Juegos publicados</h3><div class="grid cols-4">${devGames.map((g) => `<a class="lib-tile" href="#/juego/${g.id}">${DT.coverHTML(g, 'fill')}<span>${DT.esc(g.title)}</span></a>`).join('')}</div>` : ''}
 
         <h3 class="section-title">${DT.icon.trophy} Logros de DivierteTEC</h3>
         <div class="grid cols-3">${DT.PLATFORM_ACH.map((a) => `
-          <div class="ach-row big card ${pdone[a.id] ? 'got' : ''}"><span class="ach-ico">${a.icon}</span>
+          <div class="ach-row big card ${pdone[a.id] ? 'got' : ''}"><span class="ach-ico">${DT.ic(a.icon)}</span>
             <div><b>${DT.esc(a.name)}</b><small>${DT.esc(a.desc)}</small>
             <div class="reward-line">${[].concat(a.reward).map(DT.rewards.chip).join('')}</div>
             ${pdone[a.id] ? `<small class="ok">Desbloqueado ${DT.timeAgo(pdone[a.id])}</small>` : ''}</div></div>`).join('')}</div>
 
-        ${section('theme', '🎨 Temas de página')}
-        ${section('frame', '🖼️ Marcos de perfil')}
-        ${section('avatar', '🙂 Avatares')}
-        ${section('effect', '✨ Efectos')}
-        ${section('emoji', '😀 Emojis <small class="muted">(úsalos en reseñas)</small>')}
-        ${section('badge', '🏅 Insignias')}
+        ${section('theme', DT.icon.palette + ' Temas de página')}
+        ${section('frame', DT.icon.frame + ' Marcos de perfil')}
+        ${section('avatar', DT.icon.smile + ' Avatares')}
+        ${section('effect', DT.icon.sparkle + ' Efectos')}
+        ${section('emoji', DT.icon.heart + ' Stickers <small class="muted">(úsalos en reseñas)</small>')}
+        ${section('badge', DT.icon.medal + ' Insignias')}
       </section>`;
 
     if (!mine) {

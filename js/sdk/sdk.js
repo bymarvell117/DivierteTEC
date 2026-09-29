@@ -28,7 +28,7 @@
     function localToast(text) {
       try {
         var d = document.createElement('div');
-        d.textContent = '🏆 ' + text;
+        d.textContent = text;
         d.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;background:#1a6fd8;color:#fff;padding:10px 14px;border-radius:8px;font:600 14px system-ui;box-shadow:0 6px 20px #0006';
         (document.body || document.documentElement).appendChild(d);
         setTimeout(function () { d.remove(); }, 2500);

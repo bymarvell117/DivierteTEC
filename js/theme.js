@@ -3,8 +3,8 @@
   'use strict';
 
   DT.THEMES = {
-    light: { name: 'Institucional (claro)', glyph: '☀️', free: true },
-    dark: { name: 'Oscuro', glyph: '🌙', free: true },
+    light: { name: 'Institucional (claro)', glyph: 'sun', free: true },
+    dark: { name: 'Oscuro', glyph: 'moon', free: true },
     arcade: { name: 'Retro Arcade', reward: 'theme_arcade' },
     cyber: { name: 'Neón Cyberpunk', reward: 'theme_cyber' },
     gameboy: { name: 'Pixel Boy', reward: 'theme_gameboy' },

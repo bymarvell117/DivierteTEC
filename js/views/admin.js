@@ -3,7 +3,7 @@
 (function (DT) {
   'use strict';
 
-  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
+  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['criterios', 'Criterios TecNM', 'cap'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
     ['reportes', 'Reportes', 'flag'], ['moderacion', 'Moderación', 'shield'], ['registro', 'Registro', 'clock']];
 
   DT.views.admin = (app, tab) => {
@@ -23,7 +23,7 @@
         <section class="admin-main" data-body></section>
       </div>`;
     const body = DT.$('[data-body]', app);
-    ({ resumen, revision, juegos, finanzas, usuarios, reportes, moderacion, registro })[tab](body, s);
+    ({ resumen, revision, criterios, juegos, finanzas, usuarios, reportes, moderacion, registro })[tab](body, s);
     DT.media.hydrate(body);
   };
 
@@ -64,45 +64,79 @@
         return `<div class="card review-card">
           ${DT.coverHTML(g)}
           <div class="review-card-body">
-            <div class="row"><h3 style="margin:0">${DT.esc(g.title)}</h3>${flagged ? '<span class="pill bad">⚠ Palabras filtradas</span>' : ''}<span class="pill">${DT.formatLabel[g.format]}</span></div>
+            <div class="row"><h3 style="margin:0">${DT.esc(g.title)}</h3>${flagged ? '<span class="pill bad">' + DT.icon.warn + ' Palabras filtradas</span>' : ''}<span class="pill">${DT.formatLabel[g.format]}</span></div>
             <small class="muted">${DT.esc(dev.name)} ${dev.verified ? '✔' : '(sin verificar)'} · enviado ${DT.timeAgo(g.submittedAt || g.createdAt)}</small>
             <p>${DT.esc(g.short)}</p>
-            <ul class="checklist">
-              <li class="${g.description ? 'ok' : 'bad'}">Descripción completa</li>
-              <li class="${(g.format === 'html' ? g.files : g.download) ? 'ok' : 'bad'}">${g.format === 'html' ? `Archivos (${g.files ? g.files.count + ' · ' + DT.fmtBytes(g.files.size) : 'faltan'})` : 'Archivo descargable'}</li>
-              <li class="${(g.achievements || []).length ? 'ok' : ''}">${(g.achievements || []).length} logros definidos</li>
-            </ul>
+            <div class="row small muted">${g.format === 'html' ? `Archivos: ${g.files ? g.files.count + ' · ' + DT.fmtBytes(g.files.size) : 'integrado'}` : 'Descargable'} · ${(g.achievements || []).length} logros · Edad: <b>${DT.esc((g.compliance || {}).age || 'sin declarar')}</b></div>
+            ${criteriaBlock(g)}
             <div class="row">
               ${g.format === 'html' ? `<button class="btn ghost sm" data-test="${g.id}">${DT.icon.play} Probar juego</button>` : ''}
               <a class="btn ghost sm" href="#/juego/${g.id}">${DT.icon.eye} Ver página</a>
               <span class="spacer"></span>
               <button class="btn warn sm" data-decide="changes" data-gid="${g.id}">Pedir cambios</button>
               <button class="btn danger sm" data-decide="rejected" data-gid="${g.id}">${DT.icon.x} Rechazar</button>
-              <button class="btn success sm" data-decide="approved" data-gid="${g.id}">${DT.icon.check} Aprobar</button>
+              <button class="btn success sm" data-decide="approved" data-gid="${g.id}" ${DT.criteriaStatus(g).every((x) => x.ok) ? '' : 'disabled title="Marca todos los criterios TecNM para aprobar"'}>${DT.icon.check} Aprobar</button>
             </div>
           </div></div>`;
       }).join('') || `<div class="empty-inline">${DT.icon.check} No hay juegos pendientes de revisión.</div>`}`;
 
     DT.$$('[data-test]', body).forEach((b) => b.onclick = () => DT.play(b.dataset.test, { test: true }));
+    DT.$$('[data-crit]', body).forEach((c) => c.onchange = () => {
+      const g = DT.game(c.dataset.gid);
+      g.review = g.review || {}; g.review.checks = g.review.checks || {};
+      g.review.checks[c.dataset.crit] = c.checked;
+      DT.save();
+      const card = c.closest('.review-card'), st = DT.criteriaStatus(g), ok = st.filter((x) => x.ok).length;
+      card.querySelector('[data-decide="approved"]').disabled = ok < st.length;
+      card.querySelector('[data-critcount]').textContent = ok + ' / ' + st.length;
+      card.querySelector('.crit-meter i').style.width = (ok / st.length * 100) + '%';
+    });
+    DT.$$('[data-critall]', body).forEach((b) => b.onclick = () => DT.$$(`[data-crit][data-gid="${b.dataset.critall}"]`, body).forEach((c) => { if (!c.checked) { c.checked = true; c.onchange(); } }));
     DT.$$('[data-decide]', body).forEach((b) => b.onclick = async () => {
       const g = DT.game(b.dataset.gid);
       const st = b.dataset.decide;
       let note = '';
+      if (st === 'approved' && !DT.criteriaStatus(g).every((x) => x.ok)) { DT.toast('Faltan criterios TecNM por cumplir.', { kind: 'warn' }); return; }
       if (st !== 'approved') {
-        note = await DT.prompt(st === 'rejected' ? 'Motivo del rechazo' : 'Cambios solicitados', 'Mensaje para el desarrollador', '');
+        const missing = DT.criteriaStatus(g).filter((x) => !x.ok).map((x) => '• ' + x.c.text);
+        note = await DT.prompt(st === 'rejected' ? 'Motivo del rechazo' : 'Cambios solicitados', 'Mensaje para el desarrollador', missing.length ? 'No cumple estos criterios de aprobación (referencia TecNM):\n' + missing.join('\n') : '');
         if (note == null) return;
       }
       g.status = st;
       g.reviewNote = note;
-      if (st === 'approved') { g.createdAt = Date.now(); DT.rewards.checkPlatform(g.devId); }
+      g.review = Object.assign(g.review || {}, { by: DT.me().id, date: Date.now(), decision: st });
+      if (st === 'approved') { g.createdAt = Date.now(); DT.rewards.checkPlatform(g.devId); if (DT.fx) DT.fx.burstAt(b, { up: true, count: 80 }); }
       DT.toast(`«${DT.esc(g.title)}» → ${{ approved: 'aprobado', rejected: 'rechazado', changes: 'cambios solicitados' }[st]}`, { kind: st === 'approved' ? 'ok' : 'warn' });
       act(`${{ approved: 'Aprobó', rejected: 'Rechazó', changes: 'Pidió cambios en' }[st]} «${g.title}».${note ? ' Nota: ' + note : ''}`);
     });
   }
 
+  /* Lista de criterios TecNM de un juego: automáticos (✓/✗) y casillas para el admin */
+  function criteriaBlock(g) {
+    const st = DT.criteriaStatus(g), ok = st.filter((x) => x.ok).length;
+    return `<div class="crit">
+      <div class="row"><b>${DT.icon.cap} Criterios de aprobación TecNM</b><span class="spacer"></span><small data-critcount>${ok} / ${st.length}</small><button class="btn ghost sm" data-critall="${g.id}">Marcar revisados</button></div>
+      <div class="crit-meter"><i style="width:${ok / st.length * 100}%"></i></div>
+      <div class="crit-groups">${DT.TECNM_CRITERIA.map((grp) => `<div class="crit-group"><h5>${DT.ic(grp.icon)} ${grp.group}</h5>${grp.items.map((c) => {
+        const x = st.find((y) => y.c === c);
+        return c.auto ? `<div class="crit-item auto ${x.ok ? 'ok' : 'bad'}">${x.ok ? DT.icon.check : DT.icon.x}<span>${c.text}</span><small>automático</small></div>`
+          : `<label class="crit-item"><input type="checkbox" data-crit="${c.id}" data-gid="${g.id}" ${x.ok ? 'checked' : ''}><span>${c.text}</span></label>`;
+      }).join('')}</div>`).join('')}</div>
+    </div>`;
+  }
+
+  function criterios(body) {
+    body.innerHTML = `
+      <div class="page-head"><div><h1>Criterios de aprobación TecNM</h1><p>Lo que revisa la administración antes de publicar un juego.</p></div></div>
+      <div class="notice">${DT.icon.cap} ${DT.TECNM_REF}</div>
+      <div class="grid cols-2">${DT.TECNM_CRITERIA.map((grp) => `<div class="card crit-card"><h3>${DT.ic(grp.icon)} ${grp.group}</h3>${grp.ref ? `<small class="muted">Referencia: ${grp.ref}</small>` : ''}
+        <ul class="crit-list">${grp.items.map((c) => `<li>${c.auto ? `<span class="pill ok">Automático</span>` : `<span class="pill">Revisión</span>`} ${c.text}</li>`).join('')}</ul></div>`).join('')}</div>
+      <div class="card"><h3>${DT.icon.chart} Flujo de revisión</h3><ol class="crit-flow"><li><b>El estudio se autoevalúa</b> en su panel y declara edad recomendada, uso de marcas y créditos.</li><li><b>Los criterios técnicos</b> se verifican solos (archivos, textos, logros, edad).</li><li><b>La administración prueba el juego</b> y marca los criterios de ética, identidad, propiedad intelectual, datos y calidad.</li><li><b>Aprobar</b> se habilita al cumplir todo; si falta algo, «Pedir cambios» redacta la nota con lo pendiente.</li></ol></div>`;
+  }
+
   function juegos(body, s) {
     body.innerHTML = `
-      <div class="page-head"><div><h1>Catálogo</h1><p>Destacados de la portada, visibilidad y retiro de juegos.</p></div></div>
+      <div class="page-head"><div><h1>Catálogo</h1><p>Destacados de la portada, visibilidad y retiro de juegos. Retirar oculta el juego de la tienda; quien ya lo tiene lo conserva.</p></div></div>
       <div class="table">
         <div class="tr th"><span>Juego</span><span>Desarrollador</span><span>Estado</span><span>Partidas</span><span>Destacado</span><span>Acciones</span></div>
         ${s.games.map((g) => `<div class="tr">
@@ -112,20 +146,14 @@
           <span>${g.plays || 0}</span>
           <span><label class="switch"><input type="checkbox" data-feat="${g.id}" ${g.featured ? 'checked' : ''} ${g.status !== 'approved' ? 'disabled' : ''}><i></i></label></span>
           <span class="row nowrap">
-            ${g.status === 'approved' ? `<button class="btn ghost sm" data-unpub="${g.id}">Retirar</button>` : ''}
-            ${g.status === 'rejected' || g.status === 'changes' ? `<button class="btn ghost sm" data-repub="${g.id}">Publicar</button>` : ''}
+            ${g.status === 'approved' ? `<button class="btn danger sm" data-unpub="${g.id}">${DT.icon.eyeOff} Retirar</button>` : ''}
+            ${['rejected', 'changes', 'withdrawn'].includes(g.status) ? `<button class="btn success sm" data-repub="${g.id}">${DT.icon.upload} Publicar</button>` : ''}
             <button class="icon-btn sm danger" data-delgame="${g.id}" title="Eliminar">${DT.icon.trash}</button>
           </span></div>`).join('')}
       </div>`;
     DT.$$('[data-feat]', body).forEach((c) => c.onchange = () => { const g = DT.game(c.dataset.feat); g.featured = c.checked; act(`${c.checked ? 'Destacó' : 'Quitó de destacados'} «${g.title}».`); });
-    DT.$$('[data-unpub]', body).forEach((b) => b.onclick = async () => {
-      const g = DT.game(b.dataset.unpub);
-      const note = await DT.prompt('Retirar juego', 'Motivo (se mostrará al desarrollador)', 'Retirado por incumplir las normas de la comunidad.');
-      if (note == null) return;
-      g.status = 'rejected'; g.reviewNote = note; g.featured = false;
-      act(`Retiró «${g.title}». ${note}`);
-    });
-    DT.$$('[data-repub]', body).forEach((b) => b.onclick = () => { const g = DT.game(b.dataset.repub); g.status = 'approved'; g.reviewNote = ''; act(`Publicó «${g.title}».`); });
+    DT.$$('[data-unpub]', body).forEach((b) => b.onclick = () => DT.withdrawModal(DT.game(b.dataset.unpub)));
+    DT.$$('[data-repub]', body).forEach((b) => b.onclick = () => DT.republish(DT.game(b.dataset.repub)));
     DT.$$('[data-delgame]', body).forEach((b) => b.onclick = async () => {
       const g = DT.game(b.dataset.delgame);
       if (!(await DT.confirm('Eliminar juego', `¿Eliminar definitivamente «${DT.esc(g.title)}» y sus archivos?`))) return;
@@ -156,12 +184,12 @@
           ${bars.map(([k, v]) => `<div class="stat-row"><span>${k}</span><div class="bar"><i style="width:${v / maxB * 100}%"></i></div><b>${DT.money(v)}</b></div>`).join('')}
           <p class="muted small">Propinas (van completas a los estudios): ${DT.money(f.tips)}</p>
           <hr>
-          <h3>🎟️ Fondo del Pase</h3>
+          <h3>${DT.icon.ticket} Fondo del Pase</h3>
           <p>Pendiente de repartir: <b>${DT.money(f.fund)}</b> (${Math.round(e.passDevShare * 100)} % de las suscripciones).</p>
           <button class="btn primary sm" data-distribute ${f.fund <= 0 ? 'disabled' : ''}>Repartir por tiempo jugado</button>
         </div>
         <form class="card" data-rates>
-          <h3>⚙️ Tasas y precios</h3>
+          <h3>${DT.icon.gear} Tasas y precios</h3>
           <div class="form-grid">
             <label class="field"><span>Comisión estudiantil (%)</span><input type="number" name="rateStudent" min="0" max="50" value="${Math.round(e.rateStudent * 100)}"></label>
             <label class="field"><span>Comisión externa (%)</span><input type="number" name="rateExternal" min="0" max="50" value="${Math.round(e.rateExternal * 100)}"></label>
@@ -174,7 +202,7 @@
         </form>
       </div>
       <div class="card">
-        <h3>📣 Solicitudes de promoción (${pending.length})</h3>
+        <h3>${DT.icon.megaphone} Solicitudes de promoción (${pending.length})</h3>
         ${pending.map((p) => { const g = DT.game(p.gameId); return `<div class="log-row"><b>${DT.esc(g.title)}</b> · ${DT.esc((DT.user(p.devId) || {}).name)} · ${DT.money(p.price)} · ${DT.timeAgo(p.date)}
           <div class="row"><button class="btn success sm" data-promo-ok="${p.id}">Aprobar</button><button class="btn ghost sm" data-promo-no="${p.id}">Rechazar y reembolsar</button></div></div>`; }).join('') || '<p class="muted">Sin solicitudes pendientes.</p>'}
       </div>
@@ -214,7 +242,7 @@
             <span>${reps ? `<span class="pill warn">${reps}</span>` : '0'}</span>
             <span class="row nowrap">
               ${u.role === 'dev' ? `<button class="btn ghost sm" data-verify="${u.id}">${u.verified ? 'Quitar verificación' : '✔ Verificar'}</button>
-                <button class="btn ghost sm" data-student="${u.id}" title="Define la comisión que paga">${u.student ? '🎓 Estudiantil' : '🏢 Externo'}</button>` : ''}
+                <button class="btn ghost sm" data-student="${u.id}" title="Define la comisión que paga">${u.student ? DT.icon.cap + ' Estudiantil' : DT.icon.building + ' Externo'}</button>` : ''}
               ${u.id !== DT.me().id ? `<button class="btn ${u.status === 'suspended' ? 'ghost' : 'danger'} sm" data-suspend="${u.id}">${u.status === 'suspended' ? 'Reactivar' : 'Suspender'}</button>` : ''}
             </span></div>`;
         }).join('')}
@@ -243,7 +271,7 @@
             <b>${DT.esc(r.reason)}</b><span class="spacer"></span><small class="muted">por ${DT.esc(r.by === 'system' ? 'Filtro automático' : (DT.user(r.by) || {}).name)} · ${DT.timeAgo(r.date)}</small></div>
           <p>${target(r)}</p>
           ${r.text ? `<p class="muted">“${DT.esc(r.text)}”</p>` : ''}
-          ${r.note ? `<p class="note">📝 ${DT.esc(r.note)}</p>` : ''}
+          ${r.note ? `<p class="note">${DT.icon.note} ${DT.esc(r.note)}</p>` : ''}
           ${r.status === 'open' ? `<div class="row">
             ${r.type === 'review' ? `<button class="btn danger sm" data-hide="${r.id}">Ocultar reseña</button>` : ''}
             ${r.type === 'game' ? `<button class="btn danger sm" data-unpubr="${r.id}">Retirar juego</button>` : ''}
@@ -262,7 +290,7 @@
     DT.$$('[data-resolve]', body).forEach((b) => b.onclick = () => close(b.dataset.resolve, 'resolved'));
     DT.$$('[data-dismiss]', body).forEach((b) => b.onclick = () => close(b.dataset.dismiss, 'dismissed'));
     DT.$$('[data-hide]', body).forEach((b) => b.onclick = () => { const r = s.reports.find((x) => x.id === b.dataset.hide); const f = findReview(r.targetId); if (f) f.r.hidden = true; close(r.id, 'resolved', 'Reseña ocultada.'); });
-    DT.$$('[data-unpubr]', body).forEach((b) => b.onclick = () => { const r = s.reports.find((x) => x.id === b.dataset.unpubr); const g = DT.game(r.targetId); if (g) { g.status = 'rejected'; g.reviewNote = 'Retirado por reporte: ' + r.reason; g.featured = false; } close(r.id, 'resolved', 'Juego retirado.'); });
+    DT.$$('[data-unpubr]', body).forEach((b) => b.onclick = () => { const r = s.reports.find((x) => x.id === b.dataset.unpubr); const g = DT.game(r.targetId); if (g) { g.status = 'withdrawn'; g.withdrawn = { by: DT.me().id, admin: true, reason: 'Reporte: ' + r.reason, date: Date.now() }; g.reviewNote = 'Retirado por reporte: ' + r.reason; g.featured = false; } close(r.id, 'resolved', 'Juego retirado.'); });
     DT.$$('[data-susp]', body).forEach((b) => b.onclick = () => { const r = s.reports.find((x) => x.id === b.dataset.susp); const u = DT.user(r.targetId); if (u) u.status = 'suspended'; close(r.id, 'resolved', 'Cuenta suspendida.'); });
   }
 

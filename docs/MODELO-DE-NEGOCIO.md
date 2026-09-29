@@ -35,10 +35,18 @@ e itch.io deja que el estudio elija (10 % por defecto). DivierteTEC queda en la 
 baja del mercado y con un tramo gratis para quien empieza.
 
 ### Modalidades de precio para el estudio
-- **Gratis.**
+- **Paga lo que quieras (pilar de la plataforma).** En DivierteTEC no hay juegos
+  "gratis" a secas: todo juego gratuito usa *Paga lo que quieras* con mínimo $0 y un
+  precio sugerido. Se juega al instante sin pagar; quien quiera aporta la cantidad que
+  elija y el aporte se trata como una venta (misma comisión escalonada, Semilla TEC
+  incluida). Al cerrar un juego tras 5 minutos se invita, sin insistir, a apoyar al
+  estudio. El estudio también puede fijar un mínimo mayor que $0.
 - **Precio fijo**, con **descuentos temporales** (ej. −30 %).
-- **Paga lo que quieras**, con precio sugerido y mínimo (puede ser $0).
 - **Incluir en el Pase** (compatible con cualquiera de las anteriores).
+
+Por qué: convierte a cada jugador satisfecho en un posible mecenas del talento
+mexicano sin poner barreras para probar los juegos, que es lo que más necesita un
+estudio estudiantil que empieza.
 
 ## 2. Pase DivierteTEC
 

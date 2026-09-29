@@ -17,13 +17,13 @@
           <p>DivierteTEC se sostiene con comisiones justas y un Pase mensual que reparte la mayor parte de lo que recauda entre los estudios que hacen los juegos.</p>
         </div>
 
-        <h2 class="section-title">🎮 Para jugadores</h2>
+        <h2 class="section-title">${DT.icon.gamepad} Para jugadores</h2>
         <div class="grid cols-2 plan-cards">
           <div class="card plan">
-            <h3>Gratis</h3>
-            <div class="plan-price">$0 <small>para siempre</small></div>
+            <h3>${DT.icon.heart} Paga lo que quieras</h3>
+            <div class="plan-price">Desde $0 <small>tú decides</small></div>
             <ul class="checks">
-              <li>Todos los juegos gratuitos y "paga lo que quieras"</li>
+              <li><b>Todos los juegos gratuitos</b> funcionan así: juégalos al instante y aporta lo que quieras al estudio</li>
               <li>Juegos HTML al instante en el navegador</li>
               <li>Logros, recompensas, temas y perfil</li>
               <li>Compra juegos de pago con tu monedero</li>
@@ -32,7 +32,7 @@
           </div>
           <div class="card plan featured-plan">
             <span class="ribbon">Recomendado</span>
-            <h3>🎟️ Pase DivierteTEC</h3>
+            <h3>${DT.icon.ticket} Pase DivierteTEC</h3>
             <div class="plan-price">${DT.money(e.passPrice)} <small>al mes</small></div>
             <ul class="checks">
               <li><b>${passGames.length} juegos del Pase</b> incluidos sin comprarlos</li>
@@ -47,7 +47,7 @@
         </div>
         <div class="pass-games">${passGames.map((g) => `<a href="#/juego/${g.id}">${DT.coverHTML(g)}<b>${DT.esc(g.title)}</b></a>`).join('')}</div>
 
-        <h2 class="section-title">🛠️ Para desarrolladores</h2>
+        <h2 class="section-title">${DT.icon.wrench} Para desarrolladores</h2>
         <div class="grid cols-3 tiers">
           <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Tus primeros <b>${DT.money(e.seedAllowance)}</b> en ventas no pagan comisión. Para estudios estudiantiles verificados.</p></div>
           <div class="card tier"><div class="tier-rate">${pct(e.rateStudent)}</div><h4>Estudio estudiantil</h4><p>Después de la Semilla. Recibes el ${pct(1 - e.rateStudent)} de cada venta.</p></div>

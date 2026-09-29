@@ -137,10 +137,11 @@
 
     const ov = document.createElement('div');
     ov.className = 'runner';
+    if (DT.fx) { const pt = DT.fx.lastPoint(); ov.style.setProperty('--ox', pt.x + 'px'); ov.style.setProperty('--oy', pt.y + 'px'); }
     ov.innerHTML = `
       <header class="runner-bar">
         <div class="runner-title">${DT.coverHTML(g, 'mini')}<div><strong>${DT.esc(g.title)}</strong>
-          <small>${test ? '<span class="pill warn">🧪 Modo prueba — nada se guarda</span>' : 'Jugando como ' + DT.esc(me.name)}</small></div></div>
+          <small>${test ? '<span class="pill warn">' + DT.icon.flask + ' Modo prueba — nada se guarda</span>' : 'Jugando como ' + DT.esc(me.name)}</small></div></div>
         <div class="runner-ach" data-ach></div>
         <div class="runner-actions">
           ${test ? `<button class="btn ghost sm" data-console>${DT.icon.code} Consola</button>` : ''}
@@ -250,6 +251,10 @@
         g.plays = (g.plays || 0) + 1;
         DT.rewards.checkPlatform();
         DT.emit('library');
+        // Invitación amable a apoyar a quien lo hizo (Paga lo que quieras)
+        const pr = g.pricing || {};
+        if (secs >= 300 && pr.mode === 'pwyw' && !(DT.state().purchases[DT.me().id] || {})[gid] && g.devId !== DT.me().id)
+          DT.toast(`<div class="pwyw-toast">${DT.icon.heart}<div><b>¿Te gustó ${DT.esc(g.title)}?</b><small>Paga lo que quieras: ayuda a ${DT.esc((DT.user(g.devId) || {}).name || 'su estudio')} a crear más.</small></div><button class="btn primary sm" data-act="buy" data-gid="${gid}">Aportar</button></div>`, { ms: 7000 });
       }
       if (opts.onClose) opts.onClose();
     };

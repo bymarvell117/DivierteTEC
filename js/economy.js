@@ -41,7 +41,7 @@
     if (g.devId === uid || (u && u.role === 'admin')) return 'dev';
     if ((S().purchases[uid] || {})[gid]) return 'purchase';
     const pr = g.pricing || {};
-    if (!pr.mode || pr.mode === 'free') return 'free';
+    if (!pr.mode || pr.mode === 'free' || (pr.mode === 'pwyw' && !(Number(pr.min) > 0))) return 'free'; // se juega ya; pagar es opcional
     if (pr.inPass && DT.hasPass(uid)) return 'pass';
     return null;
   };
@@ -51,10 +51,11 @@
   DT.priceTag = (g) => {
     const src = DT.accessSource(g.id);
     const p = DT.priceOf(g);
-    const pass = (g.pricing || {}).inPass ? '<span class="pass-tag" title="Incluido en el Pase DivierteTEC">🎟️ Pase</span>' : '';
-    if (src === 'purchase') return `<span class="price owned-price">Comprado</span>${pass}`;
+    const pass = (g.pricing || {}).inPass ? '<span class="pass-tag" title="Incluido en el Pase DivierteTEC">' + DT.icon.ticket + ' Pase</span>' : '';
+    const paid = (S().purchases[S().currentUserId] || {})[g.id];
+    if (src === 'purchase' || (paid && p.mode === 'pwyw')) return `<span class="price owned-price">${p.mode === 'pwyw' ? 'Apoyaste con ' + DT.money(paid.paid) : 'Comprado'}</span>${pass}`;
     if (p.mode === 'free') return `<span class="price">Gratis</span>${pass}`;
-    if (p.mode === 'pwyw') return `<span class="price">Paga lo que quieras</span>${pass}`;
+    if (p.mode === 'pwyw') return `<span class="price pwyw">Paga lo que quieras<small>${p.min > 0 ? 'desde ' + DT.money(p.min) : 'desde $0'} · sugerido ${DT.money(p.base)}</small></span>${pass}`;
     return `${p.discount ? `<span class="disc">−${p.discount}%</span><s class="muted">${DT.money(p.base)}</s>` : ''}<span class="price">${DT.money(p.final)}</span>${pass}`;
   };
 
@@ -86,7 +87,8 @@
     const lib = DT.lib();
     if (!lib[gid]) lib[gid] = { added: Date.now(), playtime: 0, lastPlayed: 0, source: 'purchase' };
     DT.log(`Compró «${g.title}» por ${DT.money(gross)}.`);
-    DT.toast(`${DT.icon.check} <b>${DT.esc(g.title)}</b> es tuyo. Ya está en tu biblioteca.`, { kind: 'ok' });
+    DT.toast((g.pricing || {}).mode === 'pwyw' && gross > 0 ? `${DT.icon.heart} ¡Gracias! Apoyaste a <b>${DT.esc((DT.user(g.devId) || {}).name || 'el estudio')}</b> con ${DT.money(gross)}. <b>${DT.esc(g.title)}</b> está en tu biblioteca.` : `${DT.icon.check} <b>${DT.esc(g.title)}</b> es tuyo. Ya está en tu biblioteca.`, { kind: 'ok' });
+    if (DT.fx) DT.fx.burst(innerWidth / 2, innerHeight * 0.55, { up: true, count: 90, power: 12 });
     DT.rewards.checkPlatform();
     DT.emit('library');
     return true;
@@ -111,14 +113,15 @@
         <div class="checkout">
           ${DT.coverHTML(g)}
           <div>
-            ${pwyw ? `<label class="field"><span>¿Cuánto quieres pagar? (mínimo ${DT.money(p.min)})</span>
+            ${pwyw ? `<p class="pwyw-pitch">${DT.icon.heart} <b>Tú decides el precio.</b> ${p.min > 0 ? '' : 'Puedes jugarlo gratis; '}lo que aportes va directo al estudio que lo creó (precio sugerido: ${DT.money(p.base)}).</p>
+              <label class="field"><span>¿Cuánto quieres aportar? (mínimo ${DT.money(p.min)})</span>
               <div class="row nowrap"><span>$</span><input type="number" min="${p.min}" step="1" value="${p.base}" data-amount></div></label>
-              <div class="chips">${[0, 10, 20, 50].filter((v) => v >= p.min).map((v) => `<button class="chip" data-quick="${v}">${v ? DT.money(v) : 'Gratis'}</button>`).join('')}</div>`
+              <div class="chips">${[...new Set([0, 10, p.base, 50, 100])].filter((v) => v >= p.min).sort((a, b) => a - b).map((v) => `<button class="chip" data-quick="${v}">${v ? DT.money(v) + (v === p.base ? ' · sugerido' : '') : 'Solo jugar ($0)'}</button>`).join('')}</div>`
               : `<div class="big-price">${p.discount ? `<s class="muted">${DT.money(p.base)}</s> ` : ''}${DT.money(p.final)}</div>
-              ${p.discount ? `<span class="pill ok">Oferta −${p.discount}%</span>` : ''} ${p.passOff ? `<span class="pill">🎟️ −${Math.round(p.passOff * 100)}% por tu Pase</span>` : ''}`}
+              ${p.discount ? `<span class="pill ok">Oferta −${p.discount}%</span>` : ''} ${p.passOff ? `<span class="pill">${DT.icon.ticket} −${Math.round(p.passOff * 100)}% por tu Pase</span>` : ''}`}
             <div class="breakdown" data-breakdown></div>
             <p class="muted small">Tu saldo: <b>${DT.money(DT.wallet(me.id))}</b> · Pago simulado para la demostración.</p>
-            ${g.pricing.inPass && !DT.hasPass() ? `<p class="small">🎟️ Este juego está incluido en el <a href="#/planes" data-close>Pase DivierteTEC</a>.</p>` : ''}
+            ${(g.pricing || {}).inPass && !DT.hasPass() ? `<p class="small">${DT.icon.ticket} Este juego está incluido en el <a href="#/planes" data-close>Pase DivierteTEC</a>.</p>` : ''}
           </div>
         </div>`,
       actions: `<button class="btn ghost" data-topup>${DT.icon.plus} Recargar $200 (demo)</button><span class="spacer"></span>
@@ -133,7 +136,7 @@
         <div><span>${DT.esc((DT.user(g.devId) || {}).name)} recibe</span><b>${DT.money(c.net)}</b></div>
         <div><span>Comisión DivierteTEC <small class="muted">${DT.esc(c.note)}</small></span><b>${DT.money(c.commission)}</b></div>
         <div class="total"><span>Total</span><b>${DT.money(a)}</b></div>`;
-      m.el.querySelector('[data-pay]').textContent = a > 0 ? `Pagar ${DT.money(a)}` : 'Obtener gratis';
+      m.el.querySelector('[data-pay]').textContent = a > 0 ? `${pwyw ? 'Aportar' : 'Pagar'} ${DT.money(a)}` : 'Obtener gratis';
     };
     if (amountEl) amountEl.addEventListener('input', draw);
     m.el.querySelectorAll('[data-quick]').forEach((b) => b.onclick = () => { amountEl.value = b.dataset.quick; draw(); });
@@ -146,7 +149,7 @@
   DT.tipModal = (g) => {
     const dev = DT.user(g.devId);
     const m = DT.modal({
-      title: `💙 Apoyar a ${DT.esc(dev.name)}`,
+      title: `${DT.icon.heart} Apoyar a ${DT.esc(dev.name)}`,
       body: `<p>Las propinas van completas al estudio (en la demo sin comisión).</p>
         <div class="chips">${[10, 20, 50, 100].map((v) => `<button class="chip" data-tip="${v}">${DT.money(v)}</button>`).join('')}</div>
         <p class="muted small">Tu saldo: ${DT.money(DT.wallet())}</p>`,
@@ -176,7 +179,7 @@
     record({ type: 'pass', from: me.id, to: 'platform', gross: e.passPrice, commission: r2(e.passPrice - fund), net: fund, note: 'Pase DivierteTEC · 1 mes' });
     DT.rewards.grant(me.id, 'badge_pase');
     DT.log('Se suscribió al Pase DivierteTEC.');
-    DT.toast('🎟️ ¡Bienvenido al Pase DivierteTEC! Los juegos del Pase ya están disponibles.', { kind: 'ok' });
+    DT.toast(DT.icon.ticket + ' ¡Bienvenido al Pase DivierteTEC! Los juegos del Pase ya están disponibles.', { kind: 'ok' });
     DT.emit('library');
     return true;
   };
@@ -285,12 +288,12 @@
     const mine = S().ledger.filter((e) => e.from === me.id || e.to === me.id).slice(0, 8);
     const pass = S().passes[me.id];
     const m = DT.modal({
-      title: '💰 Mi monedero',
+      title: DT.icon.wallet + ' Mi monedero',
       wide: true,
       body: `
         <div class="wallet-head">
           <div><small class="muted">Saldo disponible</small><div class="big-price">${DT.money(DT.wallet())}</div></div>
-          <div><small class="muted">Pase DivierteTEC</small><div>${DT.hasPass() ? `🎟️ Activo hasta ${new Date(pass.until).toLocaleDateString('es-MX')}` : 'No activo · <a href="#/planes" data-close>ver planes</a>'}</div></div>
+          <div><small class="muted">Pase DivierteTEC</small><div>${DT.hasPass() ? `${DT.icon.ticket} Activo hasta ${new Date(pass.until).toLocaleDateString('es-MX')}` : 'No activo · <a href="#/planes" data-close>ver planes</a>'}</div></div>
         </div>
         <p class="notice">Dinero simulado para la demostración: no se piden ni guardan datos bancarios.</p>
         <h4>Movimientos recientes</h4>

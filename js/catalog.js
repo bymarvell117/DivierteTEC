@@ -14,81 +14,125 @@
     frame: 'Marco de perfil',
     avatar: 'Avatar',
     effect: 'Efecto',
-    emoji: 'Emoji',
+    emoji: 'Sticker',
     badge: 'Insignia'
   };
 
   /* Recompensas: el campo `data` se interpreta según el tipo (ver theme.js). */
   DT.REWARDS = {
     // Temas temáticos (la paleta reglamentaria y el modo oscuro siempre están disponibles)
-    theme_arcade: { type: 'theme', name: 'Retro Arcade', rarity: 'raro', glyph: '🕹️', desc: 'Neones rosas y amarillos de salón recreativo.', data: 'arcade' },
-    theme_cyber: { type: 'theme', name: 'Neón Cyberpunk', rarity: 'epico', glyph: '🌃', desc: 'Cian eléctrico sobre la noche de la ciudad.', data: 'cyber' },
-    theme_gameboy: { type: 'theme', name: 'Pixel Boy', rarity: 'raro', glyph: '👾', desc: 'Los cuatro verdes de la portátil clásica.', data: 'gameboy' },
-    theme_kombat: { type: 'theme', name: 'Kombate', rarity: 'legendario', glyph: '🥋', desc: 'Carmesí y oro de la arena de Furia TEC.', data: 'kombat' },
-    theme_space: { type: 'theme', name: 'Galaxia', rarity: 'epico', glyph: '🌌', desc: 'Violetas profundos y polvo de estrellas.', data: 'space' },
-    theme_lava: { type: 'theme', name: 'Volcán', rarity: 'legendario', glyph: '🌋', desc: 'Magma, brasas y obsidiana.', data: 'lava' },
+    theme_arcade: { type: 'theme', name: 'Retro Arcade', rarity: 'raro', glyph: 'joystick', desc: 'Neones rosas y amarillos de salón recreativo.', data: 'arcade' },
+    theme_cyber: { type: 'theme', name: 'Neón Cyberpunk', rarity: 'epico', glyph: 'palette', desc: 'Cian eléctrico sobre la noche de la ciudad.', data: 'cyber' },
+    theme_gameboy: { type: 'theme', name: 'Pixel Boy', rarity: 'raro', glyph: 'joystick', desc: 'Los cuatro verdes de la portátil clásica.', data: 'gameboy' },
+    theme_kombat: { type: 'theme', name: 'Kombate', rarity: 'legendario', glyph: 'fist', desc: 'Carmesí y oro de la arena de Furia TEC.', data: 'kombat' },
+    theme_space: { type: 'theme', name: 'Galaxia', rarity: 'epico', glyph: 'planet', desc: 'Violetas profundos y polvo de estrellas.', data: 'space' },
+    theme_lava: { type: 'theme', name: 'Volcán', rarity: 'legendario', glyph: 'flame', desc: 'Magma, brasas y obsidiana.', data: 'lava' },
     // Marcos
-    frame_gold: { type: 'frame', name: 'Marco Dorado', rarity: 'raro', glyph: '🥇', desc: 'Anillo de oro pulido.', data: 'gold' },
-    frame_neon: { type: 'frame', name: 'Marco Neón', rarity: 'epico', glyph: '💠', desc: 'Pulso de neón animado.', data: 'neon' },
-    frame_pixel: { type: 'frame', name: 'Marco Pixel', rarity: 'comun', glyph: '🟩', desc: 'Borde escalonado de 8 bits.', data: 'pixel' },
-    frame_fire: { type: 'frame', name: 'Marco de Fuego', rarity: 'legendario', glyph: '🔥', desc: 'Llamas que giran sin parar.', data: 'fire' },
-    frame_ice: { type: 'frame', name: 'Marco de Hielo', rarity: 'raro', glyph: '❄️', desc: 'Cristal frío y brillante.', data: 'ice' },
+    frame_gold: { type: 'frame', name: 'Marco Dorado', rarity: 'raro', glyph: 'medal', desc: 'Anillo de oro pulido.', data: 'gold' },
+    frame_neon: { type: 'frame', name: 'Marco Neón', rarity: 'epico', glyph: 'sparkle', desc: 'Pulso de neón animado.', data: 'neon' },
+    frame_pixel: { type: 'frame', name: 'Marco Pixel', rarity: 'comun', glyph: 'cube', desc: 'Borde escalonado de 8 bits.', data: 'pixel' },
+    frame_fire: { type: 'frame', name: 'Marco de Fuego', rarity: 'legendario', glyph: 'flame', desc: 'Llamas que giran sin parar.', data: 'fire' },
+    frame_ice: { type: 'frame', name: 'Marco de Hielo', rarity: 'raro', glyph: 'snow', desc: 'Cristal frío y brillante.', data: 'ice' },
     // Avatares
-    av_robot: { type: 'avatar', name: 'Robot', rarity: 'comun', glyph: '🤖', desc: 'Tu primer compañero.', data: '🤖' },
-    av_alien: { type: 'avatar', name: 'Invasor', rarity: 'raro', glyph: '👾', desc: 'Directo desde los arcades.', data: '👾' },
-    av_ninja: { type: 'avatar', name: 'Ninja', rarity: 'epico', glyph: '🥷', desc: 'Silencioso y letal.', data: '🥷' },
-    av_dragon: { type: 'avatar', name: 'Dragón', rarity: 'legendario', glyph: '🐉', desc: 'Solo para los más persistentes.', data: '🐉' },
-    av_astro: { type: 'avatar', name: 'Astronauta', rarity: 'raro', glyph: '🧑‍🚀', desc: 'Explorador de mundos.', data: '🧑‍🚀' },
-    av_pato: { type: 'avatar', name: 'Mecaquack', rarity: 'legendario', glyph: '🦆', desc: 'El pato ingeniero que salvó el archipiélago.', data: '🦆' },
-    av_gato: { type: 'avatar', name: 'Michi jardinero', rarity: 'epico', glyph: '🐈', desc: 'El gato que cuida Pixel Garden.', data: '🐈' },
+    av_robot: { type: 'avatar', name: 'Robot', rarity: 'comun', glyph: 'frame', desc: 'Tu primer compañero.', data: 'robot' },
+    av_alien: { type: 'avatar', name: 'Invasor', rarity: 'raro', glyph: 'frame', desc: 'Directo desde los arcades.', data: 'invasor' },
+    av_ninja: { type: 'avatar', name: 'Ninja', rarity: 'epico', glyph: 'frame', desc: 'Silencioso y letal.', data: 'ninja' },
+    av_dragon: { type: 'avatar', name: 'Dragón', rarity: 'legendario', glyph: 'frame', desc: 'Solo para los más persistentes.', data: 'dragon' },
+    av_astro: { type: 'avatar', name: 'Astronauta', rarity: 'raro', glyph: 'frame', desc: 'Explorador de mundos.', data: 'astro' },
+    av_pato: { type: 'avatar', name: 'Mecaquack', rarity: 'legendario', glyph: 'frame', desc: 'El pato ingeniero que salvó el archipiélago.', data: 'pato' },
+    av_gato: { type: 'avatar', name: 'Michi jardinero', rarity: 'epico', glyph: 'frame', desc: 'El gato que cuida Pixel Garden.', data: 'gato' },
     // Efectos (partículas que siguen al cursor)
-    fx_sparkle: { type: 'effect', name: 'Destellos', rarity: 'raro', glyph: '✨', desc: 'Chispas doradas al mover el cursor.', data: 'sparkle' },
-    fx_pixels: { type: 'effect', name: 'Píxeles', rarity: 'comun', glyph: '🟦', desc: 'Una estela de píxeles de colores.', data: 'pixels' },
-    fx_stars: { type: 'effect', name: 'Estrellas', rarity: 'epico', glyph: '⭐', desc: 'Estrellas fugaces tras tu cursor.', data: 'stars' },
-    fx_fire: { type: 'effect', name: 'Brasas', rarity: 'legendario', glyph: '🔥', desc: 'Brasas ardientes que suben.', data: 'fire' },
+    fx_sparkle: { type: 'effect', name: 'Destellos', rarity: 'raro', glyph: 'sparkle', desc: 'Chispas doradas al mover el cursor.', data: 'sparkle' },
+    fx_pixels: { type: 'effect', name: 'Píxeles', rarity: 'comun', glyph: 'cube', desc: 'Una estela de píxeles de colores.', data: 'pixels' },
+    fx_stars: { type: 'effect', name: 'Estrellas', rarity: 'epico', glyph: 'star', desc: 'Estrellas fugaces tras tu cursor.', data: 'stars' },
+    fx_fire: { type: 'effect', name: 'Brasas', rarity: 'legendario', glyph: 'flame', desc: 'Brasas ardientes que suben.', data: 'fire' },
     // Emojis (se usan en reseñas y comunidad)
-    em_gg: { type: 'emoji', name: 'GG', rarity: 'comun', glyph: '🤝', desc: 'Buena partida.', data: '🤝' },
-    em_fire: { type: 'emoji', name: 'En llamas', rarity: 'comun', glyph: '🔥', desc: 'Está que arde.', data: '🔥' },
-    em_crown: { type: 'emoji', name: 'Corona', rarity: 'raro', glyph: '👑', desc: 'Para el rey de la partida.', data: '👑' },
-    em_skull: { type: 'emoji', name: 'Calavera', rarity: 'raro', glyph: '💀', desc: 'Game over.', data: '💀' },
-    em_rocket: { type: 'emoji', name: 'Cohete', rarity: 'epico', glyph: '🚀', desc: 'Al infinito.', data: '🚀' },
-    em_trophy: { type: 'emoji', name: 'Trofeo', rarity: 'epico', glyph: '🏆', desc: 'Campeón.', data: '🏆' },
-    em_punch: { type: 'emoji', name: 'Remate', rarity: 'epico', glyph: '👊', desc: 'Para quien cierra con FATALITY.', data: '👊' },
+    em_gg: { type: 'emoji', name: 'GG', rarity: 'comun', glyph: 'smile', desc: 'Buena partida.', data: 'gg' },
+    em_fire: { type: 'emoji', name: 'En llamas', rarity: 'comun', glyph: 'smile', desc: 'Está que arde.', data: 'fuego' },
+    em_crown: { type: 'emoji', name: 'Corona', rarity: 'raro', glyph: 'smile', desc: 'Para el rey de la partida.', data: 'corona' },
+    em_skull: { type: 'emoji', name: 'Calavera', rarity: 'raro', glyph: 'smile', desc: 'Game over.', data: 'calavera' },
+    em_rocket: { type: 'emoji', name: 'Cohete', rarity: 'epico', glyph: 'smile', desc: 'Al infinito.', data: 'cohete' },
+    em_trophy: { type: 'emoji', name: 'Trofeo', rarity: 'epico', glyph: 'smile', desc: 'Campeón.', data: 'trofeo' },
+    em_punch: { type: 'emoji', name: 'Remate', rarity: 'epico', glyph: 'smile', desc: 'Para quien cierra con FATALITY.', data: 'puno' },
     // Insignias
-    badge_pioneer: { type: 'badge', name: 'Pionero', rarity: 'raro', glyph: '🚩', desc: 'Estuvo en DivierteTEC desde el principio.', data: '🚩' },
-    badge_critic: { type: 'badge', name: 'Crítico', rarity: 'comun', glyph: '📝', desc: 'Escribió reseñas para la comunidad.', data: '📝' },
-    badge_guard: { type: 'badge', name: 'Guardián', rarity: 'raro', glyph: '🛡️', desc: 'Ayudó a mantener segura la comunidad.', data: '🛡️' },
-    badge_creator: { type: 'badge', name: 'Creador', rarity: 'epico', glyph: '🛠️', desc: 'Publicó un juego en DivierteTEC.', data: '🛠️' },
-    badge_torre: { type: 'badge', name: 'Campeón de la Torre', rarity: 'legendario', glyph: '🏯', desc: 'Conquistó la Torre Kombate de Furia TEC.', data: '🏯' },
-    badge_pase: { type: 'badge', name: 'Miembro del Pase', rarity: 'epico', glyph: '🎟️', desc: 'Apoya a los creadores con el Pase DivierteTEC.', data: '🎟️' },
-    badge_hackatec: { type: 'badge', name: 'Hackatec 2026', rarity: 'legendario', glyph: '🏅', desc: 'Edición regional InnovaTec 2026.', data: '🏅' }
+    badge_pioneer: { type: 'badge', name: 'Pionero', rarity: 'raro', glyph: 'flag', desc: 'Estuvo en DivierteTEC desde el principio.', data: 'flag' },
+    badge_critic: { type: 'badge', name: 'Crítico', rarity: 'comun', glyph: 'note', desc: 'Escribió reseñas para la comunidad.', data: 'note' },
+    badge_guard: { type: 'badge', name: 'Guardián', rarity: 'raro', glyph: 'shield', desc: 'Ayudó a mantener segura la comunidad.', data: 'shield' },
+    badge_creator: { type: 'badge', name: 'Creador', rarity: 'epico', glyph: 'wrench', desc: 'Publicó un juego en DivierteTEC.', data: 'wrench' },
+    badge_torre: { type: 'badge', name: 'Campeón de la Torre', rarity: 'legendario', glyph: 'castle', desc: 'Conquistó la Torre Kombate de Furia TEC.', data: 'castle' },
+    badge_pase: { type: 'badge', name: 'Miembro del Pase', rarity: 'epico', glyph: 'ticket', desc: 'Apoya a los creadores con el Pase DivierteTEC.', data: 'ticket' },
+    badge_hackatec: { type: 'badge', name: 'Hackatec 2026', rarity: 'legendario', glyph: 'medal', desc: 'Edición regional InnovaTec 2026.', data: 'medal' }
   };
 
-  /* Avatares y emojis gratuitos para todos */
-  DT.FREE_AVATARS = ['🎮', '🙂', '😎', '🐱', '🦊', '🐼'];
-  DT.FREE_EMOJIS = ['👍', '👎', '😂', '😮', '❤️'];
+  /* Avatares y stickers gratuitos para todos (ilustraciones en js/art.js) */
+  DT.FREE_AVATARS = ['control', 'sonrisa', 'lentes', 'minino', 'zorro', 'panda'];
+  DT.FREE_STICKERS = ['pulgar', 'nopulgar', 'risa', 'sorpresa', 'corazon'];
 
   /* Logros de plataforma: se evalúan con `check` sobre el estado del usuario. */
   DT.PLATFORM_ACH = [
-    { id: 'p_welcome', name: 'Bienvenido a DivierteTEC', desc: 'Entra por primera vez a la plataforma.', icon: '👋', reward: ['av_robot', 'badge_pioneer'],
+    { id: 'p_welcome', name: 'Bienvenido a DivierteTEC', desc: 'Entra por primera vez a la plataforma.', icon: 'hand', reward: ['av_robot', 'badge_pioneer'],
       check: (s) => true },
-    { id: 'p_first_play', name: 'Primera partida', desc: 'Juega cualquier juego en el navegador.', icon: '🎮', reward: ['theme_arcade'],
+    { id: 'p_first_play', name: 'Primera partida', desc: 'Juega cualquier juego en el navegador.', icon: 'gamepad', reward: ['theme_arcade'],
       check: (s) => s.sessions >= 1 },
-    { id: 'p_collector', name: 'Coleccionista', desc: 'Ten 3 juegos en tu biblioteca.', icon: '📚', reward: ['frame_gold'],
+    { id: 'p_collector', name: 'Coleccionista', desc: 'Ten 3 juegos en tu biblioteca.', icon: 'book', reward: ['frame_gold'],
       check: (s) => s.owned >= 3 },
-    { id: 'p_explorer', name: 'Explorador', desc: 'Visita 5 páginas de tienda distintas.', icon: '🧭', reward: ['frame_pixel', 'fx_pixels'],
+    { id: 'p_explorer', name: 'Explorador', desc: 'Visita 5 páginas de tienda distintas.', icon: 'compass', reward: ['frame_pixel', 'fx_pixels'],
       check: (s) => s.visited >= 5 },
-    { id: 'p_critic', name: 'Crítico', desc: 'Publica tu primera reseña.', icon: '📝', reward: ['badge_critic', 'em_gg'],
+    { id: 'p_critic', name: 'Crítico', desc: 'Publica tu primera reseña.', icon: 'note', reward: ['badge_critic', 'em_gg'],
       check: (s) => s.reviews >= 1 },
-    { id: 'p_marathon', name: 'Maratón', desc: 'Acumula 30 minutos de juego.', icon: '⏱️', reward: ['theme_cyber'],
+    { id: 'p_marathon', name: 'Maratón', desc: 'Acumula 30 minutos de juego.', icon: 'stopwatch', reward: ['theme_cyber'],
       check: (s) => s.playtime >= 1800 },
-    { id: 'p_hunter', name: 'Cazador de logros', desc: 'Desbloquea 5 logros dentro de juegos.', icon: '🏹', reward: ['theme_space', 'fx_stars'],
+    { id: 'p_hunter', name: 'Cazador de logros', desc: 'Desbloquea 5 logros dentro de juegos.', icon: 'target', reward: ['theme_space', 'fx_stars'],
       check: (s) => s.gameAch >= 5 },
-    { id: 'p_guard', name: 'Guardián', desc: 'Envía un reporte para mantener sana la comunidad.', icon: '🛡️', reward: ['badge_guard'],
+    { id: 'p_guard', name: 'Guardián', desc: 'Envía un reporte para mantener sana la comunidad.', icon: 'shield', reward: ['badge_guard'],
       check: (s) => s.reports >= 1 },
-    { id: 'p_creator', name: 'Creador', desc: 'Publica un juego aprobado por la administración.', icon: '🛠️', reward: ['badge_creator', 'theme_gameboy'],
+    { id: 'p_creator', name: 'Creador', desc: 'Publica un juego aprobado por la administración.', icon: 'wrench', reward: ['badge_creator', 'theme_gameboy'],
       check: (s) => s.published >= 1 }
   ];
+
+  /* ---------- Criterios de aprobación (referencia TecNM) ----------
+     auto(g): se evalúa solo; los demás los confirma la persona que revisa. */
+  DT.TECNM_REF = 'Lista basada en principios públicos del Tecnológico Nacional de México (TecNM): su Código de Ética y Código de Conducta, el uso de la identidad institucional, la igualdad y no discriminación, la protección de datos personales y el respeto a la propiedad intelectual. Es una guía de referencia para la demostración y no sustituye los lineamientos oficiales del TecNM.';
+  DT.AGES = ['Todo público', '+10', '+13', '+16', '+18'];
+  DT.TECNM_CRITERIA = [
+    { group: 'Técnicos', icon: 'gear', items: [
+      { id: 't_files', text: 'Archivos del juego o descargable válidos', auto: (g) => (g.format === 'html' ? !!(g.files || (DT.BUILTIN && DT.BUILTIN[g.id])) : !!g.download) },
+      { id: 't_desc', text: 'Descripción corta y descripción larga completas', auto: (g) => !!(g.short && g.description) },
+      { id: 't_words', text: 'Textos sin palabras bloqueadas por la moderación', auto: (g) => !DT.hasBanned([g.title, g.short, g.description, (g.tags || []).join(' ')].join(' ')) },
+      { id: 't_ach', text: 'Logros con identificador único y nombre', auto: (g) => { const ids = (g.achievements || []).map((a) => a.id); return new Set(ids).size === ids.length && (g.achievements || []).every((a) => a.id && a.name); } },
+      { id: 't_age', text: 'Edad recomendada declarada por el estudio', auto: (g) => !!(g.compliance && g.compliance.age) },
+      { id: 't_run', text: 'Se ejecuta sin errores bloqueantes en el modo de prueba' }
+    ] },
+    { group: 'Ética y convivencia', icon: 'heart', ref: 'Código de Ética y Código de Conducta del TecNM', items: [
+      { id: 'e_respeto', text: 'Promueve el respeto: sin discursos de odio, acoso ni burlas a personas o grupos' },
+      { id: 'e_igualdad', text: 'Igualdad y no discriminación (género, origen, discapacidad, religión…) con representación respetuosa' },
+      { id: 'e_violencia', text: 'Sin violencia gráfica explícita, apología de delitos ni consumo de sustancias' },
+      { id: 'e_edad', text: 'El contenido corresponde a la edad recomendada declarada' }
+    ] },
+    { group: 'Identidad institucional', icon: 'building', ref: 'Uso de la imagen del TecNM y de cada campus', items: [
+      { id: 'i_logos', text: 'Logotipos del TecNM o de un campus solo con autorización', auto: (g) => !g.compliance || g.compliance.brand !== 'sin' },
+      { id: 'i_mascotas', text: 'Mascotas, nombres y símbolos de los Tecnológicos usados con respeto' }
+    ] },
+    { group: 'Propiedad intelectual', icon: 'note', ref: 'Derechos de autor', items: [
+      { id: 'p_recursos', text: 'Arte, música y código propios o con licencia compatible' },
+      { id: 'p_creditos', text: 'Créditos y licencias declarados por el estudio', auto: (g) => !!(g.compliance && (g.compliance.credits || '').trim()) }
+    ] },
+    { group: 'Datos personales y seguridad', icon: 'shield', ref: 'Protección de datos personales', items: [
+      { id: 'd_datos', text: 'No recaba datos personales sin aviso de privacidad' },
+      { id: 'd_seguro', text: 'Sin código malicioso, minería ni enlaces externos no declarados' }
+    ] },
+    { group: 'Calidad y accesibilidad', icon: 'eye', items: [
+      { id: 'c_controles', text: 'Controles explicados dentro del juego o en su ficha' },
+      { id: 'c_legible', text: 'Textos legibles y con contraste suficiente' }
+    ] }
+  ];
+  /* Estado de cada criterio: auto → calculado; manual → marcado por el admin */
+  DT.criteriaStatus = (g) => {
+    const checks = (g.review && g.review.checks) || {};
+    const out = [];
+    DT.TECNM_CRITERIA.forEach((grp) => grp.items.forEach((c) => out.push({ c, grp, auto: !!c.auto, ok: c.auto ? !!c.auto(g) : !!checks[c.id] })));
+    return out;
+  };
 
   /* ---------- Layouts por defecto (lienzo lógico de 1000px de ancho) ---------- */
   DT.LAYOUT_W = 1000;
@@ -115,77 +159,78 @@
 
   /* ---------- Datos semilla ---------- */
   const DAY = 86400000;
+  const byId0 = (list, id) => list.find((g) => g.id === id) || {};
   DT.seedState = () => {
     const now = Date.now();
     const games = [
       { id: 'g_astro', title: 'Astro Runner', devId: 'u_dev2', format: 'html', genre: 'Arcade', tags: ['Plataformas', 'Espacio', 'Un jugador'],
         short: 'Corre, salta y esquiva meteoritos en la superficie de una luna con baja gravedad.', description: 'Runner infinito en HTML5 Canvas: doble salto con mochila propulsora, meteoritos rodantes y voladores, estrellas coleccionables y velocidad que no deja de subir. Controles: Espacio, flecha arriba o tocar la pantalla.',
-        cover: { c1: '#1a6fd8', c2: '#0a1a3a', glyph: '🚀', angle: 160 }, featured: true, createdAt: now - 3 * DAY,
-        pricing: { mode: 'free' },
+        cover: { c1: '#1a6fd8', c2: '#0a1a3a', art: 'astro', angle: 160 }, featured: true, createdAt: now - 3 * DAY,
+        pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
-          { id: 'astro_despegue', name: 'Despegue', desc: 'Empieza tu primera carrera.', icon: '🚀', goal: 0, reward: 'em_gg' },
-          { id: 'astro_1000', name: 'Mil metros', desc: 'Recorre 1000 m en una carrera.', icon: '📏', goal: 1000, reward: 'fx_sparkle' },
-          { id: 'astro_estrellas', name: 'Coleccionista estelar', desc: 'Recoge 50 estrellas en total.', icon: '⭐', goal: 50, reward: 'av_alien' },
-          { id: 'astro_intocable', name: 'Intocable', desc: 'Sobrevive 60 segundos en una carrera.', icon: '🛡️', goal: 0, reward: 'frame_neon' },
-          { id: 'astro_agujero', name: 'Horizonte de sucesos', desc: 'Llega a 5000 m sin chocar.', icon: '🕳️', goal: 0, hidden: true, reward: 'em_rocket' }
+          { id: 'astro_despegue', name: 'Despegue', desc: 'Empieza tu primera carrera.', icon: 'rocket', goal: 0, reward: 'em_gg' },
+          { id: 'astro_1000', name: 'Mil metros', desc: 'Recorre 1000 m en una carrera.', icon: 'ruler', goal: 1000, reward: 'fx_sparkle' },
+          { id: 'astro_estrellas', name: 'Coleccionista estelar', desc: 'Recoge 50 estrellas en total.', icon: 'star', goal: 50, reward: 'av_alien' },
+          { id: 'astro_intocable', name: 'Intocable', desc: 'Sobrevive 60 segundos en una carrera.', icon: 'shield', goal: 0, reward: 'frame_neon' },
+          { id: 'astro_agujero', name: 'Horizonte de sucesos', desc: 'Llega a 5000 m sin chocar.', icon: 'planet', goal: 0, hidden: true, reward: 'em_rocket' }
         ] },
       { id: 'g_cronicas', title: 'Crónicas de Tecnia', devId: 'u_dev', format: 'exe', genre: 'RPG', tags: ['Rol', 'Fantasía', 'Historia'],
         short: 'Un RPG por turnos ambientado en un tecnológico encantado.', description: 'Explora el campus de Tecnia, recluta compañeros de cada carrera y derrota al Rector Sombrío. Instalador para Windows.',
-        cover: { c1: '#7a3cff', c2: '#1b0f3a', glyph: '🗡️' }, featured: true, pricing: { mode: 'paid', price: 129 }, createdAt: now - 12 * DAY, download: { name: 'CronicasDeTecnia-Setup.exe', size: 184549376, platform: 'Windows 10/11 · 64 bits' } },
+        cover: { c1: '#7a3cff', c2: '#1b0f3a', art: 'cronicas' }, featured: true, pricing: { mode: 'paid', price: 129 }, createdAt: now - 12 * DAY, download: { name: 'CronicasDeTecnia-Setup.exe', size: 184549376, platform: 'Windows 10/11 · 64 bits' } },
       { id: 'g_circuit', title: 'Circuit Clash', devId: 'u_dev2', format: 'cpp', genre: 'Estrategia', tags: ['Estrategia', 'Electrónica', 'PvP'],
         short: 'Estrategia en tiempo real donde construyes circuitos para ganar.', description: 'Compilado en C++ con SDL2. Conecta compuertas lógicas para alimentar tus torres y cortar la energía del rival.',
-        cover: { c1: '#00b894', c2: '#003d33', glyph: '⚡' }, createdAt: now - 20 * DAY, download: { name: 'CircuitClash-linux-win.zip', size: 52428800, platform: 'Windows · Linux' } },
+        cover: { c1: '#00b894', c2: '#003d33', art: 'circuit' }, createdAt: now - 20 * DAY, download: { name: 'CircuitClash-linux-win.zip', size: 52428800, platform: 'Windows · Linux' } },
       { id: 'g_garden', title: 'Pixel Garden', devId: 'u_dev', format: 'html', genre: 'Simulación', tags: ['Relajante', 'Pixel art', 'Granja'],
         short: 'Cultiva un jardín pixelado que crece incluso cuando no juegas.', description: 'Juego idle de jardinería con estética de consola portátil: planta zanahorias, girasoles, calabazas y cactus estelares, cosecha monedas, desbloquea semillas y adopta a Michi, el gato que cosecha por ti. Las plantas crecen en tiempo real, aunque cierres el juego.',
-        cover: { c1: '#5bd16b', c2: '#1d4d2a', glyph: '🌱' }, createdAt: now - 6 * DAY,
+        cover: { c1: '#5bd16b', c2: '#1d4d2a', art: 'garden' }, createdAt: now - 6 * DAY,
         pricing: { mode: 'pwyw', price: 20, min: 0, inPass: true },
         achievements: [
-          { id: 'garden_cosecha', name: 'Primera cosecha', desc: 'Cosecha tu primera planta.', icon: '🥕', goal: 0, reward: 'em_fire' },
-          { id: 'garden_100', name: 'Buen año', desc: 'Gana 100 monedas en total.', icon: '🪙', goal: 100, reward: 'frame_pixel' },
-          { id: 'garden_botanico', name: 'Botánico', desc: 'Desbloquea las 4 semillas.', icon: '🌵', goal: 0, reward: 'fx_pixels' },
-          { id: 'garden_gato', name: 'Michi', desc: 'Adopta al gato jardinero.', icon: '🐈', goal: 0, reward: 'av_gato' },
-          { id: 'garden_dorada', name: 'Flor dorada', desc: 'Encuentra una flor dorada al cosechar (2 %).', icon: '🌼', goal: 0, hidden: true, reward: 'em_crown' }
+          { id: 'garden_cosecha', name: 'Primera cosecha', desc: 'Cosecha tu primera planta.', icon: 'sprout', goal: 0, reward: 'em_fire' },
+          { id: 'garden_100', name: 'Buen año', desc: 'Gana 100 monedas en total.', icon: 'coin', goal: 100, reward: 'frame_pixel' },
+          { id: 'garden_botanico', name: 'Botánico', desc: 'Desbloquea las 4 semillas.', icon: 'leaf', goal: 0, reward: 'fx_pixels' },
+          { id: 'garden_gato', name: 'Michi', desc: 'Adopta al gato jardinero.', icon: 'paw', goal: 0, reward: 'av_gato' },
+          { id: 'garden_dorada', name: 'Flor dorada', desc: 'Encuentra una flor dorada al cosechar (2 %).', icon: 'sprout', goal: 0, hidden: true, reward: 'em_crown' }
         ] },
       { id: 'g_neon', title: 'Neón Drift', devId: 'u_dev2', format: 'html', genre: 'Carreras', tags: ['Carreras', 'Synthwave', 'Arcade'],
         short: 'Carreras arcade en una autopista synthwave infinita.', description: 'Autopista pseudo-3D de neón: cambia de carril, esquiva el tráfico, pasa rozando para ganar bonus de "casi choque" y usa el turbo para duplicar puntos. Controles: ← → y Espacio, o toques en móvil.',
-        cover: { c1: '#ff2a6d', c2: '#05070f', glyph: '🏎️' }, featured: true, createdAt: now - 1 * DAY,
+        cover: { c1: '#ff2a6d', c2: '#05070f', art: 'neon' }, featured: true, createdAt: now - 1 * DAY,
         pricing: { mode: 'paid', price: 49, discount: 30, inPass: true },
         achievements: [
-          { id: 'drift_primera', name: 'Luz verde', desc: 'Corre tu primera carrera.', icon: '🚦', goal: 0, reward: 'em_gg' },
-          { id: 'drift_2000', name: 'Velocidad de crucero', desc: 'Consigue 2000 puntos en una carrera.', icon: '🏁', goal: 2000, reward: 'frame_ice' },
-          { id: 'drift_casi', name: 'Por un pelo', desc: 'Logra 20 casi choques en total.', icon: '😬', goal: 20, reward: 'em_skull' },
-          { id: 'drift_turbo', name: 'Nitro', desc: 'Usa el turbo 10 veces.', icon: '🔥', goal: 10, reward: 'fx_fire' },
-          { id: 'drift_leyenda', name: 'Leyenda de la autopista', desc: 'Sobrevive 3 minutos en una carrera.', icon: '🏆', goal: 0, hidden: true, reward: 'em_trophy' }
+          { id: 'drift_primera', name: 'Luz verde', desc: 'Corre tu primera carrera.', icon: 'raceflag', goal: 0, reward: 'em_gg' },
+          { id: 'drift_2000', name: 'Velocidad de crucero', desc: 'Consigue 2000 puntos en una carrera.', icon: 'raceflag', goal: 2000, reward: 'frame_ice' },
+          { id: 'drift_casi', name: 'Por un pelo', desc: 'Logra 20 casi choques en total.', icon: 'burst', goal: 20, reward: 'em_skull' },
+          { id: 'drift_turbo', name: 'Nitro', desc: 'Usa el turbo 10 veces.', icon: 'flame', goal: 10, reward: 'fx_fire' },
+          { id: 'drift_leyenda', name: 'Leyenda de la autopista', desc: 'Sobrevive 3 minutos en una carrera.', icon: 'trophy', goal: 0, hidden: true, reward: 'em_trophy' }
         ] },
       { id: 'g_guardianes', title: 'Guardianes del Campus', devId: 'u_dev', format: 'exe', genre: 'Acción', tags: ['Acción', 'Cooperativo', 'Torre'],
         short: 'Defiende tu tecnológico de una invasión de bugs.', description: 'Tower defense cooperativo para 4 jugadores. Instalable en Windows y macOS.',
-        cover: { c1: '#ffb321', c2: '#5a2e00', glyph: '🛡️' }, createdAt: now - 30 * DAY, pricing: { mode: 'paid', price: 89 }, download: { name: 'Guardianes-Setup.exe', size: 314572800, platform: 'Windows · macOS' } },
+        cover: { c1: '#ffb321', c2: '#5a2e00', art: 'guardianes' }, createdAt: now - 30 * DAY, pricing: { mode: 'paid', price: 89 }, download: { name: 'Guardianes-Setup.exe', size: 314572800, platform: 'Windows · macOS' } },
       { id: 'g_quantum', title: 'Quantum Puzzle', devId: 'u_dev2', format: 'html', genre: 'Puzle', tags: ['Puzle', 'Ciencia'],
         short: 'Colapsa partículas entrelazadas a su estado base.', description: 'Rompecabezas tipo "luces fuera" con física cuántica de mentira: al tocar una partícula cambian ella, sus vecinas y su pareja entrelazada. 10 niveles diseñados de 3×3 a 5×5, contador de movimientos, "par" por nivel y deshacer.',
-        cover: { c1: '#00d2ff', c2: '#3a0ca3', glyph: '⚛️' }, createdAt: now - 2 * 3600000, status: 'pending', submittedAt: now - 2 * 3600000,
+        cover: { c1: '#00d2ff', c2: '#3a0ca3', art: 'quantum' }, createdAt: now - 2 * 3600000, status: 'pending', submittedAt: now - 2 * 3600000,
         pricing: { mode: 'paid', price: 25 },
         achievements: [
-          { id: 'quantum_1', name: 'Primera observación', desc: 'Resuelve tu primer nivel.', icon: '👁️', goal: 0, reward: 'em_gg' },
-          { id: 'quantum_5', name: 'Superposición', desc: 'Resuelve 5 niveles.', icon: '🌀', goal: 5, reward: 'frame_gold' },
-          { id: 'quantum_optimo', name: 'Eficiencia cuántica', desc: 'Resuelve un nivel en el par de movimientos o menos.', icon: '⚡', goal: 0, reward: 'fx_sparkle' },
-          { id: 'quantum_todo', name: 'Colapso total', desc: 'Resuelve los 10 niveles.', icon: '⚛️', goal: 0, reward: 'theme_space' },
-          { id: 'quantum_sin_deshacer', name: 'Sin mirar atrás', desc: 'Resuelve 3 niveles seguidos sin deshacer.', icon: '🧑‍🚀', goal: 0, hidden: true, reward: 'av_astro' }
+          { id: 'quantum_1', name: 'Primera observación', desc: 'Resuelve tu primer nivel.', icon: 'eye', goal: 0, reward: 'em_gg' },
+          { id: 'quantum_5', name: 'Superposición', desc: 'Resuelve 5 niveles.', icon: 'atom', goal: 5, reward: 'frame_gold' },
+          { id: 'quantum_optimo', name: 'Eficiencia cuántica', desc: 'Resuelve un nivel en el par de movimientos o menos.', icon: 'bolt', goal: 0, reward: 'fx_sparkle' },
+          { id: 'quantum_todo', name: 'Colapso total', desc: 'Resuelve los 10 niveles.', icon: 'atom', goal: 0, reward: 'theme_space' },
+          { id: 'quantum_sin_deshacer', name: 'Sin mirar atrás', desc: 'Resuelve 3 niveles seguidos sin deshacer.', icon: 'astro', goal: 0, hidden: true, reward: 'av_astro' }
         ] },
       { id: 'g_mecaquack', title: 'Mecaquack', devId: 'u_maravilla', format: 'html', genre: 'Aventura', tags: ['Aventura', 'Educativo', 'Ingeniería', 'Pixel art', 'Hackatec 2026'],
         short: 'Un pato ingeniero recorre un archipiélago resolviendo retos de física y derrotando a los Tiburones de Tierra.', description: 'Los Tiburones de Tierra arrasaron el archipiélago y dispersaron a la parvada. Mecaquack, un pato ingeniero, recorre 10 islas resolviendo 19 retos de física, química y materiales (en fácil, normal o difícil), ensambla un dron-mochila para cruzar el océano, desbloquea 5 tecnologías y se enfrenta a Bombón, el chihuahua de agua salada. Juego de la fase local de InnovaTec Hackatec, hecho por el Equipo Maravilla del Instituto Tecnológico Superior de Irapuato.',
-        cover: { asset: 'g_mecaquack:img/cinematica4.png', c1: '#5b4fb3', c2: '#f39c12', glyph: '🦆', pos: '60% 40%' }, featured: true, createdAt: now - 2 * 3600000,
-        pricing: { mode: 'free' },
+        cover: { asset: 'g_mecaquack:img/cinematica4.png', c1: '#5b4fb3', c2: '#f39c12', motif: 'gamepad', pos: '60% 40%' }, featured: true, createdAt: now - 2 * 3600000,
+        pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
-          { id: 'meca_primer_reto', name: 'Primer invento', desc: 'Completa tu primer reto de ingeniería.', icon: '⚙️', goal: 0, reward: 'em_fire' },
-          { id: 'meca_dron', name: 'Ingeniero aéreo', desc: 'Ensambla el dron-mochila.', icon: '🚁', goal: 0, reward: 'frame_neon' },
-          { id: 'meca_tiburones', name: 'Cazatiburones', desc: 'Derrota 25 Tiburones de Tierra.', icon: '🦈', goal: 25, reward: 'fx_fire' },
-          { id: 'meca_dificil', name: 'Mente brillante', desc: 'Completa 5 retos en dificultad DIFÍCIL.', icon: '💀', goal: 5, reward: 'frame_gold' },
-          { id: 'meca_estrellas', name: 'Constelación', desc: 'Gana 100 estrellas en total.', icon: '⭐', goal: 100, reward: 'fx_stars' },
-          { id: 'meca_islas', name: 'Explorador del archipiélago', desc: 'Visita las 10 islas.', icon: '🗺️', goal: 0, reward: 'frame_ice' },
-          { id: 'meca_retos', name: 'Archipiélago completo', desc: 'Completa los 19 retos.', icon: '🏝️', goal: 0, reward: 'theme_lava' },
-          { id: 'meca_bombon', name: 'Adiós, Bombón', desc: 'Derrota al jefe final en su guarida de Selvarrón.', icon: '🐶', goal: 0, reward: 'av_pato' },
-          { id: 'meca_perfecto', name: 'Sin un rasguño', desc: 'Vence a Bombón sin perder vida.', icon: '🛡️', goal: 0, hidden: true, reward: 'badge_hackatec' },
-          { id: 'meca_moda', name: 'Pato a la moda', desc: 'Equipa sombrero, skin y estela al mismo tiempo.', icon: '🎩', goal: 0, hidden: true, reward: 'em_crown' }
+          { id: 'meca_primer_reto', name: 'Primer invento', desc: 'Completa tu primer reto de ingeniería.', icon: 'gear', goal: 0, reward: 'em_fire' },
+          { id: 'meca_dron', name: 'Ingeniero aéreo', desc: 'Ensambla el dron-mochila.', icon: 'drone', goal: 0, reward: 'frame_neon' },
+          { id: 'meca_tiburones', name: 'Cazatiburones', desc: 'Derrota 25 Tiburones de Tierra.', icon: 'fish', goal: 25, reward: 'fx_fire' },
+          { id: 'meca_dificil', name: 'Mente brillante', desc: 'Completa 5 retos en dificultad DIFÍCIL.', icon: 'skull', goal: 5, reward: 'frame_gold' },
+          { id: 'meca_estrellas', name: 'Constelación', desc: 'Gana 100 estrellas en total.', icon: 'star', goal: 100, reward: 'fx_stars' },
+          { id: 'meca_islas', name: 'Explorador del archipiélago', desc: 'Visita las 10 islas.', icon: 'map', goal: 0, reward: 'frame_ice' },
+          { id: 'meca_retos', name: 'Archipiélago completo', desc: 'Completa los 19 retos.', icon: 'island', goal: 0, reward: 'theme_lava' },
+          { id: 'meca_bombon', name: 'Adiós, Bombón', desc: 'Derrota al jefe final en su guarida de Selvarrón.', icon: 'paw', goal: 0, reward: 'av_pato' },
+          { id: 'meca_perfecto', name: 'Sin un rasguño', desc: 'Vence a Bombón sin perder vida.', icon: 'shield', goal: 0, hidden: true, reward: 'badge_hackatec' },
+          { id: 'meca_moda', name: 'Pato a la moda', desc: 'Equipa sombrero, skin y estela al mismo tiempo.', icon: 'hat', goal: 0, hidden: true, reward: 'em_crown' }
         ],
         storeLayout: { height: 1620, bg: 'linear-gradient(160deg, #1b1340, #0d1b3d 55%, #2a1030)', blocks: [
           { id: 'm1', type: 'media', asset: 'g_mecaquack:img/cinematica1.png', x: 0, y: 0, w: 1000, h: 430, z: 1, shape: 'slant', fit: 'cover' },
@@ -209,67 +254,73 @@
         news: [{ id: 'nm1', title: '¡Mecaquack llega a DivierteTEC!', body: 'Ahora con guardado de partida, guarida del jefe en Selvarrón, controles táctiles y 10 logros con recompensas.', date: now - 2 * 3600000 }] },
       { id: 'g_aerodron', title: 'Aerodron 3D', devId: 'u_dev2', format: 'html', genre: 'Carreras', tags: ['3D', 'WebGL', 'Vuelo', 'Contrarreloj'],
         short: 'Rally de drones en 3D: cruza 20 anillos sobre un archipiélago low-poly antes de quedarte sin batería.', description: 'Juego 3D hecho con WebGL puro, sin librerías: terreno generado con ruido, agua animada, aerogeneradores, nubes y cielo de atardecer. Pilota tu dron por un circuito de 20 anillos, recoge baterías, usa el turbo con cuidado y bate tu récord de vuelta. Controles: ← → girar, ↑ ↓ subir y bajar, Espacio turbo; joystick en pantallas táctiles.',
-        cover: { c1: '#ff9a6a', c2: '#1b2a5a', glyph: '🚁', angle: 170 }, featured: true, createdAt: now - 30 * 60000,
-        pricing: { mode: 'free' },
+        cover: { c1: '#ff9a6a', c2: '#1b2a5a', art: 'aerodron', angle: 170 }, featured: true, createdAt: now - 30 * 60000,
+        pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
-          { id: 'dron_despegue', name: 'Despegue', desc: 'Cruza tu primer anillo.', icon: '🚁', goal: 0, reward: 'em_gg' },
-          { id: 'dron_10', name: 'Piloto', desc: 'Cruza 10 anillos en un mismo vuelo.', icon: '🎯', goal: 10, reward: 'frame_ice' },
-          { id: 'dron_circuito', name: 'Circuito completo', desc: 'Completa los 20 anillos del circuito.', icon: '🏁', goal: 0, reward: 'fx_sparkle' },
-          { id: 'dron_record', name: 'Contrarreloj', desc: 'Completa el circuito en menos de 150 segundos.', icon: '⏱️', goal: 0, reward: 'theme_cyber' },
-          { id: 'dron_baterias', name: 'Recargado', desc: 'Recoge 30 baterías en total.', icon: '🔋', goal: 30, reward: 'av_alien' },
-          { id: 'dron_rasante', name: 'Vuelo rasante', desc: 'Vuela 5 segundos a menos de 3 m del agua.', icon: '🌊', goal: 0, hidden: true, reward: 'em_rocket' }
+          { id: 'dron_despegue', name: 'Despegue', desc: 'Cruza tu primer anillo.', icon: 'drone', goal: 0, reward: 'em_gg' },
+          { id: 'dron_10', name: 'Piloto', desc: 'Cruza 10 anillos en un mismo vuelo.', icon: 'target', goal: 10, reward: 'frame_ice' },
+          { id: 'dron_circuito', name: 'Circuito completo', desc: 'Completa los 20 anillos del circuito.', icon: 'raceflag', goal: 0, reward: 'fx_sparkle' },
+          { id: 'dron_record', name: 'Contrarreloj', desc: 'Completa el circuito en menos de 150 segundos.', icon: 'stopwatch', goal: 0, reward: 'theme_cyber' },
+          { id: 'dron_baterias', name: 'Recargado', desc: 'Recoge 30 baterías en total.', icon: 'battery', goal: 30, reward: 'av_alien' },
+          { id: 'dron_rasante', name: 'Vuelo rasante', desc: 'Vuela 5 segundos a menos de 3 m del agua.', icon: 'wave', goal: 0, hidden: true, reward: 'em_rocket' }
         ],
         news: [{ id: 'na1', title: 'Aerodron 3D: el primer juego 3D de DivierteTEC', body: 'Mundo 3D en WebGL que corre directo en tu navegador, sin instalar nada.', date: now - 30 * 60000 }] },
       { id: 'g_furia', title: 'Furia TEC', devId: 'u_dev', format: 'html', genre: 'Acción', tags: ['3D', 'Pelea', 'Cooperativo local', 'Compatible con mando', 'Tecnológicos de Guanajuato'],
         short: 'Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato contra las Sombras.', description: 'Elige a tu mascota —Búho Blanco (Irapuato), Lince (Celaya), León (León), Carnero (Roque), Halcón (Uriangato), Jaguar (Abasolo), Gato Negro Brujo (Purísima del Rincón), Coyote (San Miguel de Allende) o Puma (Salvatierra)— cada una con su especial y habilidad propia. Modo cooperativo por oleadas con ataque combinado y revivir al compañero, jefe final con FINAL TEC, y modo Kombate 1 vs 1 frenético estilo arcade (contragolpes, congelado de impacto, ¡ACÁBALO! y una FATALITY caricaturesca por mascota) con la Torre contra la CPU. Ataques ligeros, medios, pesados, barridos, aéreos y combos encadenados en 5 escenarios de Guanajuato. Hasta 2 jugadores en teclado o con mandos de Xbox con vibración.',
-        cover: { c1: '#d92a2a', c2: '#1a0a14', glyph: '🥋', angle: 150 }, featured: true, createdAt: now - 10 * 60000,
-        pricing: { mode: 'free' },
+        cover: { c1: '#d92a2a', c2: '#1a0a14', art: 'furia', angle: 150 }, featured: true, createdAt: now - 10 * 60000,
+        pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
-          { id: 'kombat_ola1', name: 'Primera ronda', desc: 'Supera la oleada 1.', icon: '🥊', goal: 0, reward: 'em_fire' },
-          { id: 'kombat_combo', name: 'Combo x10', desc: 'Encadena 10 golpes seguidos.', icon: '💥', goal: 0, reward: 'fx_sparkle' },
-          { id: 'kombat_coop', name: 'Juntos somos más', desc: 'Lanza un ataque combinado con tu compañero.', icon: '🤝', goal: 0, reward: 'em_gg' },
-          { id: 'kombat_revive', name: 'No te dejo atrás', desc: 'Revive a tu compañero caído.', icon: '💚', goal: 0, reward: 'frame_ice' },
-          { id: 'kombat_jefe', name: 'Rey caído', desc: 'Derrota al Rey Sombra.', icon: '👑', goal: 0, reward: 'frame_fire' },
-          { id: 'kombat_final', name: 'Final TEC', desc: 'Remata al Rey Sombra con el FINAL TEC.', icon: '⚡', goal: 0, reward: 'theme_kombat' },
-          { id: 'kombat_versus', name: 'Retador', desc: 'Gana una partida de Kombate 1 vs 1.', icon: '🥋', goal: 0, reward: 'av_ninja' },
-          { id: 'kombat_remate', name: 'Fatality TEC', desc: 'Termina una pelea 1 vs 1 con la FATALITY de tu mascota.', icon: '👊', goal: 0, reward: 'em_punch' },
-          { id: 'kombat_impecable', name: 'Victoria impecable', desc: 'Gana un round 1 vs 1 sin recibir daño.', icon: '🌟', goal: 0, reward: 'fx_stars' },
-          { id: 'kombat_brutal', name: 'Combo Brutal', desc: 'Conecta el COMBO BRUTAL: ligero, ligero, medio, pesado.', icon: '💢', goal: 0, reward: 'em_crown' },
-          { id: 'kombat_torre', name: 'Campeón de la Torre', desc: 'Conquista la Torre Kombate: 5 mascotas y el Rey Sombra.', icon: '🏯', goal: 0, reward: 'badge_torre' },
-          { id: 'kombat_mando', name: 'Control total', desc: 'Juega con un mando.', icon: '🎮', goal: 0, reward: 'em_trophy' },
-          { id: 'kombat_perfecto', name: 'Impecable', desc: 'Supera una oleada sin recibir daño.', icon: '✨', goal: 0, hidden: true, reward: 'av_dragon' }
+          { id: 'kombat_ola1', name: 'Primera ronda', desc: 'Supera la oleada 1.', icon: 'fist', goal: 0, reward: 'em_fire' },
+          { id: 'kombat_combo', name: 'Combo x10', desc: 'Encadena 10 golpes seguidos.', icon: 'burst', goal: 0, reward: 'fx_sparkle' },
+          { id: 'kombat_coop', name: 'Juntos somos más', desc: 'Lanza un ataque combinado con tu compañero.', icon: 'hand', goal: 0, reward: 'em_gg' },
+          { id: 'kombat_revive', name: 'No te dejo atrás', desc: 'Revive a tu compañero caído.', icon: 'heart', goal: 0, reward: 'frame_ice' },
+          { id: 'kombat_jefe', name: 'Rey caído', desc: 'Derrota al Rey Sombra.', icon: 'crown', goal: 0, reward: 'frame_fire' },
+          { id: 'kombat_final', name: 'Final TEC', desc: 'Remata al Rey Sombra con el FINAL TEC.', icon: 'bolt', goal: 0, reward: 'theme_kombat' },
+          { id: 'kombat_versus', name: 'Retador', desc: 'Gana una partida de Kombate 1 vs 1.', icon: 'fist', goal: 0, reward: 'av_ninja' },
+          { id: 'kombat_remate', name: 'Fatality TEC', desc: 'Termina una pelea 1 vs 1 con la FATALITY de tu mascota.', icon: 'fist', goal: 0, reward: 'em_punch' },
+          { id: 'kombat_impecable', name: 'Victoria impecable', desc: 'Gana un round 1 vs 1 sin recibir daño.', icon: 'star', goal: 0, reward: 'fx_stars' },
+          { id: 'kombat_brutal', name: 'Combo Brutal', desc: 'Conecta el COMBO BRUTAL: ligero, ligero, medio, pesado.', icon: 'burst', goal: 0, reward: 'em_crown' },
+          { id: 'kombat_torre', name: 'Campeón de la Torre', desc: 'Conquista la Torre Kombate: 5 mascotas y el Rey Sombra.', icon: 'castle', goal: 0, reward: 'badge_torre' },
+          { id: 'kombat_mando', name: 'Control total', desc: 'Juega con un mando.', icon: 'gamepad', goal: 0, reward: 'em_trophy' },
+          { id: 'kombat_perfecto', name: 'Impecable', desc: 'Supera una oleada sin recibir daño.', icon: 'sparkle', goal: 0, hidden: true, reward: 'av_dragon' }
         ],
         news: [{ id: 'nf1', title: 'Furia TEC: ¡las mascotas de los Tecnológicos entran a la arena!', body: 'Pelea en cooperativo o versus, con teclado o mandos de Xbox con vibración.', date: now - 10 * 60000 }] },
     ];
     // Logros de ejemplo para los juegos de catálogo
     const genericAch = (prefix) => [
-      { id: prefix + '_1', name: 'Calentando motores', desc: 'Juega tu primera partida.', icon: '🔰', goal: 0, reward: 'em_gg' },
-      { id: prefix + '_2', name: 'Veterano', desc: 'Juega 10 partidas.', icon: '🎖️', goal: 10, reward: 'fx_sparkle' },
-      { id: prefix + '_3', name: 'Leyenda', desc: 'Completa el juego al 100%.', icon: '🏆', goal: 0, reward: 'em_trophy' }
+      { id: prefix + '_1', name: 'Calentando motores', desc: 'Juega tu primera partida.', icon: 'shield', goal: 0, reward: 'em_gg' },
+      { id: prefix + '_2', name: 'Veterano', desc: 'Juega 10 partidas.', icon: 'medal', goal: 10, reward: 'fx_sparkle' },
+      { id: prefix + '_3', name: 'Leyenda', desc: 'Completa el juego al 100%.', icon: 'trophy', goal: 0, reward: 'em_trophy' }
     ];
     games.forEach((g) => {
       g.status = g.status || 'approved';
       g.achievements = g.achievements || genericAch(g.id.slice(2, 6));
       g.files = null;
-      g.pricing = Object.assign({ mode: 'free', price: 0, min: 0, discount: 0, inPass: false }, g.pricing);
+      g.pricing = Object.assign({ mode: 'pwyw', price: 20, min: 0, discount: 0, inPass: false }, g.pricing);
       g.reviews = g.reviews || [];
       g.news = g.news || [];
       g.plays = g.status === 'approved' ? Math.floor(Math.random() * 900 + 100) : 0;
       g.storeLayout = g.storeLayout || DT.defaultStoreLayout(g);
       g.libraryLayout = g.libraryLayout || DT.defaultLibraryLayout(g);
       g.reviewNote = '';
+      g.compliance = g.compliance || { age: 'Todo público', brand: 'no', credits: 'Arte, música y código originales del estudio.' };
     });
+    byId0(games, 'g_furia').compliance = { age: '+10', brand: 'con', credits: 'Mascotas usadas con autorización de cada campus (demostración). Motor WebGL y arte originales de PixelForge Studio.' };
+    byId0(games, 'g_mecaquack').compliance = { age: 'Todo público', brand: 'no', credits: 'Arte y código originales del Equipo Maravilla (ITESI).' };
     const byId = Object.fromEntries(games.map((g) => [g.id, g]));
     byId.g_astro.news.push({ id: 'n1', title: '¡Actualización 1.2 disponible!', body: 'Nuevo planeta helado y 5 niveles extra.', date: now - 7 * DAY });
     byId.g_cronicas.news.push({ id: 'n2', title: 'Diario de desarrollo #8 — El Rector Sombrío', body: 'Te contamos cómo diseñamos al jefe final.', date: now - 2 * 3600000 });
     byId.g_neon.news.push({ id: 'n3', title: '7 días para el torneo de derrapes', body: 'Prepara tus mejores tiempos.', date: now - 14 * DAY });
     byId.g_garden.news.push({ id: 'n4', title: 'Concurso: el jardín mejor decorado', body: 'Comparte tu jardín en la comunidad.', date: now - 3 * DAY });
-    byId.g_astro.reviews.push({ id: 'r1', userId: 'u_luna', up: true, text: 'Súper adictivo, los jefes están geniales 🔥', date: now - 2 * DAY });
-    byId.g_cronicas.reviews.push({ id: 'r2', userId: 'u_luna', up: true, text: 'La historia me atrapó desde el inicio.', date: now - 5 * DAY });
-    byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
+    byId.g_astro.reviews.push({ id: 'r1', userId: 'u_luna', up: true, stars: 5, hours: 4.2, helpful: ['u_dev', 'u_troll'], text: 'Súper adictivo, los jefes están geniales :fuego:', date: now - 2 * DAY });
+    byId.g_cronicas.reviews.push({ id: 'r2', userId: 'u_luna', up: true, stars: 4, hours: 12.5, helpful: ['u_player'], text: 'La historia me atrapó desde el inicio.', date: now - 5 * DAY });
+    byId.g_furia.reviews.push({ id: 'r4', userId: 'u_luna', up: true, stars: 5, hours: 3.1, helpful: ['u_player', 'u_dev2'], text: 'Las Fatalities están buenísimas :risa: El gato brujo convirtiéndote en sapo no tiene precio.', date: now - 3 * 3600000 });
+    byId.g_garden.reviews.push({ id: 'r5', userId: 'u_luna', up: true, stars: 4, hours: 6, helpful: [], text: 'Relajante para después de clases. Quiero más semillas :corazon:', date: now - 4 * DAY });
+    byId.g_astro.reviews.push({ id: 'r6', userId: 'u_player', up: true, stars: 4, hours: 2.4, helpful: ['u_luna'], text: 'Muy buen runner, el doble salto se siente bien.', date: now - 6 * DAY });
+    byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, stars: 1, hours: 2.1, helpful: [], text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 8,
+      version: 9,
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },
@@ -283,9 +334,17 @@
       games,
       library: {
         u_player: {
-          g_astro: { added: now - 10 * DAY, playtime: 0, lastPlayed: 0 },
-          g_cronicas: { added: now - 8 * DAY, playtime: 0, lastPlayed: 0 }
+          g_astro: { added: now - 10 * DAY, playtime: 3 * 3600 + 1200, lastPlayed: now - 6 * DAY },
+          g_cronicas: { added: now - 8 * DAY, playtime: 2 * 3600 + 1800, lastPlayed: now - 2 * DAY }
         },
+        u_luna: {
+          g_astro: { added: now - 20 * DAY, playtime: 4.2 * 3600, lastPlayed: now - 2 * DAY },
+          g_cronicas: { added: now - 6 * DAY, playtime: 12.5 * 3600, lastPlayed: now - DAY },
+          g_furia: { added: now - DAY, playtime: 3.1 * 3600, lastPlayed: now - 3 * 3600000 },
+          g_garden: { added: now - 9 * DAY, playtime: 6 * 3600, lastPlayed: now - 4 * DAY },
+          g_neon: { added: now - 2 * DAY, playtime: 1.5 * 3600, lastPlayed: now - DAY }
+        },
+        u_troll: { g_neon: { added: now - 3 * DAY, playtime: 2.1 * 3600, lastPlayed: now - DAY } },
         u_maravilla: { g_mecaquack: { added: now, playtime: 0, lastPlayed: 0 } }
       },
       achievements: {},   // userId -> gameId -> achId -> {unlockedAt, progress}
