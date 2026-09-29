@@ -5,7 +5,7 @@
 (function (DT) {
   'use strict';
 
-  const KEY = 'divierteTEC_state_v7';
+  const KEY = 'divierteTEC_state_v8';
   let state = null;
   const listeners = new Set();
 
@@ -13,7 +13,7 @@
 
   DT.load = () => {
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
-    if (!state || state.version !== 7) { state = DT.seedState(); DT.save(); }
+    if (!state || state.version !== 8) { state = DT.seedState(); DT.save(); }
     return state;
   };
 

@@ -41,6 +41,13 @@
   .info.r .stat { flex-direction: row-reverse; }
   .stat i { display: block; height: 7px; background: linear-gradient(90deg, #ffd23f, #ff7a1a); transform: skewX(-20deg); }
   .ready { color: #5bff8a; font: 900 14px system-ui; letter-spacing: 2px; margin-top: 6px; }
+  #ov-stage { justify-content: flex-end; padding-bottom: 18px; }
+  .stage-name { font: 900 clamp(18px, 3vw, 28px) system-ui; letter-spacing: 2px; margin-bottom: 12px; color: #ffd23f; text-shadow: 0 3px 0 #3a0a0a; transform: skewX(-8deg); }
+  .stage-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: min(1200px, 100%); }
+  .stg { width: 168px; height: 104px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer; background: linear-gradient(160deg, var(--a), var(--b)); border: 2px solid #ffffff22; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transition: transform .12s; }
+  .stg span { font-size: 30px; line-height: 1; } .stg b { font: 900 13px system-ui; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; } .stg small { font-size: 11px; color: #ffffffcc; }
+  .stg.on { border-color: #ffd23f; box-shadow: inset 0 0 0 2px #ffd23f; transform: translateY(-8px); }
+  .box.wide { max-width: 860px; }
   .hint { text-align: center; color: #c9b8d8; font-size: 12px; margin-top: 8px; }
   @media (max-width: 1100px) { .grid { grid-template-columns: repeat(5, 64px); } .card { height: 78px; } .sel-row { grid-template-columns: 1fr; } .info { min-height: 0; } }
   /* Pausa y resultados */
@@ -61,10 +68,10 @@
   <div class="sub">Las mascotas de los Tecnológicos de Guanajuato</div>
   <div class="menu">
     <button class="btn" data-go="coop">Cooperativo · Oleadas</button>
-    <button class="btn" data-go="versus">Versus · 1 contra 1</button>
+    <button class="btn" data-go="versus">Kombate · 1 vs 1</button>
     <button class="btn ghost" data-go="controls">Controles</button>
   </div>
-  <div class="note" id="title-note">1 o 2 jugadores en el mismo teclado o con mandos de Xbox (con vibración). El jugador 2 se puede unir en cualquier momento.</div>
+  <div class="note" id="title-note">1 o 2 jugadores en el mismo teclado o con mandos de Xbox (con vibración). El jugador 2 se puede unir en cualquier momento. En <b>Kombate 1 vs 1</b> sin jugador 2 subes la <b>Torre</b> contra la CPU. 5 escenarios, combos y Fatalities.</div>
 </div>
 
 <div class="ov hidden" id="ov-select">
@@ -74,6 +81,13 @@
     <div><div class="grid" id="grid"></div><div class="hint" id="sel-hint"></div></div>
     <div class="info r" id="info2"></div>
   </div>
+</div>
+
+<div class="ov hidden" id="ov-stage">
+  <div class="sel-title">ELIGE EL ESCENARIO</div>
+  <div class="stage-name" id="stage-name"></div>
+  <div class="stage-row" id="stages"></div>
+  <div class="hint">J1: A/D elegir · F confirmar · H volver   |   J2: flechas · J confirmar   |   Mando: stick · A/X confirmar · Y volver</div>
 </div>
 
 <div class="ov dim hidden" id="ov-pause"><div class="box">
@@ -86,20 +100,30 @@
   </div>
 </div></div>
 
-<div class="ov dim hidden" id="ov-controls"><div class="box">
+<div class="ov dim hidden" id="ov-controls"><div class="box wide">
   <h2>CONTROLES</h2>
   <table class="ctl">
     <tr><th></th><th>Jugador 1</th><th>Jugador 2</th><th>Mando Xbox</th></tr>
     <tr><td>Moverse</td><td>A / D</td><td>← / →</td><td>Stick izq. o cruceta</td></tr>
-    <tr><td>Saltar</td><td>W</td><td>↑</td><td>A</td></tr>
-    <tr><td>Bloquear</td><td>S</td><td>↓</td><td>RB / RT o abajo</td></tr>
-    <tr><td>Golpe</td><td>F</td><td>J</td><td>X</td></tr>
-    <tr><td>Patada</td><td>G</td><td>K</td><td>Y</td></tr>
-    <tr><td>Especial</td><td>H</td><td>L</td><td>B</td></tr>
-    <tr><td>Gancho</td><td>S + F</td><td>↓ + J</td><td>Abajo + X</td></tr>
+    <tr><td>Saltar (solo hacia arriba)</td><td>W</td><td>↑</td><td>Stick o cruceta ↑</td></tr>
+    <tr><td>Agacharse</td><td>S</td><td>↓</td><td>Stick o cruceta ↓</td></tr>
+    <tr><td>Bloquear</td><td colspan="2">Mantén hacia atrás (atrás + abajo = bloqueo bajo)</td><td>Atrás o RB / RT</td></tr>
+    <tr><td>Golpe ligero</td><td>F</td><td>J</td><td>X</td></tr>
+    <tr><td>Golpe medio (patada)</td><td>G</td><td>K</td><td>A</td></tr>
+    <tr><td>Golpe pesado</td><td>H</td><td>L</td><td>Y</td></tr>
+    <tr><td>Especial</td><td>T</td><td>I</td><td>B</td></tr>
     <tr><td>Pausa / unirse</td><td>Esc / P</td><td>Enter</td><td>Start</td></tr>
   </table>
-  <p class="note">Cooperativo: si los dos tienen la barra de energía llena y usan el especial casi al mismo tiempo, lanzan el <b>ATAQUE COMBINADO</b>. Si tu compañero cae, quédate a su lado para revivirlo.</p>
+  <table class="ctl">
+    <tr><th>Movimiento</th><th>Entrada</th><th>Combo</th><th>Entrada</th></tr>
+    <tr><td>Golpe bajo</td><td>↓ + ligero</td><td>TRIPLE</td><td>L · L · M</td></tr>
+    <tr><td>Barrido (bajo)</td><td>↓ + medio</td><td>¡FURIA TEC!</td><td>L · M · P</td></tr>
+    <tr><td>Gancho lanzador</td><td>↓ + pesado</td><td>COMBO BRUTAL</td><td>L · L · M · P</td></tr>
+    <tr><td>Patada giratoria</td><td>atrás + pesado</td><td>BARRIDA LETAL</td><td>↓L · ↓L · ↓M</td></tr>
+    <tr><td>Martillo (alto)</td><td>adelante + pesado</td><td>AL AIRE</td><td>↓P · ↑ · M</td></tr>
+    <tr><td>Aéreos</td><td>en el aire: L / M / P</td><td>MARTILLAZO</td><td>↓P · ↑ · P</td></tr>
+  </table>
+  <p class="note">L = ligero · M = medio · P = pesado. Si un golpe <b>conecta</b>, cancélalo en el siguiente (ligero → medio → pesado → especial). Tras el gancho, salta para seguir el combo en el aire; el martillazo aéreo rebota al rival. Los golpes altos pasan sobre un rival agachado; el barrido se bloquea agachado, y el martillo y los aéreos, de pie.<br>Cooperativo: con la barra llena, usen el especial casi al mismo tiempo para el <b>ATAQUE COMBINADO</b>; quédate junto a tu compañero caído para revivirlo.<br><b>Kombate 1 vs 1:</b> gana 2 rounds. En el round decisivo aparece <b>¡ACÁBALO!</b>: usa el especial para la <b>FATALITY</b> de tu mascota. Golpear a un rival que está atacando es <b>CONTRAGOLPE</b> (+40 %).</p>
   <button class="btn" data-go="back">Volver</button>
 </div></div>
 
@@ -174,12 +198,38 @@
     { name: 'OLEADA 4', list: ['agil', 'bruto', 'agil', 'bruto', 'sombra'], max: 3 },
     { name: 'JEFE FINAL', list: ['boss'], max: 1, boss: true }
   ];
+  /* Ataques normales. lv: high (falla contra agachados), mid, low (bloquear agachado),
+     overhead (bloquear de pie). h = altura del golpe; a0–a1 = fotogramas activos. */
   const ATK = {
-    punch: { dur: 0.3, a0: 0.08, a1: 0.17, dmg: 6, range: 1.2, h: 1.45, kb: 2.2, stun: 0.28 },
-    kick: { dur: 0.46, a0: 0.16, a1: 0.3, dmg: 9, range: 1.6, h: 1.0, kb: 4.5, stun: 0.38 },
-    upper: { dur: 0.52, a0: 0.12, a1: 0.26, dmg: 11, range: 1.15, h: 1.5, kb: 2.5, stun: 0.5, down: true, launch: 7.5 },
-    air: { dur: 0.42, a0: 0.05, a1: 0.3, dmg: 8, range: 1.3, h: 0.9, kb: 3.2, stun: 0.3 }
+    light: { dur: 0.26, a0: 0.07, a1: 0.13, dmg: 5, range: 1.15, h: 1.5, lv: 'high', kb: 0.9, stun: 0.26 },
+    medium: { dur: 0.4, a0: 0.13, a1: 0.21, dmg: 8, range: 1.55, h: 1.1, lv: 'mid', kb: 1.6, stun: 0.34 },
+    heavy: { dur: 0.6, a0: 0.22, a1: 0.33, dmg: 13, range: 1.6, h: 1.45, lv: 'high', kb: 5.5, stun: 0.5, heavy: true },
+    cLight: { dur: 0.24, a0: 0.06, a1: 0.12, dmg: 4, range: 1.1, h: 0.75, lv: 'mid', kb: 0.8, stun: 0.24 },
+    sweep: { dur: 0.58, a0: 0.17, a1: 0.28, dmg: 8, range: 1.8, h: 0.2, lv: 'low', kb: 1.5, stun: 0.4, down: true, launch: 3.5, heavy: true },
+    upper: { dur: 0.62, a0: 0.13, a1: 0.26, dmg: 12, range: 1.15, h: 1.6, lv: 'mid', kb: 2, stun: 0.5, down: true, launch: 9, heavy: true },
+    roundhouse: { dur: 0.72, a0: 0.28, a1: 0.4, dmg: 15, range: 1.8, h: 1.35, lv: 'high', kb: 8, stun: 0.6, down: true, launch: 3, heavy: true },
+    overhead: { dur: 0.7, a0: 0.3, a1: 0.38, dmg: 11, range: 1.3, h: 1.6, lv: 'overhead', kb: 3, stun: 0.55, heavy: true },
+    airL: { dur: 0.3, a0: 0.05, a1: 0.2, dmg: 6, range: 1.2, h: 1.1, lv: 'overhead', kb: 2, stun: 0.3 },
+    airM: { dur: 0.45, a0: 0.07, a1: 0.3, dmg: 8, range: 1.45, h: 0.7, lv: 'overhead', kb: 3.2, stun: 0.34 },
+    airH: { dur: 0.5, a0: 0.12, a1: 0.34, dmg: 11, range: 1.3, h: 0.6, lv: 'overhead', kb: 4, stun: 0.45, heavy: true, spike: true }
   };
+  /* Cadenas: a qué golpe se puede cancelar cuando el anterior conecta */
+  const CHAIN = {
+    light: ['light', 'medium', 'heavy', 'cLight', 'upper', 'sweep'], cLight: ['cLight', 'light', 'sweep', 'upper', 'medium'],
+    medium: ['heavy', 'upper', 'sweep', 'overhead'], airL: ['airM', 'airH'], airM: ['airH']
+  };
+  /* Combos con nombre (se revisa la cola de golpes que conectaron; los largos primero) */
+  const COMBOS = [
+    { seq: ['light', 'light', 'medium', 'heavy'], name: 'COMBO BRUTAL', bonus: 1.4, launch: 7 },
+    { seq: ['light', 'medium', 'heavy'], name: '¡FURIA TEC!', bonus: 1.3, launch: 6 },
+    { seq: ['cLight', 'cLight', 'sweep'], name: 'BARRIDA LETAL', bonus: 1.3 },
+    { seq: ['light', 'light', 'medium'], name: 'TRIPLE', bonus: 1.15 },
+    { seq: ['light', 'light', 'light'], name: 'RÁFAGA', bonus: 1.1 },
+    { seq: ['upper', 'airH'], name: 'MARTILLAZO', bonus: 1.35 },
+    { seq: ['upper', 'airM'], name: 'AL AIRE', bonus: 1.2 },
+    { seq: ['medium', 'upper'], name: 'LANZAMIENTO', bonus: 1.15 },
+    { seq: ['heavy', 'special'], name: 'CANCELACIÓN', bonus: 1.2 }
+  ];
   const ARENA = 10.5, SPECIAL_COST = 35;
 
   /* =================== MATEMÁTICAS =================== */
@@ -265,18 +315,20 @@
     'attribute vec3 aPos;attribute vec3 aNor;attribute vec3 aCol;uniform mat4 uVP;uniform mat4 uM;varying vec3 vCol;varying vec3 vNor;varying vec3 vW;' +
     'void main(){vec4 w=uM*vec4(aPos,1.0);vW=w.xyz;vNor=(uM*vec4(aNor,0.0)).xyz;vCol=aCol;gl_Position=uVP*w;}',
     'precision highp float;varying vec3 vCol;varying vec3 vNor;varying vec3 vW;uniform vec3 uLight;uniform vec3 uFog;uniform vec3 uCam;uniform vec3 uTint;uniform float uEmit;uniform float uFogN;uniform float uFogF;' +
-    'uniform vec3 uTorch;void main(){vec3 n=normalize(vNor);vec3 base=vCol*uTint;float d=max(dot(n,uLight),0.0);' +
+    'uniform vec3 uTorch;uniform float uInv;void main(){vec3 n=normalize(vNor);vec3 base=vCol*uTint;float d=max(dot(n,uLight),0.0);' +
     'float rim=pow(1.0-max(dot(n,normalize(uCam-vW)),0.0),2.5)*0.35;' +
     'vec3 c=base*(0.32+0.55*d)+base*uTorch*(0.35+0.25*max(n.y,0.0))+vec3(0.9,0.5,0.9)*rim*0.35;' +
-    'c=mix(c,base*1.35,uEmit);float f=smoothstep(uFogN,uFogF,length(vW-uCam));gl_FragColor=vec4(mix(c,uFog,f),1.0);}'
+    'c=mix(c,base*1.35,uEmit);float f=smoothstep(uFogN,uFogF,length(vW-uCam));vec3 o=mix(c,uFog,f);float l=dot(o,vec3(0.3,0.59,0.11));o=mix(o,vec3(1.0-smoothstep(0.06,0.4,l)),uInv);gl_FragColor=vec4(o,1.0);}'
   );
   const SKY = prog('attribute vec2 aP;varying vec2 vP;void main(){vP=aP;gl_Position=vec4(aP,0.999,1.0);}',
-    'precision highp float;varying vec2 vP;uniform vec2 uRes;float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}' +
-    'void main(){float t=clamp(vP.y*0.6+0.45,0.0,1.0);vec3 c=mix(vec3(0.32,0.1,0.22),vec3(0.03,0.02,0.08),t);' +
-    'vec2 g=floor(gl_FragCoord.xy/2.0);float s=h(g);if(s>0.996&&vP.y>-0.1){c+=vec3(0.8)*(s-0.996)*250.0*t;}gl_FragColor=vec4(c,1.0);}');
+    'precision highp float;varying vec2 vP;uniform vec3 uTop;uniform vec3 uBot;uniform float uStars;uniform float uInv;float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}' +
+    'void main(){float t=clamp(vP.y*0.6+0.45,0.0,1.0);vec3 c=mix(uBot,uTop,t);' +
+    'vec2 g=floor(gl_FragCoord.xy/2.0);float s=h(g);if(s>0.996&&vP.y>-0.1){c+=vec3(0.8)*(s-0.996)*250.0*t*uStars;}' +
+    'float l=dot(c,vec3(0.3,0.59,0.11));c=mix(c,vec3(1.0-smoothstep(0.06,0.4,l)),uInv);gl_FragColor=vec4(c,1.0);}');
+  const SKL = {}; ['uTop', 'uBot', 'uStars', 'uInv'].forEach((u) => { SKL[u] = gl.getUniformLocation(SKY, u); });
   const skyBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const L = {}; ['aPos', 'aNor', 'aCol'].forEach((a) => { L[a] = gl.getAttribLocation(P, a); });
-  ['uVP', 'uM', 'uLight', 'uFog', 'uCam', 'uTint', 'uEmit', 'uFogN', 'uFogF', 'uTorch'].forEach((u) => { L[u] = gl.getUniformLocation(P, u); });
+  ['uVP', 'uM', 'uLight', 'uFog', 'uCam', 'uTint', 'uEmit', 'uFogN', 'uFogF', 'uTorch', 'uInv'].forEach((u) => { L[u] = gl.getUniformLocation(P, u); });
   const FOG = [0.09, 0.05, 0.12], LIGHT = norm([0.35, 0.8, 0.5]);
 
   /* =================== MALLAS =================== */
@@ -326,9 +378,157 @@
       arenaG.box(x + (r % 2) * 0.45, 3.9 + r * 0.55 + h / 2, -7.2 - r * 0.9, 0.55, h, 0.4, [0.1 + r * 0.02, 0.07, 0.12]);
     }
   })();
-  const ARENA_MESH = upload(arenaG);
   const MOON = upload(new Geo().cyl(0, 0, 0, 1, 1, 0.1, 24, [1, 0.95, 0.8]));
   const HEADS = upload((function () { const g = new Geo(); for (let r = 0; r < 3; r++) for (let x = -18; x <= 18; x += 0.9) g.box(x + (r % 2) * 0.45, 4.55 + r * 0.55, -7.2 - r * 0.9, 0.36, 0.36, 0.36, [0.12, 0.08, 0.14]); return g; })());
+
+  /* =================== ESCENARIOS ===================
+     Cada escenario: malla fija (build → [base, brillo]) + animación por cuadro (anim). */
+  let seedS = 1;
+  const srnd = () => (seedS = (seedS * 16807) % 2147483647) / 2147483647;
+  function floorTiles(g, c1, c2, step) {
+    step = step || 1;
+    for (let x = -13; x < 13; x += step) for (let z = -4; z < 4; z += step) {
+      const v = (srnd() - 0.5) * 0.04, c = ((Math.round(x / step) + Math.round(z / step)) & 1) ? c1 : c2;
+      g.quad([x, 0, z], [x, 0, z + step], [x + step, 0, z + step], [x + step, 0, z], [c[0] + v, c[1] + v, c[2] + v]);
+    }
+    g.quad([-60, -0.02, -40], [-60, -0.02, -4], [60, -0.02, -4], [60, -0.02, -40], [c2[0] * 0.5, c2[1] * 0.5, c2[2] * 0.5]);
+    g.quad([-60, -0.02, 4], [-60, -0.02, 30], [60, -0.02, 30], [60, -0.02, 4], [c2[0] * 0.5, c2[1] * 0.5, c2[2] * 0.5]);
+  }
+  const winQuad = (g, x, y, z, w, h, col) => g.quad([x - w / 2, y - h / 2, z], [x + w / 2, y - h / 2, z], [x + w / 2, y + h / 2, z], [x - w / 2, y + h / 2, z], col);
+  function buildAzotea() {
+    const g = new Geo(), glow = new Geo(); seedS = 7;
+    floorTiles(g, [0.5, 0.49, 0.5], [0.43, 0.42, 0.45]);
+    for (let i = 0; i < 28; i++) { const a = i / 28 * 6.2832, b = (i + 1) / 28 * 6.2832; g.quad([Math.cos(a) * 2.3, 0.01, Math.sin(a) * 1.4], [Math.cos(a) * 2.6, 0.01, Math.sin(a) * 1.6], [Math.cos(b) * 2.6, 0.01, Math.sin(b) * 1.6], [Math.cos(b) * 2.3, 0.01, Math.sin(b) * 1.4], [0.95, 0.75, 0.15]); }
+    for (const x of [-0.6, 0.6]) g.box(x, 0.01, 0, 0.25, 0.02, 1.3, [0.95, 0.95, 0.95]);
+    g.box(0, 0.01, 0, 1.2, 0.02, 0.25, [0.95, 0.95, 0.95]);
+    g.box(0, 0.45, -4.3, 30, 0.9, 0.4, [0.55, 0.5, 0.52]);
+    for (let x = -14; x <= 14; x += 1.5) g.box(x, 1.25, -4.3, 0.08, 0.8, 0.08, [0.25, 0.28, 0.35]);
+    g.box(0, 1.65, -4.3, 30, 0.08, 0.08, [0.25, 0.28, 0.35]);
+    for (const x of [-9, 8.5]) { g.box(x, 0.6, -3.2, 2.2, 1.2, 1.4, [0.6, 0.6, 0.62]); g.cyl(x - 0.5, 1.2, -3.2, 0.55, 0.55, 1.3, 12, [0.15, 0.15, 0.18]); g.cyl(x + 0.6, 1.2, -3.2, 0.55, 0.55, 1.3, 12, [0.15, 0.15, 0.18]); }
+    g.box(-5.5, 0.5, -3.4, 1.4, 1, 1, [0.75, 0.75, 0.78]); g.box(-5.5, 0.6, -2.88, 0.9, 0.6, 0.05, [0.3, 0.3, 0.32]);
+    g.box(11.5, 4, -3.6, 0.12, 8, 0.12, [0.4, 0.4, 0.45]);
+    for (let y = 1; y < 8; y += 1.2) g.box(11.5, y, -3.6, 0.9 - y * 0.08, 0.06, 0.06, [0.4, 0.4, 0.45]);
+    g.box(3.5, 2.8, -3.7, 5, 1.6, 0.15, [0.1, 0.3, 0.7]); g.box(2.2, 1.3, -3.7, 0.12, 1.5, 0.12, [0.3, 0.3, 0.35]); g.box(4.8, 1.3, -3.7, 0.12, 1.5, 0.12, [0.3, 0.3, 0.35]);
+    glow.box(3.5, 2.8, -3.6, 4.4, 0.22, 0.04, [0.95, 0.95, 1]); glow.box(3.5, 3.3, -3.6, 2.2, 0.16, 0.04, [1, 0.8, 0.2]);
+    for (let row = 0; row < 3; row++) for (let x = -70; x < 70; x += 3 + srnd() * 3) {
+      const z = -18 - row * 14 - srnd() * 6, h = 5 + srnd() * 14 - row, w = 2.5 + srnd() * 3, d = 3 + srnd() * 3, sh = 0.16 + row * 0.05 + srnd() * 0.05;
+      g.box(x, h / 2 - 6, z, w, h, d, [sh * 1.1, sh * 0.8, sh * 1.3]);
+      for (let wy = -5; wy < h - 6.6; wy += 1.1) for (let wx = -w / 2 + 0.5; wx < w / 2 - 0.3; wx += 0.8) if (srnd() < 0.42) winQuad(glow, x + wx, wy, z + d / 2 + 0.03, 0.4, 0.5, srnd() < 0.8 ? [1, 0.8, 0.45] : [0.6, 0.85, 1]);
+    }
+    return [g, glow];
+  }
+  function animAzotea(t) {
+    box(I(), 11.5, 8.1, -3.6, 0.3, 0.3, 0.3, Math.sin(t * 4) > 0 ? [1, 0.1, 0.1] : [0.3, 0.05, 0.05], 1);
+    for (let i = 0; i < 5; i++) { const x = ((t * (1.5 + i * 0.3) + i * 23) % 120) - 60; box(I(), x, 14 + i * 1.7 + Math.sin(t * 8 + i) * 0.2, -30 - i * 6, 0.5, 0.08, 0.2, [0.1, 0.08, 0.12], 0); }
+  }
+  function buildLab() {
+    const g = new Geo(), glow = new Geo(); seedS = 3;
+    floorTiles(g, [0.75, 0.8, 0.86], [0.6, 0.66, 0.74]);
+    for (let x = -13; x < 13; x += 0.5) g.quad([x, 0.005, -4], [x, 0.005, -3.7], [x + 0.25, 0.005, -3.7], [x + 0.25, 0.005, -4], [0.95, 0.8, 0.1]);
+    g.box(0, 3.5, -5.5, 32, 7, 0.5, [0.28, 0.32, 0.38]);
+    for (let x = -14; x <= 14; x += 3.5) g.box(x, 3.5, -5.22, 3.2, 6.4, 0.06, [0.34, 0.38, 0.45]);
+    g.box(0, 7.1, -2, 32, 0.3, 0.4, [0.2, 0.22, 0.25]);
+    for (const x of [-12, -10.8, 10.8, 12]) g.box(x, 1.4, -4.6, 1, 2.8, 1, [0.12, 0.13, 0.16]);
+    for (const x of [-6.5, 6.5]) { g.box(x, 0.45, -4.2, 3, 0.9, 1.2, [0.45, 0.47, 0.5]); g.box(x, 0.93, -4.2, 3.2, 0.08, 1.4, [0.7, 0.72, 0.75]); }
+    for (const x of [-3, 3]) { g.box(x, 3.6, -5.2, 3.8, 2.4, 0.06, [0.08, 0.08, 0.1]); glow.box(x, 3.6, -5.15, 3.4, 2, 0.04, [0.06, 0.25, 0.45]); }
+    for (let x = -9; x <= 9; x += 4.5) glow.box(x, 6.9, -2, 2, 0.1, 0.5, [0.9, 0.95, 1]);
+    glow.box(0, 5.4, -5.2, 6, 0.4, 0.04, [0.2, 0.8, 1]);
+    return [g, glow];
+  }
+  function roboArm(x, t, ph) {
+    const B = C(T(x, 0.97, -4.2), RY(Math.sin(t * 0.7 + ph) * 1.2));
+    draw(CYL, C(B, T(0, 0.15, 0), SC(0.6, 0.3, 0.6)), [0.95, 0.55, 0.1]);
+    const s1 = C(B, T(0, 0.3, 0), RZ(0.6 + Math.sin(t * 1.3 + ph) * 0.4));
+    box(s1, 0, 0.6, 0, 0.25, 1.2, 0.25, [0.95, 0.55, 0.1]);
+    const s2 = C(s1, T(0, 1.2, 0), RZ(-1.4 + Math.sin(t * 1.7 + ph) * 0.5));
+    box(s2, 0, 0.5, 0, 0.2, 1, 0.2, [0.9, 0.9, 0.92]);
+    box(s2, 0, 1.05, 0, 0.3, 0.12, 0.3, [0.2, 0.8, 1], 1);
+  }
+  function animLab(t) {
+    roboArm(-6.5, t, 0); roboArm(6.5, t, 2);
+    for (const x of [-12, -10.8, 10.8, 12]) for (let i = 0; i < 6; i++) { const on = Math.sin(t * (3 + i) + x * 7) > 0.2; box(I(), x + 0.3, 0.5 + i * 0.4, -4.08, 0.08, 0.08, 0.04, on ? (i % 3 ? [0.2, 1, 0.4] : [1, 0.3, 0.2]) : [0.1, 0.12, 0.1], on ? 1 : 0); }
+    for (const sx of [-3, 3]) for (let i = 0; i < 9; i++) { const h = 0.3 + Math.abs(Math.sin(t * 2 + i * 0.7 + sx)) * 1.3; box(I(), sx - 1.4 + i * 0.35, 2.7 + h / 2, -5.12, 0.22, h, 0.03, [0.2, 0.9, 1], 1); }
+  }
+  const HOUSE = [[0.9, 0.65, 0.2], [0.85, 0.35, 0.35], [0.3, 0.55, 0.8], [0.4, 0.7, 0.45], [0.95, 0.85, 0.6], [0.75, 0.35, 0.6], [0.9, 0.5, 0.25]];
+  function buildCallejon() {
+    const g = new Geo(), glow = new Geo(); seedS = 11;
+    for (let x = -13; x < 13; x += 0.5) for (let z = -4; z < 4; z += 0.5) { const v = srnd() * 0.12; g.quad([x + 0.02, 0, z + 0.02], [x + 0.02, 0, z + 0.48], [x + 0.48, 0, z + 0.48], [x + 0.48, 0, z + 0.02], [0.38 + v, 0.33 + v, 0.3 + v]); }
+    g.quad([-60, -0.01, -40], [-60, -0.01, 30], [60, -0.01, 30], [60, -0.01, -40], [0.15, 0.12, 0.12]);
+    for (let x = -17, i = 0; x < 17; i++) {
+      const w = 2.6 + srnd() * 1.6, h = 4.6 + srnd() * 3.5, col = HOUSE[i % HOUSE.length], cx = x + w / 2;
+      g.box(cx, h / 2, -6, w, h, 1.6, col);
+      g.box(cx, h + 0.1, -6, w + 0.1, 0.2, 1.7, [col[0] * 0.7, col[1] * 0.7, col[2] * 0.7]);
+      g.box(cx, 0.9, -5.18, 0.9, 1.8, 0.05, [0.35, 0.2, 0.1]);
+      for (let y = 2.9; y < h - 0.6; y += 1.8) for (const ox of [-w / 4, w / 4]) g.box(cx + ox, y, -5.18, 0.55, 0.9, 0.05, [0.12, 0.1, 0.15]);
+      g.box(cx, 2.35, -4.95, w * 0.6, 0.1, 0.5, [0.25, 0.2, 0.18]);
+      for (let k = 0; k < 3; k++) { g.box(cx - w * 0.2 + k * w * 0.2, 2.5, -4.8, 0.2, 0.2, 0.2, [0.7, 0.3, 0.15]); g.box(cx - w * 0.2 + k * w * 0.2, 2.68, -4.8, 0.22, 0.16, 0.22, k % 2 ? [0.9, 0.2, 0.35] : [0.2, 0.65, 0.25]); }
+      glow.box(cx + w / 2 - 0.3, 2.3, -5.05, 0.22, 0.32, 0.22, [1, 0.8, 0.4]);
+      x += w;
+    }
+    for (let row = 0; row < 7; row++) for (let x = -55; x < 55; x += 1.3 + srnd() * 1.2) {
+      const y = row * 1.6 - 1 + Math.sin(x * 0.08) * 1.5, z = -24 - row * 4.5, col = HOUSE[Math.floor(srnd() * HOUSE.length)];
+      g.box(x, y + 0.5, z, 1.1, 1 + srnd() * 0.6, 1, [col[0] * 0.55, col[1] * 0.55, col[2] * 0.6]);
+      if (srnd() < 0.35) winQuad(glow, x, y + 0.5, z + 0.52, 0.3, 0.35, [1, 0.8, 0.45]);
+    }
+    g.box(9, 10, -46, 4, 5, 3, [0.95, 0.8, 0.3]); g.cyl(9, 12.5, -46, 1.6, 0.3, 2.6, 10, [0.85, 0.3, 0.22]);
+    for (const x of [7.2, 10.8]) { g.box(x, 13, -45.5, 0.9, 3, 0.9, [0.95, 0.8, 0.3]); g.cyl(x, 14.5, -45.5, 0.45, 0, 1.2, 6, [0.85, 0.3, 0.22]); }
+    return [g, glow];
+  }
+  const PICADO = [[1, 0.3, 0.6], [1, 0.85, 0.2], [0.2, 0.6, 1], [0.3, 0.9, 0.4], [1, 0.5, 0.15], [0.7, 0.35, 1]];
+  function animCallejon(t) {
+    [[5.0, -3.4], [5.4, -4.3], [4.8, -2.6]].forEach(([y0, z], r) => {
+      for (let x = -12; x <= 12; x += 0.55) {
+        const y = y0 - 0.7 * (1 - (x / 12.5) * (x / 12.5)) + Math.sin(t * 3 + x + r) * 0.04;
+        draw(CUBE, C(T(x, y - 0.3, z), RX(Math.sin(t * 2.5 + x * 0.7 + r) * 0.35), SC(0.42, 0.5, 0.02)), PICADO[(Math.round(x / 0.55) + r * 2 + 60) % PICADO.length], 0.35);
+      }
+    });
+  }
+  function buildCrater() {
+    const g = new Geo(), glow = new Geo(); seedS = 5;
+    floorTiles(g, [0.17, 0.13, 0.13], [0.13, 0.1, 0.1]);
+    for (let i = 0; i < 26; i++) { const x = -12 + srnd() * 24, z = -3.8 + srnd() * 7.6, l = 0.6 + srnd() * 1.4, a = srnd() * 3; glow.quad([x, 0.01, z], [x + Math.cos(a) * l, 0.01, z + Math.sin(a) * l * 0.4], [x + Math.cos(a) * l + 0.06, 0.01, z + Math.sin(a) * l * 0.4 + 0.06], [x + 0.06, 0.01, z + 0.06], [1, 0.35, 0.05]); }
+    g.box(0, -0.15, -4.6, 30, 0.3, 1.2, [0.12, 0.1, 0.1]);
+    glow.quad([-70, -0.3, -12], [-70, -0.3, -5.2], [70, -0.3, -5.2], [70, -0.3, -12], [1, 0.38, 0.06]);
+    for (let i = 0; i < 30; i++) { const x = -40 + srnd() * 80, z = -12 - srnd() * 22; g.cyl(x, -0.5, z, 1 + srnd() * 2.5, 0, 2 + srnd() * 7, 5, [0.14, 0.1, 0.09]); }
+    g.cyl(0, -2, -85, 60, 12, 40, 12, [0.13, 0.07, 0.06]);
+    glow.cyl(0, 37.9, -85, 12, 9, 0.5, 12, [1, 0.45, 0.1]);
+    for (let i = 0; i < 7; i++) { const x = -70 + i * 23, z = -60 - (i % 3) * 8; g.cyl(x, -2, z, 12, 5, 9 + (i % 2) * 4, 9, [0.12, 0.08, 0.07]); }
+    for (const x of [-12.5, 12.5]) g.cyl(x, 0, 3.6, 0.9, 0.3, 5, 6, [0.1, 0.08, 0.08]);
+    return [g, glow];
+  }
+  function animCrater(t) {
+    for (let i = 0; i < 40; i++) {
+      const k = (t * (0.25 + (i % 5) * 0.05) + i * 0.137) % 1, x = ((i * 37.7) % 26) - 13 + Math.sin(t + i) * 0.4;
+      box(I(), x, k * 9, -4.8 - (i % 6) * 1.2, 0.07, 0.07, 0.07, [1, 0.5 + (i % 3) * 0.15, 0.1], 1 - k * 0.5);
+    }
+    for (let i = 0; i < 10; i++) box(I(), -12 + i * 2.7, -0.25 + Math.abs(Math.sin(t * 1.5 + i)) * 0.3, -7 - (i % 3), 0.6, 0.25, 0.6, [1, 0.55, 0.1], 1);
+    const e = (t % 7) / 7; if (e < 0.25) for (let i = 0; i < 6; i++) box(I(), Math.sin(i * 2.1) * 6 * e * 4, 38 + e * 60 - e * e * 90, -85, 1.5, 1.5, 1.5, [1, 0.5, 0.1], 1);
+  }
+  function animTemplo(t) {
+    draw(HEADS, T(0, Math.abs(Math.sin(t * (5 + G.crowd * 3))) * (0.08 + G.crowd * 0.18), 0), [1, 1, 1]);
+    for (const x of [-9, -4.5, 0, 4.5, 9]) {
+      const s1 = 0.5 + Math.sin(t * 12 + x) * 0.08;
+      draw(CONE, C(T(x, 5.2, -5.2), RY(t * 2 + x), SC(s1, 0.8 + Math.sin(t * 9 + x) * 0.15, s1)), [1, 0.5, 0.1], 1);
+      draw(CONE, C(T(x, 5.1, -5.2), SC(s1 * 0.55, 0.5, s1 * 0.55)), [1, 0.9, 0.4], 1);
+    }
+  }
+  const STAGES = [
+    { id: 'templo', name: 'Templo Nocturno', place: 'Arena de Furia TEC', emoji: '🏯', css: ['#6a1236', '#120616'], top: [0.03, 0.02, 0.08], bot: [0.32, 0.1, 0.22], stars: 1, fog: [0.09, 0.05, 0.12], torch: [0.9, 0.45, 0.2], fogN: 25, fogF: 110, moon: [1, 0.95, 0.8], mesh: () => [arenaG, null], anim: animTemplo },
+    { id: 'azotea', name: 'Azotea del ITESI', place: 'Irapuato al atardecer', emoji: '🌇', css: ['#ff8a4a', '#3a1f5a'], top: [0.22, 0.16, 0.45], bot: [1.0, 0.55, 0.32], stars: 0, fog: [0.62, 0.38, 0.4], torch: [0.95, 0.6, 0.35], fogN: 30, fogF: 150, moon: [1, 0.78, 0.4], mesh: buildAzotea, anim: animAzotea },
+    { id: 'lab', name: 'Laboratorio de Robótica', place: 'Edificio de Mecatrónica', emoji: '🤖', css: ['#1a6aa8', '#07121e'], top: [0.02, 0.04, 0.08], bot: [0.05, 0.1, 0.16], stars: 0, fog: [0.05, 0.08, 0.12], torch: [0.35, 0.65, 1.0], fogN: 18, fogF: 70, moon: null, mesh: buildLab, anim: animLab },
+    { id: 'callejon', name: 'Callejón de Guanajuato', place: 'Guanajuato capital', emoji: '🏘️', css: ['#e0a030', '#243070'], top: [0.03, 0.04, 0.16], bot: [0.25, 0.3, 0.6], stars: 1, fog: [0.14, 0.13, 0.26], torch: [1, 0.7, 0.35], fogN: 25, fogF: 120, moon: [1, 0.97, 0.85], mesh: buildCallejon, anim: animCallejon },
+    { id: 'crater', name: 'Siete Luminarias', place: 'Cráter · Valle de Santiago', emoji: '🌋', css: ['#ff4a10', '#1a0505'], top: [0.05, 0.01, 0.01], bot: [0.45, 0.1, 0.03], stars: 0.5, fog: [0.2, 0.06, 0.03], torch: [1.2, 0.45, 0.15], fogN: 20, fogF: 110, moon: [1, 0.35, 0.2], mesh: buildCrater, anim: animCrater }
+  ];
+  function stageMesh(st) {
+    if (!st._m) { const [a, b] = st.mesh(); st._m = upload(a); st._g = b && b.d.length ? upload(b) : null; }
+    return st;
+  }
+  function curStage() {
+    const n = STAGES.length;
+    if (G.phase === 'stage') return STAGES[G.stageCur >= n ? Math.floor(G.t * 0.8) % n : G.stageCur];
+    if (G.phase === 'title' || G.phase === 'select') return STAGES[0];
+    return STAGES[G.stage] || STAGES[0];
+  }
 
   /* =================== ENTRADA: teclado y mandos =================== */
   const keys = {};
@@ -339,23 +539,23 @@
   });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
   const KEYMAP = [
-    { left: 'KeyA', right: 'KeyD', up: 'KeyW', down: 'KeyS', punch: 'KeyF', kick: 'KeyG', special: 'KeyH', start: 'Space' },
-    { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown', punch: 'KeyJ', kick: 'KeyK', special: 'KeyL', start: 'Enter' }
+    { left: 'KeyA', right: 'KeyD', up: 'KeyW', down: 'KeyS', light: 'KeyF', medium: 'KeyG', heavy: 'KeyH', special: 'KeyT', start: 'Space' },
+    { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown', light: 'KeyJ', medium: 'KeyK', heavy: 'KeyL', special: 'KeyI', start: 'Enter' }
   ];
   let vibration = true, padNoticeT = 0, padNotice = '';
   function pads() { const list = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(Boolean) : []; return list; }
   addEventListener('gamepadconnected', (e) => { padNotice = '🎮 Mando conectado: ' + (e.gamepad.id.split('(')[0].trim() || 'mando'); padNoticeT = 3.5; });
   addEventListener('gamepaddisconnected', () => { padNotice = '🎮 Mando desconectado'; padNoticeT = 3; });
   function readInput(i) {
-    const km = KEYMAP[i];
-    const s = { left: !!keys[km.left], right: !!keys[km.right], up: !!keys[km.up], down: !!keys[km.down], punch: !!keys[km.punch], kick: !!keys[km.kick], special: !!keys[km.special], start: !!keys[km.start], block: false, pad: false, a: false };
-    const list = pads(), gp = list[i];
+    const km = KEYMAP[i], k = (n) => !!keys[km[n]];
+    const s = { left: k('left'), right: k('right'), up: k('up'), down: k('down'), light: k('light'), medium: k('medium'), heavy: k('heavy'), special: k('special'), start: k('start'), block: false, pad: false, a: false };
+    const gp = pads()[i];
     if (gp) {
       const b = (n) => !!(gp.buttons[n] && gp.buttons[n].pressed), ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
-      const any = b(0) || b(1) || b(2) || b(3) || b(4) || b(5) || b(6) || b(7) || b(9) || b(12) || b(13) || b(14) || b(15) || Math.abs(ax) > 0.5 || Math.abs(ay) > 0.5;
+      const any = [0, 1, 2, 3, 4, 5, 6, 7, 9, 12, 13, 14, 15].some(b) || Math.abs(ax) > 0.5 || Math.abs(ay) > 0.5;
       s.left = s.left || ax < -0.4 || b(14); s.right = s.right || ax > 0.4 || b(15);
-      s.up = s.up || b(0) || b(12); s.down = s.down || ay > 0.55 || b(13);
-      s.punch = s.punch || b(2); s.kick = s.kick || b(3); s.special = s.special || b(1);
+      s.up = s.up || ay < -0.6 || b(12); s.down = s.down || ay > 0.55 || b(13); // saltar = stick/cruceta arriba
+      s.light = s.light || b(2); s.medium = s.medium || b(0); s.heavy = s.heavy || b(3); s.special = s.special || b(1);
       s.block = b(4) || b(5) || b(6) || b(7); s.start = s.start || b(9); s.a = b(0);
       s.pad = any;
     }
@@ -399,6 +599,10 @@
     whoosh: () => noise(0.18, 0.12, 2500),
     special: () => { tone(300, 1200, 0.3, 'sawtooth', 0.05); noise(0.3, 0.1, 2000); },
     ko: () => { tone(200, 30, 0.8, 'sawtooth', 0.12); noise(0.6, 0.3, 500); },
+    whooshH: () => { noise(0.28, 0.18, 1400); tone(200, 90, 0.2, 'sine', 0.05); },
+    thud: () => { noise(0.18, 0.3, 400); tone(90, 40, 0.18, 'sine', 0.15); },
+    jump: () => tone(260, 520, 0.09, 'triangle', 0.035),
+    crack: () => { noise(0.6, 0.5, 5000); tone(1400, 60, 0.6, 'sawtooth', 0.1); tone(70, 30, 0.9, 'sine', 0.3); },
     ui: () => tone(660, 880, 0.06, 'square', 0.04),
     fight: () => { [440, 660, 880].forEach((f, i) => tone(f, f, 0.12, 'square', 0.05, i * 0.08)); }
   };
@@ -408,7 +612,8 @@
     phase: 'title', mode: 'coop', fighters: [], projs: [], fx: [], texts: [],
     banner: null, wave: 0, queue: [], spawnT: 0, timeScale: 1, slowT: 0,
     cam: { e: [0, 2.4, 11], l: [0, 1.2, 0] }, round: 1, wins: [0, 0], roundT: 60, waveDmg: 0,
-    maxCombo: 0, finT: 0, finisher: null, resultT: 0, usedPad: false, t: 0, flash: 0
+    maxCombo: 0, finT: 0, finisher: null, resultT: 0, usedPad: false, t: 0, flash: 0,
+    hitstop: 0, kick: 0, parts: [], lines: null, bigCombo: null, dmgTaken: [0, 0], tower: null, fin: null, rem: null, moonPing: 0, crowd: 0, stamp: null, stage: 0, stageCur: 0, inv: 0, focus: null
   };
   const players = [
     { joined: true, cursor: 0, ready: false, prev: {}, cur: {} },
@@ -424,7 +629,8 @@
       grounded: true, jumps: 0, scale: def.scale || 1, playerIdx: opts.playerIdx, isCPU: !!opts.cpu, isBoss: !!def.boss,
       pow: def.pow, spd: def.spd, pose: basePose(), walk: 0, t: rand(0, 5), flash: 0, dead: false, removeT: 0,
       combo: 0, comboT: 0, slowT: 0, lives: def.id === 'gato' ? 1 : 0, prowl: 0, prowlBonus: false,
-      ai: { t: 0, move: 0, block: 0, action: null }, reviveT: 0, chargeT: 0, finishable: false, id: Math.random()
+      ai: { t: 0, move: 0, block: 0, action: null, plan: null, air: 0, low: false }, reviveT: 0, chargeT: 0, finishable: false, id: Math.random(),
+      guard: false, crouch: false, blockT: 0, buf: null, bufT: 0, airT: 0, flip: 0, airAtk: false, juggle: 0, seq: [], introT: 0, getupT: 0, hitLow: false, hitVar: 0
     };
     if (opts.hpMul) { f.hp *= opts.hpMul; f.maxHp = f.hp; }
     return f;
@@ -433,8 +639,8 @@
   const opponentsOf = (f) => G.fighters.filter((o) => o.team !== f.team && !o.dead);
 
   /* =================== FLUJO =================== */
-  function showOv(id) { ['ov-title', 'ov-select', 'ov-pause', 'ov-controls', 'ov-result'].forEach((o) => $(o).classList.toggle('hidden', o !== id)); }
-  function toTitle() { G.phase = 'title'; G.fighters = []; G.projs = []; G.fx = []; G.texts = []; G.banner = null; G.timeScale = 1; showOv('ov-title'); }
+  function showOv(id) { ['ov-title', 'ov-select', 'ov-stage', 'ov-pause', 'ov-controls', 'ov-result'].forEach((o) => $(o).classList.toggle('hidden', o !== id)); }
+  function toTitle() { G.phase = 'title'; G.stamp = null; G.parts = []; G.fighters = []; G.projs = []; G.fx = []; G.texts = []; G.banner = null; G.timeScale = 1; showOv('ov-title'); }
   function toSelect(mode) {
     G.mode = mode; G.phase = 'select';
     players.forEach((p, i) => { p.ready = false; p.joined = i === 0 || p.joined || pads().length > 1; });
@@ -446,7 +652,13 @@
     if (G.mode === 'coop') {
       spawnHeroes(); G.wave = 0; startWave();
     } else {
-      G.wins = [0, 0]; G.round = 1; G.cpuChar = (players[0].cursor + 1 + Math.floor(Math.random() * (FIGHTERS.length - 1))) % FIGHTERS.length; startRound();
+      G.wins = [0, 0]; G.round = 1;
+      // Torre Kombate: 5 mascotas al azar y el Rey Sombra al final
+      if (!players[1].joined) {
+        const rivals = FIGHTERS.map((f, i) => i).filter((i) => i !== players[0].cursor).sort(() => Math.random() - 0.5).slice(0, 5);
+        G.tower = { step: 0, list: rivals.concat(['boss']), done: false };
+      } else G.tower = null;
+      startRound();
     }
   }
   function spawnHeroes() {
@@ -461,21 +673,28 @@
     G.maxAlive = w.max + (two && !w.boss ? 1 : 0);
     G.spawnT = 1.8; G.waveDmg = 0;
     G.phase = 'intro';
-    banner(w.name, w.boss ? 'EL REY SOMBRA TE DESAFÍA' : 'Oleada ' + (G.wave + 1) + ' de ' + WAVES.length, 1.8, () => { banner('¡PELEA!', '', 0.9); SFX.fight(); G.phase = 'fight'; });
+    banner(w.name, w.boss ? 'EL REY SOMBRA TE DESAFÍA' : 'Oleada ' + (G.wave + 1) + ' de ' + WAVES.length + (G.wave === 0 ? '  ·  ' + STAGES[G.stage].name : ''), 1.8, () => { banner('¡PELEA!', '', 0.9); SFX.fight(); G.phase = 'fight'; });
   }
   function startRound() {
     G.fighters = [];
     const p2cpu = !players[1].joined;
     G.fighters.push(makeFighter(FIGHTERS[players[0].cursor], { team: 'p1', x: -3, facing: 1, playerIdx: 0 }));
-    const d2 = FIGHTERS[p2cpu ? G.cpuChar : players[1].cursor];
+    const d2 = p2cpu ? towerDef() : FIGHTERS[players[1].cursor];
     G.fighters.push(makeFighter(d2, { team: 'p2', x: 3, facing: -1, playerIdx: p2cpu ? null : 1, cpu: p2cpu }));
-    G.roundT = 60; G.projs = []; G.phase = 'intro';
-    banner('ROUND ' + G.round, G.fighters[0].def.name + ' vs ' + G.fighters[1].def.name, 1.6, () => { banner('¡PELEA!', '', 0.9); SFX.fight(); G.phase = 'fight'; });
+    G.roundT = 99; G.projs = []; G.parts = []; G.fx = []; G.texts = []; G.phase = 'intro'; G.dmgTaken = [0, 0];
+    G.fin = null; G.rem = null; G.stamp = null; G.crowd = 0; G.moonPing = 0; G.bigCombo = null; G.lines = null; G.hitstop = 0; G.slowT = 0;
+    G.fighters.forEach((f) => { f.introT = 1.4; });
+    const tw = (G.round === 1 ? '  ·  ' + STAGES[G.stage].name : '') + (G.tower ? '  ·  TORRE ' + (G.tower.step + 1) + '/' + G.tower.list.length : '');
+    banner('ROUND ' + G.round, G.fighters[0].def.name + ' vs ' + G.fighters[1].def.name + tw, 1.5, () => { banner('¡PELEA!', '', 0.8); SFX.fight(); G.phase = 'fight'; });
+  }
+  function towerDef() {
+    const r = G.tower ? G.tower.list[G.tower.step] : 0;
+    return r === 'boss' ? Object.assign({ id: 'boss' }, ENEMIES.boss, { hp: 210, campus: 'Jefe de la Torre' }) : FIGHTERS[r];
   }
   function banner(text, sub, dur, after) { G.banner = { text, sub, t: 0, dur, after }; }
   function togglePause() {
     if (G.phase === 'pause') { G.phase = G.pausedFrom; showOv(null); }
-    else if (['fight', 'intro', 'clear'].includes(G.phase)) { G.pausedFrom = G.phase; G.phase = 'pause'; showOv('ov-pause'); }
+    else if (['fight', 'intro', 'clear', 'finish'].includes(G.phase)) { G.pausedFrom = G.phase; G.phase = 'pause'; showOv('ov-pause'); }
   }
   function results(title, lines, canRetry) {
     G.phase = 'result';
@@ -494,7 +713,9 @@
     else if (go === 'menu') toTitle();
     else if (go === 'retry') {
       showOv(null);
-      if (G.mode === 'coop') { G.fighters = []; spawnHeroes(); G.projs = []; startWave(); } else startMatch();
+      if (G.mode === 'coop') { G.fighters = []; spawnHeroes(); G.projs = []; startWave(); }
+      else if (G.tower && !G.tower.done) { G.wins = [0, 0]; G.round = 1; startRound(); } // reintenta el mismo rival de la torre
+      else startMatch();
     }
   }
   document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => onMenu(b.dataset.go)));
@@ -507,12 +728,12 @@
     refreshSelect();
   }
   function infoHTML(p, i) {
-    if (!p.joined) return `<h3>JUGADOR ${i + 1}</h3><p>${G.mode === 'versus' ? 'Sin jugador 2: pelearás contra la CPU.' : 'Presiona ' + (i ? 'Enter, J o las flechas' : 'F') + ' o Start en un mando para unirte.'}</p>`;
+    if (!p.joined) return `<h3>JUGADOR ${i + 1}</h3><p>${G.mode === 'versus' ? 'Sin jugador 2: subes la <b>TORRE KOMBATE</b> contra la CPU (5 mascotas y el Rey Sombra). Pulsa J o flechas para un duelo entre 2.' : 'Presiona ' + (i ? 'Enter, J o las flechas' : 'F') + ' o Start en un mando para unirte.'}</p>`;
     const f = FIGHTERS[p.cursor];
     const bar = (lbl, v) => `<div class="stat"><span>${lbl}</span><i style="width:${Math.round(v * 60)}px"></i></div>`;
     return `<h3>${f.emoji} ${f.name.toUpperCase()}</h3><div class="campus">${f.campus}</div>` +
       bar('VIDA', f.hp / 100) + bar('VELOCIDAD', f.spd) + bar('FUERZA', f.pow) +
-      `<p><b>Especial</b> · ${f.special}</p><p><b>Habilidad</b> · ${f.move}</p>${p.ready ? '<div class="ready">¡LISTO!</div>' : ''}`;
+      `<p><b>Especial</b> · ${f.special}</p><p><b>Habilidad</b> · ${f.move}</p><p><b>Fatality</b> · ${FATAL[f.id].name}</p>${p.ready ? '<div class="ready">¡LISTO!</div>' : ''}`;
   }
   function refreshSelect() {
     $('grid').querySelectorAll('.card').forEach((c) => {
@@ -524,14 +745,14 @@
     });
     $('info1').innerHTML = infoHTML(players[0], 0);
     $('info2').innerHTML = infoHTML(players[1], 1);
-    $('sel-hint').textContent = 'J1: A/D/W/S elegir · F confirmar · G volver   |   J2: flechas · J confirmar   |   Mando: stick · X/A confirmar · Y volver';
+    $('sel-hint').textContent = 'J1: A/D elegir · F confirmar · H volver   |   J2: flechas · J confirmar · L volver   |   Mando: stick · A/X confirmar · Y volver';
   }
   const pressed = (p, k) => p.cur[k] && !p.prev[k];
   function updateSelect() {
     let changed = false;
     players.forEach((p, i) => {
       if (!p.joined) {
-        if (i === 1 && (pressed(p, 'a') || pressed(p, 'punch') || pressed(p, 'start') || pressed(p, 'left') || pressed(p, 'right') || pressed(p, 'up'))) { p.joined = true; p.ready = false; changed = true; SFX.ui(); }
+        if (i === 1 && (pressed(p, 'a') || pressed(p, 'light') || pressed(p, 'start') || pressed(p, 'left') || pressed(p, 'right') || pressed(p, 'up'))) { p.joined = true; p.ready = false; changed = true; SFX.ui(); }
         return;
       }
       if (!p.ready) {
@@ -540,54 +761,143 @@
         if (pressed(p, 'right')) { p.cursor = (p.cursor + 1) % FIGHTERS.length; changed = true; }
         if (pressed(p, 'up') && cols < 9) { p.cursor = (p.cursor + FIGHTERS.length - cols) % FIGHTERS.length; changed = true; }
         if (pressed(p, 'down') && cols < 9) { p.cursor = (p.cursor + cols) % FIGHTERS.length; changed = true; }
-        if (pressed(p, 'punch') || pressed(p, 'start') || pressed(p, 'a')) { p.ready = true; changed = true; }
-        else if (i === 0 && pressed(p, 'kick')) { toTitle(); return; }
+        if (pressed(p, 'light') || pressed(p, 'start') || pressed(p, 'a')) { p.ready = true; changed = true; }
+        else if (i === 0 && pressed(p, 'heavy')) { toTitle(); return; }
         if (changed) SFX.ui();
-      } else if (pressed(p, 'kick')) { p.ready = false; changed = true; }
+      } else if (pressed(p, 'heavy')) { p.ready = false; changed = true; }
     });
     if (changed) refreshSelect();
     const joined = players.filter((p) => p.joined);
-    if (joined.length && joined.every((p) => p.ready)) { G.selectDone = (G.selectDone || 0) + 1; if (G.selectDone > 25) { G.selectDone = 0; startMatch(); } }
+    if (joined.length && joined.every((p) => p.ready)) { G.selectDone = (G.selectDone || 0) + 1; if (G.selectDone > 25) { G.selectDone = 0; toStage(); } }
     else G.selectDone = 0;
   }
 
-  /* =================== POSES =================== */
-  function basePose() { return { lean: 0.1, head: 0, rot: 0, drop: 0.06, fa1: 0.45, fa2: 1.9, ba1: 0.75, ba2: 1.8, fl1: 0.3, fl2: -0.4, bl1: -0.25, bl2: -0.3, tail: 0.4, glow: 0 }; }
-  function targetPose(f) {
-    const p = basePose(), t = f.t;
-    p.drop += Math.sin(t * 3) * 0.02;
-    p.tail = 0.4 + Math.sin(t * 2) * 0.2;
-    const st = f.state;
-    if (st === 'walk') {
-      const ph = f.walk;
-      p.fl1 = 0.2 + Math.sin(ph) * 0.55; p.bl1 = -0.1 - Math.sin(ph) * 0.55;
-      p.fl2 = -0.3 - Math.max(0, -Math.cos(ph)) * 0.6; p.bl2 = -0.3 - Math.max(0, Math.cos(ph)) * 0.6;
-      p.lean = 0.18;
+  /* =================== ESCENARIO =================== */
+  function toStage() {
+    G.phase = 'stage'; G.stageCur = Math.min(G.stage || 0, STAGES.length); showOv('ov-stage');
+    $('stages').innerHTML = STAGES.map((st, i) => `<div class="stg" data-i="${i}" style="--a:${st.css[0]};--b:${st.css[1]}"><span>${st.emoji}</span><b>${st.name}</b><small>${st.place}</small></div>`).join('') +
+      `<div class="stg" data-i="${STAGES.length}" style="--a:#555;--b:#111"><span>🎲</span><b>Aleatorio</b><small>Sorpresa</small></div>`;
+    $('stages').querySelectorAll('.stg').forEach((c) => c.addEventListener('click', () => { G.stageCur = +c.dataset.i; pickStage(); }));
+    refreshStage();
+  }
+  function refreshStage() {
+    $('stages').querySelectorAll('.stg').forEach((c) => c.classList.toggle('on', +c.dataset.i === G.stageCur));
+    const st = STAGES[G.stageCur]; $('stage-name').textContent = st ? st.name + ' · ' + st.place : 'Escenario sorpresa';
+  }
+  function pickStage() { SFX.fight(); G.stage = G.stageCur >= STAGES.length ? Math.floor(Math.random() * STAGES.length) : G.stageCur; startMatch(); }
+  function updateStage() {
+    const n = STAGES.length + 1;
+    for (const p of players) {
+      if (!p.joined) continue;
+      if (pressed(p, 'left')) { G.stageCur = (G.stageCur + n - 1) % n; SFX.ui(); refreshStage(); }
+      if (pressed(p, 'right')) { G.stageCur = (G.stageCur + 1) % n; SFX.ui(); refreshStage(); }
+      if (pressed(p, 'light') || pressed(p, 'start') || pressed(p, 'a')) { pickStage(); return; }
+      if (pressed(p, 'heavy')) { toSelect(G.mode); return; }
     }
-    if (!f.grounded && st !== 'hit' && st !== 'down' && st !== 'ko') { p.fl1 = 0.9; p.fl2 = -1.5; p.bl1 = 0.5; p.bl2 = -1.3; p.fa1 = 0.9; p.fa2 = 1.6; p.ba1 = 1.2; p.ba2 = 1.3; }
-    if (st === 'block') { Object.assign(p, { fa1: 1.25, fa2: 2.3, ba1: 1.35, ba2: 2.2, drop: 0.16, fl1: 0.45, fl2: -0.8, bl1: -0.1, bl2: -0.6, lean: 0.05 }); if (f.prowl > 1) p.glow = 0.4; }
+  }
+
+  /* =================== POSES Y ANIMACIÓN ===================
+     Cada articulación es un ángulo en el plano de pelea (RZ) más giros de torso (twist),
+     abducción de brazos (fo/bo), giro de cuerpo completo (spin) y voltereta (rot).
+     Los ataques son clips con fotogramas clave en segundos: [tiempo, {articulaciones}]. */
+  function basePose() { return { lean: 0.14, twist: 0.35, head: -0.08, rot: 0, drop: 0.08, bx: 0, spin: 0, fa1: 0.95, fa2: 2.0, fo: 0.1, ba1: 0.6, ba2: 2.2, bo: 0.1, fl1: 0.35, fl2: -0.5, bl1: -0.3, bl2: -0.2, tail: 0.4, glow: 0 }; }
+  const CROUCH = { drop: 0.45, lean: 0.38, twist: 0.3, head: -0.2, fa1: 1.05, fa2: 2.05, ba1: 0.75, ba2: 2.2, fl1: 1.25, fl2: -2.05, bl1: 0.15, bl2: -1.9 };
+  const AIRP = { fl1: 1.1, fl2: -1.9, bl1: 0.5, bl2: -1.6, fa1: 1.0, fa2: 1.7, ba1: 1.2, ba2: 1.5, lean: 0.1 };
+  const HOLD = (o) => o; // legibilidad: pose que se mantiene entre dos claves
+  const JAB = { fa1: 1.55, fa2: 0.08, twist: 0.6, lean: 0.24, bx: 0.1, head: 0.05 };
+  const FKICK = { fl1: 1.58, fl2: -0.05, lean: -0.32, bx: 0.08, fa1: 0.5, fa2: 1.4, ba1: -0.3, ba2: 1.2, bl1: -0.1, bl2: -0.2, drop: 0.1 };
+  const CROSS = { twist: -0.8, lean: 0.4, drop: 0.14, ba1: 1.58, ba2: 0.06, bo: 0.2, fa1: 0.45, fa2: 2.2, bx: 0.3, fl1: 0.72, fl2: -0.8, bl1: -0.65, bl2: -0.1, head: 0.1 };
+  const SWEEP = { drop: 0.62, lean: 0.8, fa1: 0.3, fa2: 0.2, ba1: 0.1, ba2: 0.3, fl1: 1.57, fl2: 0, bl1: 0.3, bl2: -2.4 };
+  const UPPER = { drop: -0.05, lean: -0.32, twist: -0.4, fa1: 3.0, fa2: 0.1, fo: 0.1, bx: 0.12, fl1: 0.25, fl2: -0.2, bl1: -0.35, bl2: -0.2, head: -0.3 };
+  const RKICK = { fl1: 1.95, fl2: -0.05, lean: -0.55, fo: 0.9, bo: 0.9, fa1: 1.2, ba1: 1.2, fa2: 0.8, ba2: 0.8, bl1: -0.05, bl2: -0.05, bx: 0.1 };
+  const SLAM = { fa1: 1.05, fa2: 0.1, ba1: 1.1, ba2: 0.1, lean: 0.62, drop: 0.25, twist: 0, bx: 0.25, head: 0.2, fl1: 0.8, fl2: -1.1, bl1: -0.6, bl2: -0.2 };
+  const AKICK = { fl1: 1.35, fl2: -0.05, bl1: -0.4, bl2: -1.6, lean: -0.35, fa1: 0.6, ba1: 1.6 };
+  const CLIPS = {
+    light: { base: 'stand', keys: [[0, {}], [0.035, { fa1: 1.1, fa2: 1.4, twist: 0.5 }], [0.07, JAB], [0.13, HOLD(JAB)], [0.26, {}]] },
+    medium: { base: 'stand', keys: [[0, {}], [0.09, { fl1: 1.6, fl2: -2.2, lean: -0.05, fa1: 0.7, ba1: 0.2, ba2: 1.6, drop: 0.12 }], [0.13, FKICK], [0.21, HOLD(FKICK)], [0.3, { fl1: 1.3, fl2: -2.0, lean: 0 }], [0.4, {}]] },
+    heavy: { base: 'stand', keys: [[0, {}], [0.16, { twist: 1.0, lean: 0.02, drop: 0.14, ba1: 0.3, ba2: 2.5, fa1: 1.2, fa2: 1.8, head: -0.1, bx: -0.08 }], [0.22, CROSS], [0.33, HOLD(CROSS)], [0.6, {}]] },
+    cLight: { base: 'crouch', keys: [[0, {}], [0.06, { fa1: 1.5, fa2: 0.08, twist: 0.55, lean: 0.45, bx: 0.08 }], [0.12, { fa1: 1.5, fa2: 0.1, twist: 0.55, lean: 0.45, bx: 0.08 }], [0.24, {}]] },
+    sweep: { base: 'crouch', keys: [[0, {}], [0.12, { drop: 0.6, spin: -2.2, lean: 0.8, fa1: 0.4, fa2: 0.2, ba1: 0.2, ba2: 0.3, fl1: 1.0, fl2: -1.4, bl1: 0.3, bl2: -2.3 }], [0.17, Object.assign({ spin: -5.4 }, SWEEP)], [0.28, Object.assign({ spin: -6.2832 }, SWEEP)], [0.58, { spin: -6.2832 }]] },
+    upper: { base: 'crouch', keys: [[0, {}], [0.1, { drop: 0.5, lean: 0.5, fa1: -0.4, fa2: 1.6, twist: 0.8 }], [0.14, UPPER], [0.26, HOLD(UPPER)], [0.62, {}]] },
+    roundhouse: { base: 'stand', keys: [[0, {}], [0.18, { spin: -2.6, fl1: 1.1, fl2: -1.8, lean: 0.05, fo: 0.8, bo: 0.8, fa1: 0.9, ba1: 0.9 }], [0.28, Object.assign({ spin: -5.9 }, RKICK)], [0.4, Object.assign({ spin: -6.2832 }, RKICK)], [0.55, { spin: -6.2832, fl1: 1.0, fl2: -1.6, lean: -0.1 }], [0.72, { spin: -6.2832 }]] },
+    overhead: { base: 'stand', keys: [[0, {}], [0.22, { fa1: 3.05, fa2: 0.7, ba1: 3.0, ba2: 0.8, lean: -0.3, drop: 0.02, twist: 0, head: -0.3 }], [0.3, SLAM], [0.38, HOLD(SLAM)], [0.7, {}]] },
+    airL: { base: 'air', keys: [[0, {}], [0.05, { fa1: 1.25, fa2: 0.08, twist: 0.6, lean: 0.25 }], [0.2, { fa1: 1.25, fa2: 0.1, twist: 0.6, lean: 0.25 }], [0.3, {}]] },
+    airM: { base: 'air', keys: [[0, {}], [0.07, AKICK], [0.3, HOLD(AKICK)], [0.45, {}]] },
+    airH: { base: 'air', keys: [[0, {}], [0.1, { fl1: 2.8, fl2: -0.1, bl1: -0.2, bl2: -1.8, lean: -0.3, fa1: 1.8, ba1: 2.2, fo: 0.8, bo: 0.8 }], [0.16, { fl1: 0.7, fl2: -0.05, bl1: -0.3, bl2: -1.6, lean: 0.45, fa1: 1.6, ba1: 1.6, fo: 0.8, bo: 0.8 }], [0.34, { fl1: 0.6, fl2: -0.05, lean: 0.4, fo: 0.8, bo: 0.8 }], [0.5, {}]] }
+  };
+  const ss = (a, b, x) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
+  function clipPose(base, keys, t) {
+    let i = 0;
+    while (i < keys.length - 2 && t > keys[i + 1][0]) i++;
+    const [t0, a] = keys[i], [t1, b] = keys[i + 1] || keys[i];
+    const e = t1 > t0 ? ss(t0, t1, t) : 1, out = Object.assign({}, base);
+    for (const k in base) { const va = k in a ? a[k] : base[k], vb = k in b ? b[k] : base[k]; out[k] = va + (vb - va) * e; }
+    return out;
+  }
+  /* Poses de victoria (y de presentación) propias de cada mascota */
+  function victoryPose(f, p, t) {
+    const s = Math.sin(t * 6), a = Math.abs(s);
+    const wings = { fa1: 1.6 + s * 0.9, ba1: 1.6 + s * 0.9, fo: 1.2, bo: 1.2, fa2: 0.2, ba2: 0.2, drop: 0.04 - a * 0.04, lean: -0.15, twist: 0, head: -0.3 };
+    const V = {
+      buho: wings, halcon: wings,
+      lince: { fa1: 1.6, fa2: 2.7, ba1: 1.6, ba2: 2.7, fo: 0.6, bo: 0.6, twist: Math.sin(t * 2) * 0.2, lean: -0.05, head: -0.1 },
+      leon: { fa1: 1.9, fa2: 0.6, ba1: 1.9, ba2: 0.6, fo: 1.0, bo: 1.0, lean: -0.35 - a * 0.1, head: -0.5, twist: 0 },
+      carnero: { lean: 0.15 + a * 0.55, head: 0.3, fa1: 2.8, fa2: 0.4, ba1: 2.8, ba2: 0.4, twist: 0 },
+      jaguar: { drop: 0.35, lean: 0.55, fa1: 1.4, fa2: 0.6, ba1: 1.2, ba2: 0.8, fl1: 1.0, fl2: -1.6, bl1: -0.2, bl2: -1.4, head: -0.3, tail: 1 + s },
+      gato: { fa1: 2.9, fa2: 0.2, ba1: 1.2, ba2: 1.8, glow: 0.4 + a * 0.3, lean: -0.1, twist: s * 0.3 },
+      coyote: { head: -0.9, lean: -0.35, fa1: 0.8, ba1: 0.6, twist: 0, tail: 1.2 },
+      boss: { lean: -0.3 - a * 0.2, fa1: 2.2, ba1: 2.2, fo: 1.1, bo: 1.1, fa2: 0.4, ba2: 0.4, head: -0.5 }
+    };
+    Object.assign(p, V[f.def.id] || { fa1: 3.0, fa2: 0.2, ba1: 3.0, ba2: 0.2, lean: -0.1, twist: 0, drop: 0.02 + a * 0.08 });
+  }
+  function targetPose(f) {
+    const t = f.t, st = f.state, w = Math.sin(t * 3.2);
+    let p = basePose();
+    p.drop += w * 0.015; p.fa1 += w * 0.05; p.ba1 -= w * 0.04; p.twist += Math.sin(t * 1.7) * 0.05; p.head += Math.sin(t * 1.3) * 0.03;
+    p.tail = 0.4 + Math.sin(t * 2) * 0.25;
+    if (f.crouch || st === 'crouch' || st === 'cblock') Object.assign(p, CROUCH);
+    if (st === 'walk') {
+      const ph = f.walk, back = f.vx * f.facing < 0;
+      p.fl1 = 0.3 + Math.sin(ph) * 0.5; p.bl1 = -0.2 - Math.sin(ph) * 0.5;
+      p.fl2 = -0.35 - Math.max(0, -Math.cos(ph)) * 0.8; p.bl2 = -0.3 - Math.max(0, Math.cos(ph)) * 0.8;
+      p.drop = 0.06 + Math.abs(Math.cos(ph)) * 0.05; p.lean = back ? -0.02 : 0.2; p.twist = 0.35 + Math.sin(ph) * 0.12;
+      p.fa1 += Math.sin(ph) * 0.12; p.ba1 -= Math.sin(ph) * 0.12;
+    }
+    if (!f.grounded && !['hit', 'launch', 'down', 'ko', 'getup'].includes(st)) {
+      Object.assign(p, AIRP);
+      if (f.vy > 4 && !f.flip) Object.assign(p, { fl1: 0.3, fl2: -0.5, bl1: -0.3, bl2: -0.4, fa1: 2.4, ba1: 2.2 });
+      if (f.flip) p.rot = f.flip * 6.2832 * ss(0.06, 0.6, f.airT || 0);
+    }
+    if (st === 'block') Object.assign(p, { fa1: 1.4, fa2: 2.55, ba1: 1.3, ba2: 2.45, fo: 0.15, bo: 0.15, twist: 0.1, lean: 0.02, head: 0.18, drop: 0.14, bx: -0.05 });
+    if (st === 'cblock') Object.assign(p, { fa1: 1.5, fa2: 2.6, ba1: 1.35, ba2: 2.5, twist: 0.1, head: 0.1 });
+    if ((st === 'block' || st === 'cblock') && f.prowl > 1) p.glow = 0.4;
     if (f.atk) {
-      const a = f.atk, def = ATK[a.type], wind = def ? a.t < def.a0 : false;
-      if (a.type === 'punch') Object.assign(p, wind ? { fa1: 0.1, fa2: 2.4, lean: 0.05 } : { fa1: 1.55, fa2: 0.05, lean: 0.28, ba1: 0.3, ba2: 2.2 });
-      if (a.type === 'kick') Object.assign(p, wind ? { fl1: 1.0, fl2: -1.6, lean: -0.1 } : { fl1: 1.55, fl2: -0.05, lean: -0.32, fa1: 0.8, ba1: 0.9 });
-      if (a.type === 'upper') Object.assign(p, wind ? { drop: 0.25, fa1: -0.2, fa2: 1.2 } : { fa1: 2.9, fa2: 0.25, lean: -0.15, drop: -0.05 });
-      if (a.type === 'air') Object.assign(p, { fl1: 1.35, fl2: -0.1, bl1: -0.2, bl2: -1.2, lean: -0.2 });
+      const a = f.atk, c = CLIPS[a.type];
+      if (c) p = clipPose(c.base === 'crouch' ? Object.assign(p, CROUCH) : c.base === 'air' ? Object.assign(p, AIRP) : p, c.keys, a.t);
       if (a.type === 'special') {
         const id = f.def.id;
-        if (id === 'leon') Object.assign(p, { fa1: 2.3, fa2: 0.3, ba1: 2.4, ba2: 0.3, lean: -0.25, head: -0.35 });
-        else if (id === 'carnero') Object.assign(p, { lean: 0.75, head: 0.35, fa1: -0.4, ba1: -0.5, fa2: 0.8, ba2: 0.8 });
-        else if (id === 'halcon' || id === 'puma') Object.assign(p, { lean: 0.8, fa1: -0.6, ba1: -0.7, fa2: 0.3, ba2: 0.3, fl1: 0.2, bl1: -0.6 });
-        else if (id === 'lince' || id === 'jaguar') Object.assign(p, { lean: 0.55, fa1: 1.7, fa2: 0.1, ba1: 1.2, ba2: 0.4 });
-        else Object.assign(p, { fa1: 1.5, fa2: 0.1, ba1: 1.4, ba2: 0.2, lean: 0.2 });
+        if (id === 'leon') Object.assign(p, { fa1: 2.3, fa2: 0.3, ba1: 2.4, ba2: 0.3, fo: 0.9, bo: 0.9, lean: -0.25, head: -0.45, twist: 0 });
+        else if (id === 'carnero') Object.assign(p, { lean: 0.75, head: 0.35, fa1: -0.4, ba1: -0.5, fa2: 0.8, ba2: 0.8, twist: 0 });
+        else if (id === 'halcon' || id === 'puma') Object.assign(p, { lean: 0.8, fa1: -0.6, ba1: -0.7, fa2: 0.3, ba2: 0.3, fl1: 0.2, bl1: -0.6, fo: 0.9, bo: 0.9 });
+        else if (id === 'lince' || id === 'jaguar') Object.assign(p, { lean: 0.55, fa1: 1.7, fa2: 0.1, ba1: 1.2, ba2: 0.4, twist: Math.sin(a.t * 40) * 0.6, drop: 0.2 });
+        else Object.assign(p, { fa1: 1.5, fa2: 0.1, ba1: 1.4, ba2: 0.2, lean: 0.2, twist: 0.05, bx: 0.1 });
         p.glow = 0.3;
       }
-      if (a.type === 'boss') Object.assign(p, { fa1: 2.6, fa2: 0.4, ba1: 1.4, ba2: 0.2, lean: 0.1 });
     }
+    if (f.remate) Object.assign(p, { fa1: 2.9, fa2: 0.2, ba1: 2.9, ba2: 0.2, fo: 0.4, bo: 0.4, lean: -0.2, drop: 0.2, glow: 0.7 + Math.sin(t * 30) * 0.3 });
     if (f.chargeT > 0) Object.assign(p, { fa1: 2.8, fa2: 0.3, ba1: 2.8, ba2: 0.3, lean: -0.1, glow: 0.6 + Math.sin(t * 20) * 0.3 });
-    if (st === 'hit') Object.assign(p, { lean: -0.35, head: 0.35, fa1: -0.2, fa2: 0.8, ba1: -0.3, ba2: 0.9 });
-    if (st === 'dizzy') Object.assign(p, { rot: Math.sin(t * 4) * 0.14, head: Math.sin(t * 5) * 0.35, fa1: 0.1, fa2: 0.3, ba1: -0.1, ba2: 0.3 });
-    if (st === 'down' || st === 'ko') Object.assign(p, { rot: 1.5, drop: 0.72 - (f.dead && f.team === 'enemy' ? f.removeT * 0.2 : 0), fa1: 2.6, fa2: 0.4, ba1: 2.9, ba2: 0.3, fl1: 0.3, fl2: -0.3, bl1: 0.1, bl2: -0.2, lean: 0, head: 0.2 });
-    if (st === 'victory') Object.assign(p, { fa1: 3.0, fa2: 0.2, ba1: 3.0, ba2: 0.2, lean: -0.1, drop: 0.02 + Math.abs(Math.sin(t * 6)) * 0.08 });
+    if (st === 'hit') {
+      if (f.hitLow) Object.assign(p, { lean: 0.6, head: 0.35, fa1: 0.9, fa2: 2.2, ba1: 0.8, ba2: 2.3, drop: 0.2, bx: -0.1, twist: 0.2 });
+      else Object.assign(p, { lean: -0.45 - (f.hitVar || 0) * 0.15, head: -0.55, twist: (f.hitVar || 0) > 0.5 ? 0.7 : -0.3, fa1: -0.3, fa2: 0.9, ba1: -0.5 + (f.hitVar || 0), ba2: 1.0, drop: 0.1, bx: -0.12 });
+    }
+    if (st === 'launch') {
+      const up = clamp(f.vy / 8, -1, 1);
+      Object.assign(p, { rot: 0.9 - up * 0.6 + (f.juggle || 0) * 0.12, lean: -0.3, head: -0.4, fa1: 2.4 + Math.sin(t * 20) * 0.4, fa2: 0.6, ba1: 2.8 + Math.cos(t * 17) * 0.4, ba2: 0.5, fl1: 0.6, fl2: -0.9, bl1: -0.2, bl2: -0.8, drop: 0.25, twist: 0 });
+    }
+    if (st === 'getup') { const k = 1 - clamp(f.getupT / 0.4, 0, 1); Object.assign(p, { rot: 1.5 * (1 - k), drop: lerp(0.72, 0.3, k), fl1: 1.5, fl2: -2.2, bl1: 1.2, bl2: -2, fa1: 1.2, ba1: 1.3, lean: 0.5 * k, twist: 0 }); }
+    if (st === 'dizzy') Object.assign(p, { rot: Math.sin(t * 4) * 0.14, head: Math.sin(t * 5) * 0.35, fa1: 0.1, fa2: 0.3, ba1: -0.1, ba2: 0.3, twist: Math.sin(t * 3) * 0.4 });
+    if (st === 'down' || st === 'ko') Object.assign(p, { rot: 1.5, drop: 0.72 - (f.dead && f.team === 'enemy' ? f.removeT * 0.2 : 0), fa1: 2.6, fa2: 0.4, ba1: 2.9, ba2: 0.3, fl1: 0.3, fl2: -0.3, bl1: 0.1, bl2: -0.2, lean: 0, head: 0.2, twist: 0 });
+    if (st === 'victory' || (f.introT > 0.2 && st === 'idle')) victoryPose(f, p, t);
     if (st === 'select') Object.assign(p, { fa1: 1.1 + Math.sin(t * 2) * 0.1, fa2: 2.2, ba1: 1.2, ba2: 2.0 });
     return p;
   }
@@ -600,11 +910,22 @@
     for (const o of opp) if (Math.abs(o.x - f.x) < Math.abs(near.x - f.x)) near = o;
     if (Math.abs(near.x - f.x) > 0.05) f.facing = Math.sign(near.x - f.x);
   }
-  function canAct(f) { return !f.dead && !f.atk && f.chargeT <= 0 && ['idle', 'walk', 'block', 'jump'].includes(f.state); }
+  function canAct(f) { return !f.dead && !f.atk && f.chargeT <= 0 && !(f.blockT > 0) && ['idle', 'walk', 'block', 'cblock', 'crouch'].includes(f.state); }
+  function pickAttack(f, k, move, down) {
+    if (!f.grounded) return k === 'light' ? 'airL' : k === 'medium' ? 'airM' : 'airH';
+    if (down) return k === 'light' ? 'cLight' : k === 'medium' ? 'sweep' : 'upper';
+    const rel = Math.sign(move || 0) * f.facing;
+    if (k === 'heavy' && rel < 0) return 'roundhouse';
+    if (k === 'heavy' && rel > 0) return 'overhead';
+    return k;
+  }
   function startAttack(f, type) {
-    f.atk = { type, t: 0, hitSet: new Set(), phase: 0, fired: false };
-    if (type !== 'special') SFX.whoosh();
-    if (f.grounded && type !== 'special') f.vx = 0;
+    f.atk = { type, t: 0, hitSet: new Set(), phase: 0, fired: false, hit: false, chainN: 0 };
+    const c = CLIPS[type];
+    if (c && f.grounded) f.crouch = c.base === 'crouch';
+    if (type !== 'special') (ATK[type] && ATK[type].heavy ? SFX.whooshH : SFX.whoosh)();
+    if (type.startsWith('air')) f.airAtk = true;
+    if (f.grounded && type !== 'special') { f.vx = 0; f.state = 'idle'; }
   }
   function trySpecial(f) {
     if (f.isBoss) { if (f.specCD > 0) return; f.specCD = 3.5; }
@@ -669,67 +990,271 @@
     if (!d || a.t < d.a0 || a.t > d.a1) return;
     const reach = d.range * f.scale;
     for (const o of opponentsOf(f)) {
-      if (a.hitSet.has(o.id) || o.state === 'ko') continue;
-      if (o.state === 'down' && a.type !== 'kick') continue;
+      if (a.hitSet.has(o.id) || ['ko', 'down', 'getup'].includes(o.state)) continue;
+      if (o.state === 'launch' && (o.juggle || 0) >= 6) continue; // límite de malabares
+      if (d.lv === 'high' && o.crouch && o.grounded && o.state !== 'hit') continue; // los golpes altos pasan por encima
       const dx = (o.x - f.x) * f.facing;
-      const hy = f.y + d.h * f.scale, oy0 = o.y, oy1 = o.y + 2.0 * o.scale;
-      if (dx > -0.2 && dx < reach + 0.35 * o.scale && hy > oy0 - 0.3 && hy < oy1 + 0.3) {
+      const hy = f.y + d.h * f.scale, oy0 = o.y, oy1 = o.y + (o.crouch && o.grounded ? 1.3 : 2.0) * o.scale;
+      if (dx > -0.2 && dx < reach + 0.35 * o.scale && hy > oy0 - 0.35 && hy < oy1 + 0.3) {
         a.hitSet.add(o.id);
         let dmg = d.dmg;
         if (f.prowlBonus) { dmg *= 1.5; f.prowlBonus = false; floatText(f.x, f.y + 2.4, '¡ACECHO!', '#ffd23f'); }
-        hit(f, o, dmg, { kb: d.kb, stun: d.stun, down: d.down, launch: d.launch, heavy: a.type !== 'punch' });
+        hit(f, o, dmg, { kb: d.kb, stun: d.stun, down: d.down, launch: d.launch, heavy: !!d.heavy, lv: d.lv, move: a.type, spike: d.spike, h: d.h });
       }
     }
+  }
+  const blockable = (tgt, lv) => (lv === 'low' ? tgt.crouch : lv === 'overhead' ? !tgt.crouch : true);
+  function comboName(att, cb) {
+    const human = att.playerIdx != null;
+    if (G.mode === 'versus') G.bigCombo = { n: att.combo, side: att.team === 'p1' ? 0 : 1, t: 0, name: cb.name };
+    else G.texts.push({ x: att.x, y: att.y + 3.1 * att.scale, text: cb.name, color: '#ff7a1a', t: 0, big: true, owner: { combo: att } });
+    tone(500, 1400, 0.25, 'square', 0.05); G.flash = Math.max(G.flash, 0.2);
+    if (human && cb.name === 'COMBO BRUTAL') SDK.unlock('kombat_brutal');
+    if (human) { best.named = (best.named || 0) + 1; }
+  }
+  /* Golpe final: la imagen se invierte en blanco y negro con acercamiento (estilo Smash) */
+  function finalHit(x, y, dir) {
+    G.inv = 0.55; G.focus = { x, y, side: -dir || 1 }; G.hitstop = Math.max(G.hitstop, 0.45); G.flash = 0;
+    G.lines = { x, y, t: 0, dur: 0.55 }; G.kick = 1.6; G.shake = 0.6;
+    SFX.crack(); [0, 1].forEach((i) => rumble(i, 1, 1, 450));
   }
   function hit(att, tgt, dmg, o) {
     if (tgt.invul > 0 || tgt.dead) return;
     const dir = Math.sign(tgt.x - att.x) || att.facing;
+    if (att.atk) att.atk.hit = true; // conectó: permite encadenar
     // Astucia del coyote
-    if (tgt.def.id === 'coyote' && !o.special && Math.random() < 0.2) { floatText(tgt.x, tgt.y + 2.2, '¡ESQUIVA!', '#5ef2ff'); tgt.kvx = dir * 3; return; }
-    const blocking = tgt.state === 'block' && tgt.facing === -dir;
-    const px = tgt.x - dir * 0.3 * tgt.scale, py = tgt.y + 1.3 * tgt.scale;
+    if (tgt.def.id === 'coyote' && !o.special && !['hit', 'launch'].includes(tgt.state) && Math.random() < 0.2) { floatText(tgt.x, tgt.y + 2.2, '¡ESQUIVA!', '#5ef2ff'); tgt.kvx = dir * 3; return; }
+    const lv = o.lv || 'mid';
+    const blocking = tgt.guard && tgt.grounded && !tgt.atk && tgt.facing === -dir && ['idle', 'walk', 'block', 'cblock', 'crouch'].includes(tgt.state) && blockable(tgt, lv);
+    const px = tgt.x - dir * 0.3 * tgt.scale, py = tgt.y + (tgt.crouch && tgt.grounded ? 0.8 : 1.3) * tgt.scale;
     if (blocking) {
+      impact(px, py, [0.4, 0.8, 1], 0, true, dir);
       dmg *= 0.2; tgt.hp = Math.max(1, tgt.hp - dmg); tgt.kvx = dir * (o.kb || 2) * 0.5; tgt.meter = Math.min(100, tgt.meter + 3);
-      spark(px, py, [0.4, 0.8, 1], 'BLOQUEO'); SFX.block();
+      tgt.state = tgt.crouch ? 'cblock' : 'block'; tgt.blockT = Math.max(0.12, (o.stun || 0.3) * 0.75); tgt.vx = 0;
+      spark(px, py, [0.4, 0.8, 1], lv === 'low' ? 'BLOQUEO BAJO' : 'BLOQUEO'); SFX.block();
       if (tgt.playerIdx != null) rumble(tgt.playerIdx, 0.1, 0.3, 80);
-    } else {
-      dmg *= att.pow;
-      tgt.flash = 0.12;
-      att.meter = Math.min(100, att.meter + 8); tgt.meter = Math.min(100, tgt.meter + 5);
-      att.combo = att.comboT > 0 ? att.combo + 1 : 1; att.comboT = 1.1;
-      if (att.team !== 'enemy') {
-        G.maxCombo = Math.max(G.maxCombo, att.combo);
-        if (att.combo >= 10) SDK.unlock('kombat_combo');
-        if (att.combo >= 2) G.texts.push({ x: att.x, y: att.y + 2.6 * att.scale, text: att.combo + ' GOLPES', color: '#ffd23f', t: 0, big: true, owner: att });
-      }
-      if (tgt.team !== 'enemy') G.waveDmg += dmg;
-      spark(px, py, o.special ? att.look.accent : [1, 0.85, 0.4], Math.round(dmg));
-      (o.heavy || o.special ? SFX.heavy : SFX.hit)();
-      if (att.playerIdx != null) rumble(att.playerIdx, 0.15, 0.4, 70);
-      if (tgt.playerIdx != null) rumble(tgt.playerIdx, o.heavy ? 0.9 : 0.6, 0.4, o.heavy ? 220 : 120);
-      if (o.slow) tgt.slowT = 2;
-      // Jefe: no baja de 12 % hasta el Final TEC
-      if (tgt.isBoss && !G.finisher) {
-        if (tgt.finishable && att.team === 'hero') { startFinisher(att, tgt); return; }
-        tgt.hp -= dmg;
-        if (tgt.hp <= tgt.maxHp * 0.12) { tgt.hp = Math.max(1, tgt.hp); tgt.finishable = true; tgt.state = 'dizzy'; tgt.atk = null; banner('¡ACÁBALO!', 'Golpea al Rey Sombra para el FINAL TEC', 2.2); SFX.fight(); return; }
-      } else tgt.hp -= dmg;
-      if (tgt.hp <= 0) { tgt.hp = 0; return ko(tgt, att, dir); }
-      const armored = (tgt.def.id === 'leon' && tgt.atk && tgt.atk.type === 'kick') || (tgt.def.id === 'carnero' && tgt.atk && tgt.atk.type === 'special') || (tgt.isBoss && Math.random() < 0.5 && !o.special);
-      if (armored) { floatText(tgt.x, tgt.y + 2.3 * tgt.scale, 'RESISTE', '#ffb321'); return; }
-      const down = (o.down || att.combo >= 6) && !(tgt.def.id === 'carnero' && !o.special);
-      tgt.atk = null; tgt.chargeT = 0;
-      tgt.kvx = dir * (o.kb || 2) / Math.sqrt(tgt.scale);
-      if (down) { tgt.state = 'down'; tgt.downT = 1.1; tgt.vy = o.launch || 4; tgt.grounded = false; }
-      else { tgt.state = 'hit'; tgt.stun = o.stun || 0.3; }
+      return;
     }
+    if (tgt.guard && tgt.grounded && !tgt.atk && tgt.playerIdx != null && (lv === 'low' || lv === 'overhead')) floatText(tgt.x, tgt.y + 2.9, lv === 'low' ? '¡BLOQUEA ABAJO!' : '¡BLOQUEA DE PIE!', '#ff9a3d');
+    dmg *= att.pow;
+    tgt.flash = 0.12;
+    // Contragolpe: golpear a quien está atacando
+    const counter = G.mode === 'versus' && !!tgt.atk && tgt.atk.type !== 'remate';
+    if (counter) { dmg *= 1.4; floatText(tgt.x, tgt.y + 2.6 * tgt.scale, '¡CONTRAGOLPE!', '#ff5a3c'); G.slowT = Math.max(G.slowT, 0.22); }
+    // Combo: sigue mientras el rival no se recupera
+    const chained = ['hit', 'launch'].includes(tgt.state) || (G.mode === 'coop' && att.comboT > 0);
+    att.combo = chained ? att.combo + 1 : 1; att.comboT = 1.1;
+    att.seq = att.combo > 1 ? (att.seq || []).concat(o.move || 'special') : [o.move || 'special'];
+    let named = null;
+    for (const cb of COMBOS) { const n = cb.seq.length; if (att.seq.length >= n && cb.seq.every((m, i) => att.seq[att.seq.length - n + i] === m)) { named = cb; break; } }
+    if (named) { dmg *= named.bonus; if (named.launch) o = Object.assign({}, o, { down: true, launch: named.launch, kb: (o.kb || 2) + 2 }); comboName(att, named); }
+    if (tgt.state === 'launch') dmg *= Math.max(0.5, 1 - (tgt.juggle || 0) * 0.1); // escalado de malabares
+    const power = (o.special ? 0.75 : o.heavy ? 0.55 : 0.2) + (counter ? 0.35 : 0) + (named ? 0.3 : 0);
+    impact(px, py, o.special ? att.look.accent : [1, 0.85, 0.4], power, false, dir);
+    if (G.mode === 'versus') G.dmgTaken[tgt.team === 'p1' ? 0 : 1] += dmg;
+    att.meter = Math.min(100, att.meter + 8); tgt.meter = Math.min(100, tgt.meter + 5);
+    if (att.team !== 'enemy') {
+      G.maxCombo = Math.max(G.maxCombo, att.combo);
+      if (att.combo >= 10) SDK.unlock('kombat_combo');
+      if (G.mode === 'versus') { if (att.combo >= 3 && !named) G.bigCombo = { n: att.combo, side: att.team === 'p1' ? 0 : 1, t: 0, name: G.bigCombo && G.bigCombo.side === (att.team === 'p1' ? 0 : 1) ? G.bigCombo.name : null }; else if (named) G.bigCombo.n = att.combo; }
+      else if (att.combo >= 2) G.texts.push({ x: att.x, y: att.y + 2.6 * att.scale, text: att.combo + ' GOLPES', color: '#ffd23f', t: 0, big: true, owner: att });
+    }
+    if (tgt.team !== 'enemy') G.waveDmg += dmg;
+    spark(px, py, o.special ? att.look.accent : [1, 0.85, 0.4], Math.round(dmg));
+    (o.heavy || o.special ? SFX.heavy : SFX.hit)();
+    if (att.playerIdx != null) rumble(att.playerIdx, 0.15, 0.4, 70);
+    if (tgt.playerIdx != null) rumble(tgt.playerIdx, o.heavy ? 0.9 : 0.6, 0.4, o.heavy ? 220 : 120);
+    if (o.slow) tgt.slowT = 2;
+    // Jefe (cooperativo): no baja de 12 % hasta el Final TEC
+    if (tgt.isBoss && !G.finisher && G.mode === 'coop') {
+      if (tgt.finishable && att.team === 'hero') { startFinisher(att, tgt); return; }
+      tgt.hp -= dmg;
+      if (tgt.hp <= tgt.maxHp * 0.12) { tgt.hp = Math.max(1, tgt.hp); tgt.finishable = true; tgt.state = 'dizzy'; tgt.atk = null; banner('¡ACÁBALO!', 'Golpea al Rey Sombra para el FINAL TEC', 2.2); SFX.fight(); return; }
+    } else tgt.hp -= dmg;
+    if (tgt.hp <= 0) { tgt.hp = 0; return ko(tgt, att, dir); }
+    const armored = (tgt.def.id === 'leon' && tgt.atk && ['medium', 'roundhouse', 'sweep', 'airM'].includes(tgt.atk.type)) || (tgt.def.id === 'carnero' && tgt.atk && tgt.atk.type === 'special') || (tgt.isBoss && Math.random() < 0.5 && !o.special);
+    if (armored) { floatText(tgt.x, tgt.y + 2.3 * tgt.scale, 'RESISTE', '#ffb321'); return; }
+    const wasAir = !tgt.grounded;
+    tgt.atk = null; tgt.chargeT = 0; tgt.blockT = 0;
+    tgt.kvx = dir * (o.kb || 2) / Math.sqrt(tgt.scale);
+    if (o.move && att.grounded && !o.down) att.kvx = dir * Math.min(1.2, (o.kb || 2) * 0.6); // el atacante avanza para seguir el combo
+    const jug = Math.max(0.45, 1 - (tgt.juggle || 0) * 0.12);
+    const knock = (o.down || att.combo >= 8) && !(tgt.def.id === 'carnero' && !o.special && !named && !wasAir);
+    if (o.spike && wasAir) { tgt.state = 'launch'; tgt.vy = -14; tgt.bounce = true; tgt.juggle = (tgt.juggle || 0) + 1; floatText(tgt.x, tgt.y + 2, '¡REBOTE!', '#ffd23f'); }
+    else if (knock) { tgt.state = 'launch'; tgt.vy = (o.launch || 4) * jug; tgt.grounded = false; tgt.juggle = (tgt.juggle || 0) + 1; }
+    else if (tgt.state === 'launch' || wasAir) { tgt.state = 'launch'; tgt.vy = Math.max(tgt.vy, 5 * jug); tgt.grounded = false; tgt.juggle = (tgt.juggle || 0) + 1; }
+    else { tgt.state = 'hit'; tgt.stun = o.stun || 0.3; tgt.hitLow = lv === 'low' || (o.h != null && o.h < 1.2); tgt.hitVar = Math.random(); }
   }
   function ko(tgt, att, dir) {
     if (tgt.lives > 0) { tgt.lives--; tgt.hp = tgt.maxHp * 0.3; tgt.invul = 1.5; tgt.state = 'idle'; floatText(tgt.x, tgt.y + 2.4, '¡SIETE VIDAS!', '#c77dff'); G.fx.push({ type: 'wave', x: tgt.x, y: 1, t: 0, dur: 0.7, color: [0.7, 0.4, 1] }); return; }
+    if (G.mode === 'versus' || (tgt.team === 'enemy' && !G.queue.length && !G.fighters.some((e) => e.team === 'enemy' && !e.dead && e !== tgt))) finalHit(tgt.x, tgt.y + 1.2 * tgt.scale, dir);
+    // Round decisivo: el rival queda aturdido para la FATALITY
+    if (G.mode === 'versus' && G.phase === 'fight' && G.wins[att.team === 'p1' ? 0 : 1] + 1 >= 2) return enterFinish(tgt, att, dir);
     tgt.dead = true; tgt.state = 'ko'; tgt.atk = null; tgt.vy = 6; tgt.grounded = false; tgt.kvx = dir * 5; tgt.chargeT = 0;
     SFX.ko(); G.shake = 0.4;
     if (tgt.playerIdx != null) rumble(tgt.playerIdx, 1, 1, 500);
-    if (G.mode === 'versus') { G.slowT = 1.2; roundOver(att); }
+    if (G.mode === 'versus') { G.slowT = 1.3; G.hitstop = Math.max(G.hitstop, 0.22); G.kick = Math.max(G.kick, 1.4); shards(tgt.x, tgt.y + 1.2, att.look.accent, 36, 8, dir); roundOver(att, G.phase === 'finish' ? 'finish' : 'ko'); }
+  }
+  function enterFinish(tgt, att, dir) {
+    G.phase = 'finish'; G.fin = { att, tgt, t: 0 };
+    tgt.hp = 0; tgt.state = 'dizzy'; tgt.atk = null; tgt.chargeT = 0; tgt.vx = 0; tgt.kvx = dir * 4; tgt.invul = 0;
+    att.atk = null; if (att.state !== 'down') att.state = 'idle';
+    G.projs = []; G.slowT = 0.6; G.hitstop = Math.max(G.hitstop, 0.18); G.shake = 0.5; G.kick = Math.max(G.kick, 1.2);
+    shards(tgt.x, tgt.y + 1.2, att.look.accent, 30, 7, dir);
+    banner('¡ACÁBALO!', att.playerIdx != null ? 'ESPECIAL = FATALITY · o termínalo a golpes' : '', 1.6);
+    SFX.ko(); SFX.fight();
+    [0, 1].forEach((i) => rumble(i, 0.8, 0.8, 400));
+  }
+  function startRemate(att) {
+    const tgt = G.fin.tgt;
+    G.phase = 'remate'; G.rem = { att, tgt, t: 0 };
+    att.atk = null; att.chargeT = 0; att.state = 'idle'; att.remate = true; att.vx = 0; att.kvx = 0; att.invul = 5;
+    att.facing = Math.sign(tgt.x - att.x) || att.facing;
+    if (Math.abs(tgt.x - att.x) > 2) att.x = clamp(tgt.x - att.facing * 1.7, -ARENA, ARENA);
+    tgt.facing = -att.facing;
+    G.projs = []; G.slowT = 0;
+    SFX.special(); tone(80, 400, 0.9, 'sawtooth', 0.08);
+    [0, 1].forEach((i) => rumble(i, 0.4, 0.9, 800));
+  }
+  function updateRemate(rdt) {
+    const R = G.rem, a = R.att, b = R.tgt;
+    R.t += rdt;
+    if (R.t < 0.9 && Math.random() < 0.5) shards(a.x, a.y + 1.2, a.look.accent, 1, 3, 0);
+    if (R.t > 0.9 && !R.boom) {
+      R.boom = true; a.remate = false; a.state = 'victory';
+      b.dead = true; b.atk = null; b.vx = b.kvx = b.vy = 0; b.flash = 0.3; b.pinned = true;
+      b.mod = { sy: 1, sxz: 1, spin: 0, sink: 0, flip: false, x0: b.x };
+      R.fat = FATAL[a.def.id] || FATAL.boss; R.ft = 0; R.fat.start(a, b, R);
+      G.kick = 1.8; G.shake = 0.9; finalHit(b.x, 1.3, a.facing);
+      for (let i = 0; i < 3; i++) G.fx.push({ type: 'wave', x: b.x, y: 1.3, t: -i * 0.12, dur: 1.2, color: i === 1 ? [1, 1, 1] : a.look.accent });
+      G.fx.push({ type: 'wave', x: b.x, y: 0.1, t: 0, dur: 0.9, color: a.look.accent, flat: true });
+      shards(b.x, 1.3, a.look.accent, 70, 11, a.facing);
+      SFX.ko(); SFX.heavy(); tone(60, 30, 1.2, 'sine', 0.3);
+      [0, 1].forEach((i) => rumble(i, 1, 1, 1000));
+      if (a.playerIdx != null) SDK.unlock('kombat_remate');
+    }
+    if (R.boom) {
+      R.ft += rdt; R.fat.step(a, b, R.ft, rdt, R);
+      if (R.ft > 2.6 && !R.named) { R.named = true; banner('FATALITY', R.fat.name + ' · ' + a.def.name, 2); tone(70, 35, 1.4, 'sawtooth', 0.14); noise(0.8, 0.25, 400); }
+    }
+    if (R.t > 5.6 && !R.done) { R.done = true; roundOver(a, 'remate'); }
+  }
+  /* =================== FATALITIES (caricaturescas, sin sangre) ===================
+     start(a, b): a = ganador, b = rival. step(a, b, t, dt): t = segundos desde el golpe. */
+  const once = (R, k, t, at, fn) => { if (t >= at && !R[k]) { R[k] = true; fn(); } };
+  const say = (b, txt, col) => floatText(b.x, 2.8, txt, col || '#ffd23f');
+  const FATAL = {
+    buho: { name: 'Cubitos de hielo',
+      start(a, b) { b.state = 'hit'; b.mod.tint = [0.55, 0.85, 1.3]; b.mod.emit = 0.35; say(b, '¡CONGELADO!', '#9ad0ff'); tone(2000, 500, 0.6, 'sine', 0.08); },
+      step(a, b, t, dt, R) {
+        if (t > 0.5 && t < 1.2) b.flash = 0.05;
+        once(R, 'shat', t, 1.2, () => { b.hidden = true; shards(b.x, 1.1, [0.7, 0.92, 1], 110, 7, 0); G.shake = 0.6; noise(0.5, 0.45, 5000); tone(1500, 300, 0.3, 'square', 0.05); say(b, '¡CUBITOS!', '#9ad0ff'); });
+      } },
+    lince: { name: 'Tornado felino',
+      start(a, b) { b.state = 'hit'; a.pinned = true; a.mod = { sy: 1, sxz: 1, spin: 0, sink: 0 }; say(b, '¡TORNADO!'); },
+      step(a, b, t, dt) {
+        if (t < 1) a.mod.spin += dt * 40; else if (a.mod) { a.pinned = false; a.mod = null; a.state = 'victory'; }
+        b.mod.spin += dt * (12 + t * 30);
+        b.y = t < 0.4 ? 0 : (t - 0.4) * (t - 0.4) * 7;
+        if (Math.random() < 0.6) shards(b.x + rand(-0.8, 0.8), b.y + rand(0, 2), [0.95, 0.9, 0.8], 1, 4, 0);
+        if (b.y > 16) b.hidden = true;
+        if (Math.random() < dt * 8) noise(0.15, 0.08, 2500);
+      } },
+    leon: { name: 'Rugido a la luna',
+      start(a, b) { b.state = 'down'; G.fx.push({ type: 'wave', x: a.x + a.facing, y: 1.4, t: 0, dur: 0.9, color: [1, 0.75, 0.3], side: a.facing }); tone(90, 60, 1, 'sawtooth', 0.2); say(b, '¡A LA LUNA!'); },
+      step(a, b, t, dt, R) {
+        const k = Math.min(1, t / 1.9);
+        b.x = lerp(b.mod.x0, 18, k * k); b.y = lerp(0.5, 34, k); b.z = lerp(0, -90, k * k); b.mod.spin += dt * 9;
+        once(R, 'ping', t, 1.9, () => { b.hidden = true; G.moonPing = 1; tone(1760, 1760, 0.5, 'sine', 0.1); tone(2640, 2640, 0.4, 'sine', 0.06, 0.12); });
+      } },
+    carnero: { name: 'Directo al público',
+      start(a, b) { b.state = 'hit'; a.pinned = true; a.state = 'walk'; say(b, '¡BEEE!'); },
+      step(a, b, t, dt, R) {
+        if (t < 0.35) { a.x = clamp(a.x + a.facing * dt * 10, -ARENA, ARENA); a.walk += dt * 20; a.pose.lean = 0.75; }
+        else if (!R.go) { R.go = true; a.pinned = false; a.state = 'victory'; b.state = 'down'; SFX.heavy(); G.shake = 0.5; R.bx = b.x; }
+        if (R.go) {
+          const k = Math.min(1, (t - 0.35) / 1.1);
+          b.x = R.bx + a.facing * k * 3; b.z = -7.6 * k; b.y = Math.sin(k * Math.PI) * 4 + k * 4.4; b.mod.spin += dt * 10;
+          once(R, 'land', t, 1.45, () => { b.mod.spin = 0; b.state = 'ko'; G.crowd = 2.5; noise(1.6, 0.3, 1800); say(b, '¡AL PÚBLICO!'); });
+        }
+      } },
+    halcon: { name: 'Clavado de cabeza',
+      start(a, b) { b.state = 'hit'; a.pinned = true; a.grounded = false; say(b, '¡A VOLAR!'); },
+      step(a, b, t, dt, R) {
+        if (t < 1.3) { a.y = t * t * 9; b.y = Math.max(0, a.y - 1.3); b.x = a.x + a.facing * 0.3; }
+        else {
+          if (!R.drop) { R.drop = true; b.mod.flip = true; b.state = 'idle'; tone(1200, 200, 1, 'sine', 0.06); }
+          a.y = Math.max(0, a.y - dt * 8); if (a.y === 0) { a.grounded = true; a.pinned = false; a.state = 'victory'; }
+          if (!R.stuck) { b.y -= dt * 30; if (b.y <= -1) { b.y = -1; R.stuck = true; G.shake = 0.7; shards(b.x, 0.1, [0.5, 0.4, 0.35], 40, 6, 0); SFX.heavy(); say(b, '¡CLAVADITO!'); } }
+          else b.pose.fl1 = 0.3 + Math.sin(t * 25) * 0.4; // patalea
+        }
+      } },
+    jaguar: { name: 'Tapete de la selva',
+      start(a, b) { b.state = 'hit'; a.pinned = true; say(b, '¡MIL ZARPAZOS!'); },
+      step(a, b, t, dt, R) {
+        if (t < 1.6) {
+          const n = Math.floor(t / 0.08);
+          if (n !== R.n) { R.n = n; a.atk = { type: n % 2 ? 'light' : 'medium', t: n % 2 ? 0.1 : 0.17, hitSet: new Set() }; b.flash = 0.06; spark(b.x - a.facing * 0.2, rand(0.8, 1.8), [1, 0.8, 0.3], ''); SFX.hit(); b.mod.spin = rand(-0.3, 0.3); }
+        } else {
+          once(R, 'rug', t, 1.6, () => { a.atk = null; a.pinned = false; a.state = 'victory'; b.state = 'ko'; b.mod.spin = 0; SFX.heavy(); G.shake = 0.5; say(b, '¡TAPETE NUEVO!'); });
+          b.mod.sy = lerp(b.mod.sy, 0.08, dt * 12); b.mod.sxz = lerp(b.mod.sxz, 1.5, dt * 12);
+        }
+      } },
+    gato: { name: '¡Sapo!',
+      start(a, b) { b.state = 'hit'; G.fx.push({ type: 'wave', x: b.x, y: 1, t: 0, dur: 0.8, color: [0.7, 0.35, 1] }); tone(400, 1600, 0.6, 'triangle', 0.08); say(b, '¡ABRACADABRA!', '#c77dff'); },
+      step(a, b, t, dt, R) {
+        if (t < 0.8) { b.mod.spin += dt * 30; b.mod.sy = b.mod.sxz = Math.max(0.3, 1 - t); }
+        once(R, 'poof', t, 0.8, () => { b.mod = { sy: 1, sxz: 1, spin: 0, sink: 0, morph: 'frog' }; shards(b.x, 0.8, [0.7, 0.35, 1], 50, 5, 0); noise(0.3, 0.3, 3000); say(b, '¡CROAC!', '#5bff8a'); });
+        if (t > 0.8) {
+          const h = (t - 0.8) % 0.55, dir = -a.facing;
+          b.y = h < 0.35 ? Math.sin(h / 0.35 * Math.PI) * 0.7 : 0;
+          if (h < 0.35) b.x = clamp(b.x + dir * dt * 2.6, -ARENA, ARENA);
+          b.facing = dir;
+          const hop = Math.floor((t - 0.8) / 0.55); if (hop !== R.hop) { R.hop = hop; tone(170, 110, 0.18, 'square', 0.08); tone(150, 90, 0.14, 'square', 0.06, 0.1); }
+        }
+      } },
+    coyote: { name: 'Tortilla de estampida',
+      start(a, b) { b.state = 'hit'; G.stamp = []; for (let i = 0; i < 7; i++) G.stamp.push({ x: b.x - a.facing * (9 + i * 1.3), z: rand(-0.5, 0.5), d: a.facing, hit: false }); tone(300, 600, 0.4, 'sawtooth', 0.05); say(b, '¡ESTAMPIDA!', '#5ef2ff'); },
+      step(a, b, t, dt, R) {
+        for (const c of G.stamp) {
+          c.x += c.d * dt * 15;
+          if (!c.hit && (c.x - b.x) * c.d > 0) { c.hit = true; b.state = 'ko'; b.mod.sy = Math.max(0.07, b.mod.sy * 0.35); b.mod.sxz = Math.min(1.8, b.mod.sxz + 0.12); SFX.hit(); shards(b.x, 0.3, [0.6, 0.5, 0.4], 6, 4, c.d); G.shake = 0.25; }
+        }
+        once(R, 'flat', t, 1.8, () => say(b, '¡COMO TORTILLA!'));
+        if (t > 1.8) b.mod.sxz = 1.8 + Math.sin(t * 12) * 0.08;
+      } },
+    puma: { name: 'Plantado',
+      start(a, b, R) { b.state = 'dizzy'; a.pinned = true; a.grounded = false; R.ax = a.x; say(b, '¡SALTO DE PUMA!'); },
+      step(a, b, t, dt, R) {
+        const top = 2.0 * b.scale - b.mod.sink;
+        const n = [0.7, 1.05, 1.4].filter((s) => t >= s).length;
+        if (n !== (R.n || 0)) { R.n = n; G.shake = 0.5; SFX.heavy(); shards(b.x, 0.1, [0.5, 0.4, 0.35], 25, 5, 0); rumble(a.playerIdx, 0.8, 0.8, 150); }
+        b.mod.sink = lerp(b.mod.sink, [0, 0.6, 1.2, 1.7][n], Math.min(1, dt * 20));
+        if (t < 0.7) { const k = t / 0.7; a.x = lerp(R.ax, b.x, k); a.y = Math.sin(k * Math.PI) * 4 + k * top; }
+        else if (t < 1.8) { a.x = b.x; a.y = Math.max(0, top) + Math.abs(Math.sin((t - 0.7) / 0.35 * Math.PI)) * 0.9; }
+        else { a.x = lerp(a.x, b.x - a.facing * 1.8, dt * 6); a.y = Math.max(0, a.y - dt * 7); if (a.y === 0) { a.pinned = false; a.grounded = true; a.state = 'victory'; } }
+        once(R, 'txt', t, 1.6, () => say(b, '¡PLANTADO!'));
+      } },
+    boss: { name: 'Mini-yo',
+      start(a, b) { b.state = 'hit'; G.fx.push({ type: 'wave', x: b.x, y: 1, t: 0, dur: 1, color: [0.6, 0.08, 0.1] }); tone(120, 40, 1, 'sawtooth', 0.15); say(b, '¡ENCOGE!', '#ff5a5a'); },
+      step(a, b, t, dt, R) {
+        b.mod.sy = b.mod.sxz = Math.max(0.22, 1 - t * 1.1);
+        if (t > 0.8) {
+          b.state = 'walk'; b.walk += dt * 30;
+          const d = Math.floor(t / 0.9) % 2 ? 1 : -1; b.facing = d; b.x = clamp(b.x + d * dt * 3, -ARENA, ARENA);
+          const q = Math.floor(t / 0.3); if (q !== R.q) { R.q = q; tone(1600 + rand(0, 400), 1200, 0.08, 'square', 0.04); }
+          once(R, 'mini', t, 1, () => say(b, '¡MINI!', '#ff5a5a'));
+        }
+      } }
+  };
+  function updateFinish(rdt) {
+    const F = G.fin;
+    F.t += rdt;
+    if (F.att.playerIdx == null && F.t > 1.1) startRemate(F.att); // la CPU remata sola
+    else if (F.t > 4.5) { // se acabó el tiempo: el rival cae solo
+      const b = F.tgt; b.dead = true; b.state = 'ko'; b.vy = 4; b.grounded = false; SFX.ko();
+      roundOver(F.att, 'ko');
+    }
   }
   function startFinisher(att, boss) {
     G.finisher = { att, boss, t: 0 };
@@ -738,97 +1263,210 @@
     banner('FINAL TEC', att.def.name + ' · ' + att.def.campus, 2.6);
     [0, 1].forEach((i) => rumble(i, 1, 1, 900));
   }
-  function roundOver(winner) {
-    if (G.phase !== 'fight' && G.phase !== 'intro') return;
+  function roundOver(winner, how) {
+    if (!['fight', 'intro', 'finish', 'remate'].includes(G.phase)) return;
     G.phase = 'roundEnd';
     const wi = winner.team === 'p1' ? 0 : 1;
     G.wins[wi]++;
-    winner.state = 'victory';
-    banner('¡GANA ' + winner.def.name.toUpperCase() + '!', winner.def.campus, 2.4, () => {
-      if (G.wins[wi] >= 2) {
-        const human = winner.playerIdx != null;
-        if (human) SDK.unlock('kombat_versus');
-        results(human ? '¡VICTORIA DE J' + (wi + 1) + '!' : 'GANA LA CPU', ['<b>' + winner.def.name + '</b> · ' + winner.def.campus, 'Rounds: ' + G.wins[0] + ' - ' + G.wins[1], 'Combo máximo: ' + G.maxCombo], true);
-      } else { G.round++; startRound(); }
-    });
+    const flawless = G.dmgTaken[wi] === 0, human = winner.playerIdx != null;
+    if (flawless && human) SDK.unlock('kombat_impecable');
+    const announce = () => {
+      winner.atk = null; if (!winner.dead) winner.state = 'victory';
+      banner('¡GANA ' + winner.def.name.toUpperCase() + '!', flawless ? 'VICTORIA IMPECABLE' : (winner.def.campus || ''), 2.1, () => {
+        if (G.wins[wi] >= 2) matchOver(winner, wi); else { G.round++; startRound(); }
+      });
+    };
+    if (how === 'remate') announce();
+    else { banner(how === 'time' ? 'TIEMPO' : 'K.O.', '', 1.2, announce); tone(120, 50, 0.7, 'sawtooth', 0.12); }
+  }
+  function matchOver(winner, wi) {
+    const human = winner.playerIdx != null;
+    if (human) SDK.unlock('kombat_versus');
+    const stats = ['<b>' + winner.def.name + '</b> · ' + (winner.def.campus || ''), 'Rounds: ' + G.wins[0] + ' - ' + G.wins[1], 'Combo máximo: ' + G.maxCombo];
+    if (!G.tower) return results(human ? '¡VICTORIA DE J' + (wi + 1) + '!' : 'GANA LA CPU', stats, true);
+    const T0 = G.tower;
+    if (!human) return results('GANA LA CPU', stats.concat(['Torre: rival ' + (T0.step + 1) + ' de ' + T0.list.length, 'Reintentar vuelve a este rival']), true);
+    T0.step++;
+    best.tower = Math.max(best.tower || 0, T0.step); saveBest();
+    SDK.setStat('Torre Kombate', best.tower + '/' + T0.list.length);
+    if (T0.step >= T0.list.length) {
+      T0.done = true; SDK.unlock('kombat_torre');
+      return results('¡CAMPEÓN DE LA TORRE!', ['<b>' + winner.def.name + '</b> · ' + winner.def.campus, 'Venciste a 5 mascotas y al Rey Sombra', 'Combo máximo: ' + G.maxCombo], true);
+    }
+    const nx = towerDef();
+    banner('SIGUIENTE RIVAL', 'Torre ' + (T0.step + 1) + '/' + T0.list.length + ' · ' + nx.name + (nx.campus ? ' (' + nx.campus + ')' : ''), 2.2, () => { G.wins = [0, 0]; G.round = 1; startRound(); });
+  }
+  /* Efectos de impacto: congelado del golpe, esquirlas 3D, cámara, líneas de velocidad */
+  function shards(x, y, color, n, sp, dir) {
+    for (let i = 0; i < n && G.parts.length < 260; i++) {
+      G.parts.push({ x, y, z: rand(-0.3, 0.3), vx: rand(-1, 1) * sp * 0.6 + (dir || 0) * sp * rand(0.2, 0.9), vy: rand(0.1, 1.1) * sp, vz: rand(-1, 1) * sp * 0.35,
+        t: 0, life: rand(0.35, 0.8), s: rand(0.05, 0.15), c: Math.random() < 0.3 ? [1, 1, 1] : color, r: rand(0, 6) });
+    }
+  }
+  function impact(x, y, color, power, blocked, dir) {
+    const vs = G.mode === 'versus';
+    power = Math.min(1, power);
+    G.hitstop = Math.max(G.hitstop, blocked ? 0.035 : vs ? 0.05 + power * 0.08 : 0.02 + power * 0.04);
+    shards(x, y, color, blocked ? 4 : Math.round(vs ? 8 + power * 16 : 3 + power * 6), 3 + power * 5, dir);
+    if (vs && !blocked) {
+      G.kick = Math.max(G.kick, 0.3 + power * 0.9); G.shake = Math.max(G.shake || 0, 0.1 + power * 0.3);
+      if (power >= 0.5) { G.lines = { x, y, t: 0 }; G.flash = Math.max(G.flash, 0.3 * power); }
+    }
   }
 
   /* =================== IA =================== */
+  const AI_BTN = { cLight: ['light', true], sweep: ['medium', true], upper: ['heavy', true] };
+  const AI_PLANS = [[], ['medium', 'heavy'], ['light', 'medium'], ['light', 'medium', 'heavy'], ['medium'], ['heavy']];
   function aiIntent(f, dt) {
-    const I0 = { move: 0, up: false, down: false, punch: false, kick: false, special: false };
+    const I0 = { move: 0, up: false, down: false, block: false, light: false, medium: false, heavy: false, special: false };
     const opp = opponentsOf(f).filter((o) => o.state !== 'ko');
     if (!opp.length || f.state === 'dizzy') return I0;
     const tgt = opp.reduce((a, b) => (Math.abs(a.x - f.x) < Math.abs(b.x - f.x) ? a : b));
-    const dx = tgt.x - f.x, dist = Math.abs(dx), dir = Math.sign(dx);
+    const dx = tgt.x - f.x, dist = Math.abs(dx), dir = Math.sign(dx) || f.facing;
+    const vs = G.mode === 'versus';
     // Solo 2 enemigos atacan a la vez; los demás rodean a distancia
     let engaged = true;
     if (f.team === 'enemy') {
       const same = G.fighters.filter((e) => e.team === 'enemy' && !e.dead).sort((a, b) => Math.abs(a.x - tgt.x) - Math.abs(b.x - tgt.x));
       engaged = same.indexOf(f) < 2 || f.isBoss;
     }
-    const aggr = f.team === 'enemy' ? 0.8 + G.wave * 0.12 : 1.1;
+    const aggr = f.team === 'enemy' ? 0.8 + G.wave * 0.12 : vs ? 1.15 + (G.tower ? G.tower.step * 0.14 : 0.2) : 1.1;
     const ai = f.ai;
     ai.t -= dt; ai.block -= dt;
-    if (ai.block > 0) return Object.assign(I0, { down: true });
-    if (tgt.atk && dist < 1.9 && Math.random() < 0.02 * aggr) { ai.block = 0.5; return Object.assign(I0, { down: true }); }
-    const reach = 1.25 * f.scale + 0.3;
+    // Defensa: bloquea alto o bajo según el ataque que viene
+    if (ai.block > 0) return Object.assign(I0, { move: -dir, block: true, down: !!ai.low });
+    if (tgt.atk && dist < 2.4 && Math.random() < (vs ? 0.06 : 0.025) * aggr) {
+      ai.block = 0.3 + Math.random() * 0.3;
+      const ty = tgt.atk.type; ai.low = ty === 'sweep' || ty === 'cLight';
+      return Object.assign(I0, { move: -dir, block: true, down: ai.low });
+    }
+    // Antiaéreo con gancho
+    if (vs && !tgt.grounded && tgt.state !== 'launch' && dist < 2.2 && f.grounded && !f.atk && Math.random() < 0.07 * aggr) return Object.assign(I0, { down: true, heavy: true });
+    // Encadenar golpes cuando el anterior conectó
+    if (ai.plan && ai.plan.length) {
+      const nx = ai.plan[0];
+      if (nx === 'up') { if (f.atk && f.atk.type === 'upper' && f.atk.hit && f.atk.t > ATK.upper.a1) { ai.plan.shift(); return Object.assign(I0, { up: true, move: dir }); } }
+      else if (nx === 'airM') { if (!f.grounded && (f.airT || 0) > 0.18) { ai.plan.shift(); return Object.assign(I0, { medium: true }); } }
+      else if (f.atk && f.atk.hit && f.atk.t >= (ATK[f.atk.type] || { a0: 0 }).a0 + 0.03) { ai.plan.shift(); const b = AI_BTN[nx] || [nx, false]; return Object.assign(I0, { [b[0]]: true, down: b[1] }); }
+      if (!f.atk && f.grounded && nx !== 'airM') ai.plan = null;
+    }
+    const reach = 1.35 * f.scale + 0.3;
     if (ai.t <= 0) {
-      ai.t = rand(0.3, 0.75) / aggr;
-      ai.action = null;
+      ai.t = rand(0.25, 0.6) / aggr; ai.action = null;
       if (!engaged) ai.move = dist < 3 ? -dir : dist > 3.8 ? dir : 0;
-      else if (dist > reach) { ai.move = dir; if ((f.isBoss || f.team !== 'enemy') && dist > 3 && f.meter >= SPECIAL_COST && Math.random() < 0.35) ai.action = 'special'; if (f.isBoss && dist > 3 && Math.random() < 0.3) ai.action = 'special'; }
-      else {
+      else if (dist > reach) {
+        ai.move = dir;
+        if ((f.isBoss || f.team !== 'enemy') && dist > 3 && f.meter >= SPECIAL_COST && Math.random() < 0.35) ai.action = 'special';
+        if (f.isBoss && dist > 3 && Math.random() < 0.3) ai.action = 'special';
+        if (vs && dist > 2.4 && dist < 4.6 && Math.random() < 0.16 * aggr) ai.action = 'jumpin';
+        if (dist > 1.5 && dist < 2.1 && Math.random() < 0.3) ai.action = 'sweep';
+      } else {
         ai.move = 0;
         const r = Math.random();
-        ai.action = r < 0.42 ? 'punch' : r < 0.7 ? 'kick' : r < 0.78 ? 'upper' : r < 0.9 ? 'block' : 'back';
-        if (f.team !== 'enemy' && f.meter >= SPECIAL_COST && Math.random() < 0.25) ai.action = 'special';
+        ai.action = r < 0.3 ? 'light' : r < 0.45 ? 'medium' : r < 0.53 ? 'heavy' : r < 0.62 ? 'clight' : r < 0.69 ? 'sweep' : r < 0.75 ? 'upper' : r < 0.79 ? 'overhead' : r < 0.82 ? 'roundhouse' : r < 0.92 ? 'block' : 'back';
+        if (f.team !== 'enemy' && f.meter >= SPECIAL_COST && Math.random() < 0.2) ai.action = 'special';
+        const lvl = f.team === 'enemy' ? Math.min(2, G.wave) : vs ? 5 : 3;
+        if (ai.action === 'light') ai.plan = AI_PLANS[Math.floor(Math.random() * Math.min(AI_PLANS.length, lvl + 1))].slice();
+        else if (ai.action === 'medium') ai.plan = Math.random() < 0.5 ? ['heavy'] : ['upper'];
+        else if (ai.action === 'clight') ai.plan = ['cLight', 'sweep'].slice(0, lvl > 1 ? 2 : 1);
+        else if (ai.action === 'upper' && vs) ai.plan = ['up', 'airM'];
+        else ai.plan = null;
+        if (ai.plan && f.team === 'enemy') ai.plan = ai.plan.slice(0, lvl);
       }
     }
     const out = Object.assign(I0, { move: ai.move });
-    if (ai.action === 'punch') { out.punch = true; ai.action = null; }
-    else if (ai.action === 'kick') { out.kick = true; ai.action = null; }
-    else if (ai.action === 'upper') { out.down = true; out.punch = true; ai.action = null; }
-    else if (ai.action === 'special') { out.special = true; ai.action = null; }
-    else if (ai.action === 'block') { ai.block = 0.6; ai.action = null; }
-    else if (ai.action === 'back') { out.move = -dir; }
-    if (f.team !== 'enemy' && Math.random() < 0.004) out.up = true;
+    switch (ai.action) {
+      case 'light': out.light = true; break;
+      case 'medium': out.medium = true; break;
+      case 'heavy': out.heavy = true; break;
+      case 'clight': out.down = true; out.light = true; break;
+      case 'sweep': out.down = true; out.medium = true; break;
+      case 'upper': out.down = true; out.heavy = true; break;
+      case 'overhead': out.move = dir; out.heavy = true; break;
+      case 'roundhouse': out.move = -dir; out.heavy = true; break;
+      case 'special': out.special = true; break;
+      case 'block': ai.block = 0.5; ai.low = Math.random() < 0.4; break;
+      case 'jumpin': out.up = true; out.move = dir; ai.air = 0.3; break;
+      case 'back': out.move = -dir; break;
+    }
+    if (ai.action !== 'back') ai.action = null;
+    if (ai.air > 0) { ai.air -= dt; if (ai.air <= 0 && !f.grounded) out[Math.random() < 0.5 ? 'medium' : 'heavy'] = true; }
+    if (f.team !== 'enemy' && !vs && Math.random() < 0.004) out.up = true;
     return out;
   }
 
   /* =================== ACTUALIZACIÓN =================== */
   function intentFromPlayer(f) {
     const p = players[f.playerIdx], c = p.cur, pr = (k) => c[k] && !p.prev[k];
-    return { move: (c.right ? 1 : 0) - (c.left ? 1 : 0), up: pr('up'), upHeld: c.up, down: c.down || c.block, punch: pr('punch'), kick: pr('kick'), special: pr('special') };
+    return { move: (c.right ? 1 : 0) - (c.left ? 1 : 0), up: pr('up'), upHeld: c.up, down: c.down, block: c.block, light: pr('light'), medium: pr('medium'), heavy: pr('heavy'), special: pr('special') };
+  }
+  function threatNear(f) {
+    for (const o of opponentsOf(f)) if (o.atk && Math.abs(o.x - f.x) < (o.atk.type === 'special' ? 5 : 2.8)) return true;
+    for (const p of G.projs) if (p.team !== f.team && Math.abs(p.x - f.x) < 4.5 && Math.sign(f.x - p.x) === Math.sign(p.vx || 1)) return true;
+    return false;
   }
   function updateFighter(f, dt) {
     f.t += dt;
     f.flash = Math.max(0, f.flash - dt); f.invul = Math.max(0, f.invul - dt);
-    f.comboT = Math.max(0, f.comboT - dt); if (f.comboT === 0) f.combo = 0;
+    f.comboT = Math.max(0, f.comboT - dt); if (f.comboT === 0) { f.combo = 0; f.seq = []; }
     f.slowT = Math.max(0, f.slowT - dt); f.specCD = Math.max(0, (f.specCD || 0) - dt);
+    if (f.introT > 0) f.introT -= dt;
     if (f.dead) { f.removeT += dt; }
-    const inp = f.dead || G.phase !== 'fight' ? { move: 0 } : (f.playerIdx != null ? intentFromPlayer(f) : aiIntent(f, dt));
+    if (f.pinned) return; // animado por la Fatality
+    const finAtt = G.phase === 'finish' && G.fin && G.fin.att === f && f.playerIdx != null;
+    const act = G.phase === 'fight' || finAtt;
+    const inp = f.dead || !act ? { move: 0 } : (f.playerIdx != null ? intentFromPlayer(f) : aiIntent(f, dt));
+    // Búfer: ningún botón se pierde durante el congelado de impacto o una cancelación
+    if (f.bufT > 0) f.bufT -= dt;
+    for (const k of ['special', 'heavy', 'medium', 'light']) if (inp[k]) { f.buf = k; f.bufT = 0.25; }
+    if (!(f.bufT > 0)) f.buf = null;
     // Combo cooperativo en espera
     if (f.chargeT > 0) { f.chargeT -= dt; f.vx = 0; if (f.chargeT <= 0) doSpecial(f); }
-    if (f.state === 'hit') { f.stun -= dt; if (f.stun <= 0) f.state = 'idle'; }
-    if (f.state === 'down' && f.grounded) { f.downT -= dt; if (f.downT <= 0) { f.state = 'idle'; f.invul = 0.6; } }
+    if (f.state === 'hit') { f.stun -= dt; if (f.stun <= 0) f.state = f.crouch ? 'crouch' : 'idle'; }
+    if (f.blockT > 0) { f.blockT -= dt; f.vx = 0; }
+    if (f.state === 'down') { f.downT -= dt; if (f.downT <= 0) { f.state = 'getup'; f.getupT = 0.4; f.invul = 0.55; } }
+    if (f.state === 'getup') { f.getupT -= dt; if (f.getupT <= 0) { f.state = 'idle'; f.juggle = 0; } }
     if (f.state === 'victory' || f.state === 'dizzy') f.vx = 0;
-    if (canAct(f) && G.phase === 'fight') {
+    f.guard = act && f.grounded && (!!inp.block || Math.sign(inp.move || 0) * f.facing < 0);
+    if (act && canAct(f)) {
       if (f.grounded) faceTarget(f);
-      const blockHeld = inp.down && f.grounded;
-      if (blockHeld && !inp.punch) { f.state = 'block'; f.vx = 0; f.prowl += dt; if (f.def.id === 'jaguar' && f.prowl > 1 && !f.prowlBonus) { f.prowlBonus = true; floatText(f.x, f.y + 2.4, 'ACECHANDO', '#ffd23f'); } }
+      const rel = Math.sign(inp.move || 0) * f.facing;
+      f.crouch = !!inp.down && f.grounded;
+      const threat = f.grounded && (inp.block || (rel < 0 && threatNear(f)));
+      if (f.buf) {
+        const k = f.buf; f.buf = null; f.bufT = 0;
+        if (k === 'special') { if (finAtt) startRemate(f); else trySpecial(f); }
+        else if (f.grounded || !f.airAtk) startAttack(f, pickAttack(f, k, inp.move, inp.down));
+      } else if (threat) {
+        f.state = f.crouch ? 'cblock' : 'block'; f.vx = 0; f.prowl += dt;
+        if (f.def.id === 'jaguar' && f.prowl > 1 && !f.prowlBonus) { f.prowlBonus = true; floatText(f.x, f.y + 2.4, 'ACECHANDO', '#ffd23f'); }
+      } else if (f.crouch) { f.state = 'crouch'; f.vx = 0; f.prowl = 0; }
       else {
         f.prowl = 0;
-        const speed = 3.6 * f.spd * (f.slowT > 0 ? 0.5 : 1);
-        if (f.grounded) { f.vx = (inp.move || 0) * speed; f.state = inp.move ? 'walk' : 'idle'; if (inp.move) f.walk += dt * 9 * f.spd * Math.sign(inp.move) * f.facing; }
-        else f.vx = lerp(f.vx, (inp.move || 0) * speed, dt * 3);
-        if (inp.up) {
+        const speed = 3.6 * f.spd * (f.slowT > 0 ? 0.5 : 1) * (rel < 0 ? 0.75 : 1);
+        if (f.grounded) { f.vx = (inp.move || 0) * speed; f.state = inp.move ? 'walk' : 'idle'; if (inp.move) f.walk += dt * 9 * f.spd * rel; }
+        else f.vx = lerp(f.vx, (inp.move || 0) * speed, dt * 2);
+        if (inp.up) { // saltar solo apuntando ARRIBA (como en Mortal Kombat)
           const dbl = ['halcon', 'gato'].includes(f.def.id);
-          if (f.grounded) { f.vy = 9.5; f.grounded = false; f.jumps = 1; if (['puma', 'jaguar'].includes(f.def.id) && inp.move) f.vx = inp.move * 7; }
-          else if (dbl && f.jumps < 2) { f.vy = 8.5; f.jumps = 2; G.fx.push({ type: 'wave', x: f.x, y: f.y, t: 0, dur: 0.35, color: f.look.accent, flat: true }); }
+          if (f.grounded) {
+            f.vy = 9.5; f.grounded = false; f.jumps = 1; f.airT = 0; f.airAtk = false; f.state = 'idle';
+            f.vx = (inp.move || 0) * speed * 1.15; if (['puma', 'jaguar'].includes(f.def.id) && inp.move) f.vx = inp.move * 7;
+            f.flip = rel > 0 ? -1 : rel < 0 ? 1 : 0; SFX.jump();
+          } else if (dbl && f.jumps < 2) { f.vy = 8.5; f.jumps = 2; f.airT = 0; f.flip = rel < 0 ? 1 : -1; f.pose.rot = 0; G.fx.push({ type: 'wave', x: f.x, y: f.y, t: 0, dur: 0.35, color: f.look.accent, flat: true }); }
         }
-        if (inp.punch) startAttack(f, !f.grounded ? 'air' : inp.down ? 'upper' : 'punch');
-        else if (inp.kick) startAttack(f, f.grounded ? 'kick' : 'air');
-        else if (inp.special) trySpecial(f);
+      }
+    } else if (act && f.atk && f.atk.hit && f.atk.type !== 'special' && ATK[f.atk.type]) {
+      // Cancelaciones: encadenar golpes que conectaron
+      const d = ATK[f.atk.type];
+      if (f.atk.type === 'upper' && inp.up && f.atk.t > d.a1) { f.atk = null; f.state = 'idle'; f.pose.spin = 0; f.vy = 9.5; f.grounded = false; f.jumps = 1; f.airT = 0; f.airAtk = false; f.flip = 0; f.vx = f.facing * 1.6; SFX.jump(); }
+      else if (f.buf && f.atk.t >= d.a0) {
+        const k = f.buf;
+        if (k === 'special') { if (f.meter >= SPECIAL_COST || f.isBoss) { f.atk = null; f.pose.spin = 0; f.buf = null; trySpecial(f); } }
+        else {
+          let nx = pickAttack(f, k, inp.move, inp.down); const list = CHAIN[f.atk.type] || [];
+          if (!list.includes(nx) && list.includes(k)) nx = k;
+          if (list.includes(nx) && f.atk.chainN < 4) { const n = f.atk.chainN + 1; if (Math.abs(f.pose.spin) > 3) f.pose.spin = 0; startAttack(f, nx); f.atk.chainN = n; f.buf = null; }
+        }
       }
     }
     // Ataque en curso
@@ -836,21 +1474,40 @@
       f.atk.t += dt;
       let dur;
       if (f.atk.type === 'special') dur = updateSpecial(f, dt);
-      else { dur = ATK[f.atk.type].dur; meleeCheck(f); if (f.atk.type === 'upper' && f.atk.t > 0.12 && f.atk.t < 0.2 && f.grounded) { f.vy = 3.5; f.grounded = false; } }
-      if (f.atk && f.atk.t >= dur) { f.atk = null; f.state = 'idle'; }
+      else {
+        const d = ATK[f.atk.type], ty = f.atk.type, t = f.atk.t;
+        dur = d.dur; meleeCheck(f);
+        if (ty === 'upper' && t > 0.12 && t < 0.2 && f.grounded) { f.vy = 3.5; f.grounded = false; }
+        if ((ty === 'heavy' || ty === 'overhead' || ty === 'roundhouse') && f.grounded) f.vx = t > d.a0 - 0.08 && t < d.a1 ? f.facing * 2.4 : 0;
+        if (ty === 'sweep' && f.grounded) f.vx = t < d.a1 ? f.facing * 1.2 : 0;
+        if (ty === 'airH' && t >= d.a0 && !f.atk.dove && !f.grounded) { f.atk.dove = true; f.vy = Math.min(f.vy, -7); }
+      }
+      if (f.atk && f.atk.t >= dur) { f.atk = null; f.state = f.crouch && f.grounded ? 'crouch' : 'idle'; if (Math.abs(f.pose.spin) > 3) f.pose.spin = 0; }
     }
     // Física
-    const g = 24;
-    f.vy -= g * dt;
-    if (f.def.id === 'buho' && !f.grounded && f.vy < -1.4 && inp.upHeld && !f.atk) f.vy = -1.4;
+    f.vy -= 24 * dt;
+    if (f.def.id === 'buho' && !f.grounded && f.vy < -1.4 && inp.upHeld && !f.atk && f.state !== 'launch') f.vy = -1.4;
     f.y += f.vy * dt;
     f.x += (f.vx + f.kvx) * dt;
     f.kvx *= Math.pow(0.02, dt);
-    if (f.y <= 0) { if (!f.grounded && f.vy < -12) G.shake = Math.max(G.shake || 0, 0.15); f.y = 0; f.vy = 0; f.grounded = true; f.jumps = 0; }
+    if (!f.grounded) f.airT = (f.airT || 0) + dt;
+    if (f.y <= 0) {
+      const wasAir = !f.grounded, vy = f.vy;
+      f.y = 0; f.vy = 0; f.grounded = true; f.jumps = 0;
+      if (wasAir) {
+        if (Math.abs(f.pose.rot) > 3) f.pose.rot = 0;
+        f.flip = 0; f.airAtk = false;
+        if (f.atk && f.atk.type.startsWith('air')) { f.atk = null; f.state = 'idle'; }
+        if (f.state === 'launch') {
+          if (f.bounce) { f.bounce = false; f.vy = 6.5; f.grounded = false; G.shake = Math.max(G.shake || 0, 0.35); shards(f.x, 0.1, [0.6, 0.55, 0.5], 14, 5, 0); SFX.heavy(); }
+          else if (!f.dead) { f.state = 'down'; f.downT = 0.7; G.shake = Math.max(G.shake || 0, 0.2); shards(f.x, 0.1, [0.55, 0.5, 0.45], 8, 3, 0); SFX.thud(); }
+        } else if (vy < -12) G.shake = Math.max(G.shake || 0, 0.15);
+      }
+    }
     f.x = clamp(f.x, -ARENA, ARENA);
   }
   function separate() {
-    const alive = G.fighters.filter((f) => !f.dead && f.state !== 'down');
+    const alive = G.fighters.filter((f) => !f.dead && !['down', 'launch', 'getup'].includes(f.state));
     for (let i = 0; i < alive.length; i++) for (let j = i + 1; j < alive.length; j++) {
       const a = alive[i], b = alive[j];
       if (a.team === b.team) continue;
@@ -945,23 +1602,34 @@
       p.prev = p.cur; p.cur = readInput(i);
       if (p.cur.pad && !G.usedPad) { G.usedPad = true; SDK.unlock('kombat_mando'); padNotice = '🎮 ¡Mando listo! Vibración ' + (vibration ? 'activada' : 'desactivada'); padNoticeT = 3; }
     });
-    if (G.phase === 'title' && (pressed(players[0], 'punch') || pressed(players[0], 'start') || pressed(players[0], 'a') || pressed(players[1], 'punch'))) { toSelect('coop'); return; }
-    if (G.phase === 'result' && ['punch', 'start', 'a'].some((k) => pressed(players[0], k))) { onMenu($('btn-retry').style.display === 'none' ? 'menu' : 'retry'); return; }
+    if (G.phase === 'title' && (pressed(players[0], 'light') || pressed(players[0], 'start') || pressed(players[0], 'a') || pressed(players[1], 'light'))) { toSelect('coop'); return; }
+    if (G.phase === 'result' && ['light', 'start', 'a'].some((k) => pressed(players[0], k))) { onMenu($('btn-retry').style.display === 'none' ? 'menu' : 'retry'); return; }
     if (G.phase === 'select') { updateSelect(); updateSelectPreview(dt); }
+    else if (G.phase === 'stage') updateStage();
     const p0 = players[0];
-    if (p0.cur.start && !p0.prev.start && ['fight', 'intro', 'clear', 'pause'].includes(G.phase)) togglePause();
-    if (players[1].cur.start && !players[1].prev.start && players[1].joined && ['fight', 'intro', 'clear', 'pause'].includes(G.phase)) togglePause();
-    if (G.phase === 'pause' || G.phase === 'title' || G.phase === 'result' || G.phase === 'select') return;
+    if (p0.cur.start && !p0.prev.start && ['fight', 'intro', 'clear', 'finish', 'pause'].includes(G.phase)) togglePause();
+    if (players[1].cur.start && !players[1].prev.start && players[1].joined && ['fight', 'intro', 'clear', 'finish', 'pause'].includes(G.phase)) togglePause();
+    if (G.phase === 'pause' || G.phase === 'title' || G.phase === 'result' || G.phase === 'select' || G.phase === 'stage') return;
     // Unirse a mitad de la partida
     const q = players[1];
-    if (!q.joined && G.mode === 'coop' && ['punch', 'kick', 'special', 'start'].some((k) => q.cur[k] && !q.prev[k])) joinP2();
+    if (!q.joined && G.mode === 'coop' && ['light', 'medium', 'heavy', 'special', 'start'].some((k) => q.cur[k] && !q.prev[k])) joinP2();
 
-    if (G.slowT > 0) { G.slowT -= dt; dt *= 0.3; }
+    const rdt = dt;
+    if (G.mode === 'versus') dt *= 1.2; // Kombate: más frenético
+    if (G.slowT > 0) { G.slowT -= rdt; dt *= 0.3; }
+    if (G.hitstop > 0) { G.hitstop -= rdt; dt = 0; } // congelado del golpe
+    G.inv = Math.max(0, G.inv - rdt);
+    G.kick = Math.max(0, G.kick - rdt * 4); G.moonPing = Math.max(0, G.moonPing - rdt * 0.6); G.crowd = Math.max(0, G.crowd - rdt * 0.5);
+    updateParts(rdt);
+    if (G.lines) { G.lines.t += rdt; if (G.lines.t > (G.lines.dur || 0.22)) G.lines = null; }
+    if (G.bigCombo) { G.bigCombo.t += rdt; if (G.bigCombo.t > 1.2) G.bigCombo = null; }
+    if (G.phase === 'finish') updateFinish(rdt);
+    else if (G.phase === 'remate') updateRemate(rdt);
     if (G.phase === 'finisher') {
       const F = G.finisher; F.t += dt; dt *= 0.3;
       if (F.t > 0.9 && !F.launched) {
         F.launched = true; F.boss.dead = true; F.boss.state = 'ko'; F.boss.vy = 12; F.boss.grounded = false; F.boss.kvx = F.att.facing * 3;
-        G.flash = 1; G.fx.push({ type: 'wave', x: F.boss.x, y: 1.5, t: 0, dur: 1.5, color: [1, 0.9, 0.5] }); SFX.ko();
+        finalHit(F.boss.x, 1.8, F.att.facing); G.fx.push({ type: 'wave', x: F.boss.x, y: 1.5, t: 0, dur: 1.5, color: [1, 0.9, 0.5] }); SFX.ko();
         SDK.unlock('kombat_jefe'); SDK.unlock('kombat_final');
         best.wave = WAVES.length; saveBest(); SDK.setStat('Oleada máxima', WAVES.length + '/' + WAVES.length);
       }
@@ -972,8 +1640,8 @@
       }
     }
     if (G.mode === 'versus' && G.phase === 'fight') {
-      G.roundT -= dt;
-      if (G.roundT <= 0) { const [a, b] = G.fighters; roundOver(a.hp / a.maxHp >= b.hp / b.maxHp ? a : b); }
+      G.roundT -= rdt;
+      if (G.roundT <= 0) { const [a, b] = G.fighters; roundOver(a.hp / a.maxHp >= b.hp / b.maxHp ? a : b, 'time'); }
     }
     for (const f of G.fighters) updateFighter(f, dt);
     separate();
@@ -983,8 +1651,16 @@
     G.texts.forEach((e) => { e.t += dt; }); G.texts = G.texts.filter((e) => e.t < (e.big ? 0.7 : 0.9));
     // Solo el último contador de combos por peleador
     const seen = new Set(); G.texts = G.texts.reverse().filter((e) => { if (!e.big) return true; if (seen.has(e.owner)) return false; seen.add(e.owner); return true; }).reverse();
-    if (G.shake > 0) G.shake -= dt;
-    if (G.flash > 0) G.flash -= dt * 1.5;
+    if (G.shake > 0) G.shake -= rdt;
+    if (G.flash > 0) G.flash -= rdt * 1.5;
+  }
+  function updateParts(dt) {
+    for (const q of G.parts) {
+      q.t += dt; q.vy -= 20 * dt;
+      q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt;
+      if (q.y < 0.03) { q.y = 0.03; q.vy *= -0.35; q.vx *= 0.6; q.vz *= 0.6; }
+    }
+    G.parts = G.parts.filter((q) => q.t < q.life);
   }
   const preview = [null, null];
   function updateSelectPreview(dt) {
@@ -1017,19 +1693,32 @@
     gl.drawArrays(gl.TRIANGLES, 0, mesh.count);
   }
   const box = (M, x, y, z, sx, sy, sz, col, emit) => draw(CUBE, C(M, T(x, y, z), SC(sx, sy, sz)), col, emit);
+  function drawFrog(f) {
+    const M = C(T(f.x, f.y, f.z || 0), RY(f.facing > 0 ? 0 : Math.PI)), g = [0.3, 0.75, 0.25], acc = f.look.accent;
+    box(M, 0, 0.28, 0, 0.62, 0.36, 0.56, g); box(M, 0.05, 0.2, 0, 0.5, 0.2, 0.46, [0.85, 0.9, 0.5]);
+    for (const z of [0.16, -0.16]) { box(M, 0.2, 0.52, z, 0.16, 0.16, 0.16, [1, 1, 1], 0.4); box(M, 0.29, 0.53, z, 0.03, 0.08, 0.08, [0, 0, 0]); box(M, -0.2, 0.1, z * 1.8, 0.34, 0.12, 0.14, g); box(M, 0.22, 0.06, z * 1.4, 0.12, 0.12, 0.1, g); }
+    box(M, 0.3, 0.34, 0, 0.02, 0.03, 0.3, [0.6, 0.1, 0.15]);
+    box(M, 0, 0.48, 0, 0.5, 0.06, 0.58, acc); // la banda de su campus sigue ahí
+  }
   function drawFighter(f, opt) {
+    const md = f.mod;
+    if (f.hidden) return;
+    if (md && md.morph === 'frog') return drawFrog(f);
     const p = f.pose, lk = f.look, s = f.scale;
     const flash = f.flash > 0 ? 0.8 : 0, glow = Math.max(p.glow || 0, f.invul > 0 && Math.floor(f.t * 20) % 2 ? 0.4 : 0);
     const dim = f.dead && f.team === 'enemy' ? Math.max(0.2, 1 - f.removeT * 0.4) : 1;
-    const tint = (c) => [c[0] * dim, c[1] * dim, c[2] * dim];
-    const em = Math.max(flash, glow);
-    const root = C(T(f.x, f.y, 0), RY(f.facing > 0 ? 0 : Math.PI), SC(s, s, s), T(0, 0.95 - p.drop, 0), RZ(p.rot));
+    const mt = md && md.tint ? md.tint : W1;
+    const tint = (c) => [c[0] * dim * mt[0], c[1] * dim * mt[1], c[2] * dim * mt[2]];
+    const em = Math.max(flash, glow, md && md.emit || 0);
+    const jit = G.hitstop > 0 && f.flash > 0 ? rand(-0.07, 0.07) : 0;
+    const pre = md ? C(T(f.x + jit, f.y - (md.sink || 0), f.z || 0), SC(md.sxz, md.sy, md.sxz), RY(md.spin), md.flip ? C(T(0, 1.9 * s, 0), RZ(Math.PI)) : I()) : T(f.x + jit, f.y, 0);
+    const root = C(pre, RY((f.facing > 0 ? 0 : Math.PI) + (p.spin || 0)), SC(s, s, s), T(p.bx || 0, 0.95 - p.drop, 0), RZ(p.rot));
     const fur = tint(lk.fur), out = tint(lk.outfit), acc = tint(lk.accent);
     box(root, 0, 0, 0, 0.44, 0.2, 0.32, out, em);
     // Cola
     if (lk.tail) { const tl = lk.tail === 'short' ? 0.22 : lk.tail === 'bushy' ? 0.5 : 0.55, tw = lk.tail === 'bushy' ? 0.16 : 0.08; draw(CUBE, C(root, T(-0.2, 0.05, 0), RZ(p.tail + 0.5), T(-tl / 2, 0, 0), SC(tl, tw, tw)), lk.tail === 'bushy' ? tint(lk.cheek || lk.fur) : fur, em); }
     if (lk.cape) draw(CUBE, C(root, T(-0.24, 0.55, 0), RZ(-0.12 + Math.sin(f.t * 3) * 0.05), SC(0.06, 1.2, 0.62)), acc, em);
-    const tor = C(root, RZ(-p.lean));
+    const tor = C(root, RY(p.twist || 0), RZ(-p.lean));
     box(tor, 0, 0.38, 0, 0.5, 0.62, 0.34, out, em);
     box(tor, 0.02, 0.4, 0, 0.52, 0.12, 0.36, acc, em);
     if (lk.spots) for (const [sx, sy] of [[0.26, 0.55], [0.26, 0.25], [-0.26, 0.45]]) box(tor, sx, sy, 0.1, 0.02, 0.07, 0.07, [0.15, 0.1, 0.05], em);
@@ -1039,7 +1728,7 @@
     if (opt && opt.headOnly) return;
     // Brazos (delantero z+ y trasero z-)
     for (const [z, a1, a2] of [[0.26, p.fa1, p.fa2], [-0.26, p.ba1, p.ba2]]) {
-      const sh = C(tor, T(0, 0.64, z), RZ(a1));
+      const sh = C(tor, T(0, 0.64, z), RX(z > 0 ? -(p.fo || 0) : (p.bo || 0)), RZ(a1));
       box(sh, 0, -0.17, 0, 0.14, 0.36, 0.14, fur, em);
       const el = C(sh, T(0, -0.34, 0), RZ(a2));
       box(el, 0, -0.16, 0, 0.13, 0.32, 0.13, fur, em);
@@ -1112,46 +1801,53 @@
     let e, l;
     if (G.phase === 'select' || G.phase === 'title') {
       e = G.phase === 'title' ? [Math.sin(t * 0.2) * 3, 1.7, 9] : [Math.sin(t * 0.3) * 0.3, 1.2, 6.6]; l = G.phase === 'title' ? [0, 1.25, 0] : [0, 0.45, 0];
+    } else if (G.phase === 'stage') {
+      e = [Math.sin(t * 0.25) * 5, 2.6, 10.5]; l = [0, 1.6, -2];
     } else if (G.phase === 'finisher' && G.finisher) {
       const b = G.finisher.boss; e = [b.x - G.finisher.att.facing * 1.2, 1.9, 4.2]; l = [b.x, b.y + 1.4, 0];
+    } else if (G.phase === 'remate' && G.rem) {
+      const b = G.rem.tgt, a = G.rem.t * 0.9 - 0.4, cx = clamp(b.hidden ? G.rem.att.x : b.x, -8, 8), up = clamp(b.y, 0, 8), r = 5 + up * 0.5;
+      e = [cx + Math.sin(a) * r, 1.6 + up * 0.3, Math.cos(a) * r]; l = [cx, 1.2 + up * 0.6, 0];
     } else {
       const fs = G.fighters.filter((f) => !(f.dead && f.team === 'enemy'));
       const xs = fs.length ? fs.map((f) => f.x) : [0];
       const mn = Math.min(...xs), mx = Math.max(...xs), cx = clamp((mn + mx) / 2, -6.5, 6.5), sp = mx - mn;
-      const d = clamp(6.5 + sp * 0.62, 7.5, 15);
-      e = [cx, 2.1 + d * 0.08, d]; l = [cx, 1.25, 0];
+      const d = (G.mode === 'versus' ? clamp(4.3 + sp * 0.62, 5.2, 11.5) : clamp(5.6 + sp * 0.62, 6.6, 14)) * (G.phase === 'finish' ? 0.75 : 1);
+      e = [cx, 1.5 + d * 0.09, d]; l = [cx, 1.15, 0];
     }
-    for (let i = 0; i < 3; i++) { G.cam.e[i] = lerp(G.cam.e[i], e[i], 0.08); G.cam.l[i] = lerp(G.cam.l[i], l[i], 0.08); }
+    if (G.inv > 0 && G.focus) { e = [G.focus.x + G.focus.side * 1.1, G.focus.y + 0.5, 4.3]; l = [G.focus.x, G.focus.y, 0]; } // acercamiento del golpe final
+    const cr = G.inv > 0 ? 0.3 : 0.08;
+    for (let i = 0; i < 3; i++) { G.cam.e[i] = lerp(G.cam.e[i], e[i], cr); G.cam.l[i] = lerp(G.cam.l[i], l[i], cr); }
     camE = G.cam.e.slice();
+    if (G.kick > 0) for (let i = 0; i < 3; i++) camE[i] += (G.cam.l[i] - camE[i]) * Math.min(0.35, G.kick * 0.2); // golpe de cámara
     if (G.shake > 0) { camE[0] += rand(-1, 1) * G.shake * 0.4; camE[1] += rand(-1, 1) * G.shake * 0.4; }
     VP = mul(perspective(0.85, glc.width / glc.height, 0.1, 250), lookAt(camE, G.cam.l, [0, 1, 0]));
     gl.viewport(0, 0, glc.width, glc.height);
-    gl.clearColor(FOG[0], FOG[1], FOG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const st = stageMesh(curStage()), invf = G.inv > 0 ? 1 : 0;
+    gl.clearColor(st.fog[0], st.fog[1], st.fog[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     // Cielo
     gl.useProgram(SKY); gl.depthMask(false);
+    gl.uniform3fv(SKL.uTop, st.top); gl.uniform3fv(SKL.uBot, st.bot); gl.uniform1f(SKL.uStars, st.stars); gl.uniform1f(SKL.uInv, invf);
     const aP = gl.getAttribLocation(SKY, 'aP'); gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.enableVertexAttribArray(aP);
     gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0); gl.drawArrays(gl.TRIANGLES, 0, 3); gl.disableVertexAttribArray(aP); gl.depthMask(true);
     gl.useProgram(P);
     [L.aPos, L.aNor, L.aCol].forEach((a) => gl.enableVertexAttribArray(a));
     gl.uniformMatrix4fv(L.uVP, false, VP);
-    gl.uniform3fv(L.uLight, LIGHT); gl.uniform3fv(L.uFog, FOG); gl.uniform3fv(L.uCam, camE);
-    gl.uniform1f(L.uFogN, 25); gl.uniform1f(L.uFogF, 110);
+    gl.uniform3fv(L.uLight, LIGHT); gl.uniform3fv(L.uFog, st.fog); gl.uniform3fv(L.uCam, camE); gl.uniform1f(L.uInv, invf);
+    gl.uniform1f(L.uFogN, st.fogN); gl.uniform1f(L.uFogF, st.fogF);
     const fl = 0.85 + Math.sin(t * 13) * 0.08 + Math.sin(t * 7.3) * 0.06 + (G.flash > 0 ? G.flash * 0.8 : 0);
-    gl.uniform3fv(L.uTorch, [0.9 * fl, 0.45 * fl, 0.2 * fl]);
-    draw(ARENA_MESH, I());
-    draw(MOON, C(T(18, 34, -90), RX(Math.PI / 2), SC(7, 1, 7)), [1, 0.95, 0.8], 1);
-    draw(HEADS, T(0, Math.abs(Math.sin(t * 5)) * 0.08, 0), [1, 1, 1]);
-    // Llamas de las antorchas
-    for (const x of [-9, -4.5, 0, 4.5, 9]) {
-      const s1 = 0.5 + Math.sin(t * 12 + x) * 0.08;
-      draw(CONE, C(T(x, 5.2, -5.2), RY(t * 2 + x), SC(s1, 0.8 + Math.sin(t * 9 + x) * 0.15, s1)), [1, 0.5, 0.1], 1);
-      draw(CONE, C(T(x, 5.1, -5.2), SC(s1 * 0.55, 0.5, s1 * 0.55)), [1, 0.9, 0.4], 1);
-    }
+    const tc = st.torch, vsl = G.mode === 'versus' && !['title', 'select', 'stage'].includes(G.phase);
+    const rr = vsl ? (G.phase === 'finish' || G.phase === 'remate' ? 1.5 : 1.2) : 1, gg = vsl ? 0.7 : 1;
+    gl.uniform3fv(L.uTorch, [tc[0] * fl * rr, tc[1] * fl * gg, tc[2] * fl * gg]);
+    draw(st._m, I()); if (st._g) draw(st._g, I(), W1, 1);
+    if (st.moon) { const mp = 7 * (1 + G.moonPing * 0.35); draw(MOON, C(T(18, 34, -90), RX(Math.PI / 2), SC(mp, 1, mp)), [st.moon[0], st.moon[1] - G.moonPing * 0.3, st.moon[2] - G.moonPing * 0.5], 1); }
+    st.anim(t);
     // Peleadores
-    const list = G.phase === 'select' ? preview.filter(Boolean) : G.fighters;
+    const list = G.phase === 'select' ? preview.filter(Boolean) : G.phase === 'stage' ? [] : G.fighters;
     for (const f of list) {
-      if (G.phase !== 'select') { const tp = targetPose(f); const r = Math.min(1, (f.atk ? 26 : 12) * (1 / 60)); for (const k in tp) f.pose[k] = lerp(f.pose[k], tp[k], r); }
+      if (G.phase !== 'select') { const tp = targetPose(f); const r = Math.min(1, (f.atk ? 36 : 14) * (1 / 60)); for (const k in tp) f.pose[k] = lerp(f.pose[k], tp[k], r); }
       drawFighter(f);
+      if (f.hidden || (f.z || 0) < -1 || (f.mod && f.mod.sink > 0.3)) continue;
       // sombra
       draw(CYL, C(T(f.x, 0.02, 0), SC(0.9 * f.scale * (1 - Math.min(0.6, f.y * 0.1)), 0.01, 0.5 * f.scale)), [0.05, 0.03, 0.06], 0);
     }
@@ -1166,8 +1862,19 @@
         draw(CONE, C(T(p.x + d * 0.45, p.y + 0.5, -0.08), SC(0.1, 0.2, 0.08)), p.color, 0.9);
       } else draw(ORB, C(T(p.x, p.y, 0), RY(t * 8), RZ(t * 5), SC(0.5 * p.size, 0.5 * p.size, 0.5 * p.size)), p.color, 0.9);
     }
+    // Estampida de coyotes espirituales
+    if (G.stamp) for (const c of G.stamp) {
+      const y = 0.55 + Math.abs(Math.sin(t * 20 + c.z * 9)) * 0.15, col = [0.5, 0.9, 1];
+      draw(CUBE, C(T(c.x, y, c.z), SC(0.9, 0.35, 0.3)), col, 0.9);
+      draw(CUBE, C(T(c.x + c.d * 0.5, y + 0.25, c.z), SC(0.35, 0.3, 0.28)), col, 0.9);
+      draw(CONE, C(T(c.x + c.d * 0.45, y + 0.5, c.z + 0.08), SC(0.1, 0.2, 0.08)), col, 0.9);
+      draw(CONE, C(T(c.x + c.d * 0.45, y + 0.5, c.z - 0.08), SC(0.1, 0.2, 0.08)), col, 0.9);
+    }
+    // Esquirlas de impacto
+    for (const q of G.parts) { const k = q.t / q.life, s = q.s * (1 - k * 0.6); draw(CUBE, C(T(q.x, q.y, q.z), RZ(q.r + q.t * 14), RX(q.t * 9), SC(s, s * 2.2, s)), q.c, 1); }
     // Ondas
     for (const w of G.fx) if (w.type === 'wave') {
+      if (w.t < 0) continue;
       const k = w.t / w.dur, r = 0.5 + k * (w.flat ? 2.5 : 6);
       const M = w.flat ? C(T(w.x, w.y + 0.05, 0), RX(Math.PI / 2), SC(r, r, r)) : C(T(w.x, w.y, 0), SC(r, r, r));
       draw(WAVE, M, w.color, 1);
@@ -1184,7 +1891,7 @@
       gl.viewport(px, py, size, size); gl.scissor(px, py, size, size);
       gl.clearColor(0.1, 0.05, 0.12, 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       const hy = 1.87;
-      const fake = Object.assign({}, f, { x: 0, y: 0, scale: 1, facing: idx === 0 ? 1 : -1, pose: Object.assign({}, f.pose, { rot: 0, drop: 0, lean: 0 }), flash: f.flash, invul: 0, dead: false });
+      const fake = Object.assign({}, f, { x: 0, y: 0, z: 0, mod: null, hidden: false, scale: 1, facing: idx === 0 ? 1 : -1, pose: Object.assign({}, f.pose, { rot: 0, drop: 0, lean: 0, spin: 0, bx: 0, twist: 0.2 }), flash: f.flash, invul: 0, dead: false });
       const V = mul(perspective(0.5, 1, 0.1, 20), lookAt([idx === 0 ? 1.15 : -1.15, hy + 0.12, 0.95], [0, hy, 0], [0, 1, 0]));
       gl.uniformMatrix4fv(L.uVP, false, V); gl.uniform3fv(L.uCam, [0, 2, 2]); gl.uniform1f(L.uFogN, 100); gl.uniform1f(L.uFogF, 200);
       drawFighter(fake, { headOnly: true });
@@ -1234,8 +1941,9 @@
   function drawHUD(t) {
     const W = innerWidth, H = innerHeight;
     h2d.clearRect(0, 0, W, H);
-    if (G.flash > 0) { h2d.fillStyle = 'rgba(255,240,200,' + Math.min(0.8, G.flash) + ')'; h2d.fillRect(0, 0, W, H); }
-    if (['fight', 'intro', 'clear', 'finisher', 'win', 'over', 'roundEnd', 'pause'].includes(G.phase)) {
+    if (G.flash > 0 && !(G.inv > 0)) { h2d.fillStyle = 'rgba(255,240,200,' + Math.min(0.8, G.flash) + ')'; h2d.fillRect(0, 0, W, H); }
+    if (['fight', 'intro', 'clear', 'finisher', 'win', 'over', 'roundEnd', 'pause', 'finish', 'remate'].includes(G.phase)) {
+      if (G.mode === 'versus') drawImpactFX(t);
       if (G.mode === 'coop') {
         const hs = heroes();
         playerPanel(hs.find((h) => h.playerIdx === 0), 0, 'JUGADOR 1');
@@ -1246,7 +1954,12 @@
       } else {
         playerPanel(G.fighters[0], 0); playerPanel(G.fighters[1], 1);
         text(String(Math.max(0, Math.ceil(G.roundT))), W / 2, 40, 34, '#fff', 'center');
-        text('ROUND ' + G.round, W / 2, 68, 12, '#ffd23f', 'center', 3);
+        text('ROUND ' + G.round + (G.tower ? '  ·  TORRE ' + (G.tower.step + 1) + '/' + G.tower.list.length : ''), W / 2, 68, 12, '#ffd23f', 'center', 3);
+        if (G.phase === 'finish' && G.fin) {
+          const [fx, fy] = toScreen(G.fin.tgt.x, G.fin.tgt.y + 2.7 * G.fin.tgt.scale, 0);
+          text('¡ACÁBALO!', fx, fy - 10, 30 + Math.sin(t * 14) * 4, '#ff3e3e', 'center', 6);
+          text(Math.max(0, Math.ceil(4.5 - G.fin.t)) + '', fx, fy + 18, 16, '#fff', 'center', 4);
+        }
       }
       // Barras sobre enemigos y jefe
       for (const f of G.fighters) {
@@ -1301,6 +2014,35 @@
     if (padNoticeT > 0) text(padNotice, 16, H - 20, 13, '#9ad0ff', 'left', 3);
   }
 
+  /* Capa 2D del Kombate: viñeta de peligro, líneas de impacto y contador de combo */
+  function drawImpactFX(t) {
+    const W = innerWidth, H = innerHeight;
+    const low = G.fighters.some((f) => !f.dead && f.hp > 0 && f.hp / f.maxHp < 0.25) || G.phase === 'finish';
+    if (low) {
+      const a = 0.22 + Math.sin(t * 8) * 0.1, g = h2d.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
+      g.addColorStop(0, 'rgba(160,0,0,0)'); g.addColorStop(1, 'rgba(190,0,10,' + a + ')');
+      h2d.fillStyle = g; h2d.fillRect(0, 0, W, H);
+    }
+    if (G.lines) {
+      const [cx, cy] = toScreen(G.lines.x, G.lines.y, 0), k = G.lines.t / (G.lines.dur || 0.22), R = Math.hypot(W, H);
+      h2d.save(); h2d.globalAlpha = 1 - k;
+      for (let i = 0; i < 34; i++) {
+        const a = i / 34 * Math.PI * 2 + (i * 7.13 % 1) * 0.15, r0 = 90 + (i * 3.7 % 1) * 120 + k * 60, w = 0.012 + (i % 3) * 0.008;
+        h2d.fillStyle = i % 2 ? '#000' : '#fff';
+        h2d.beginPath(); h2d.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+        h2d.lineTo(cx + Math.cos(a - w) * R, cy + Math.sin(a - w) * R); h2d.lineTo(cx + Math.cos(a + w) * R, cy + Math.sin(a + w) * R); h2d.fill();
+      }
+      h2d.restore();
+    }
+    if (G.bigCombo) {
+      const b = G.bigCombo, k = b.t / 1.2, sc = b.t < 0.1 ? 1.5 - b.t * 5 : 1, x = b.side ? W * 0.8 : W * 0.2;
+      h2d.save(); h2d.translate(x, H * 0.32); h2d.scale(sc, sc); h2d.transform(1, 0, -0.18, 1, 0, 0); h2d.globalAlpha = k > 0.75 ? (1 - k) / 0.25 : 1;
+      text(b.n + ' HITS', 0, 0, Math.min(56, W / 14), b.side ? '#ff5a6e' : '#6fb0ff', 'center', 8);
+      text(b.name || 'COMBO', 0, 36, b.name ? 24 : 18, b.name ? '#ff7a1a' : '#ffd23f', 'center', 6);
+      h2d.restore(); h2d.globalAlpha = 1;
+    }
+  }
+
   /* =================== BUCLE =================== */
   let last = performance.now();
   function loop(now) {
@@ -1309,12 +2051,12 @@
     if (G.banner && G.phase !== 'pause') { G.banner.t += dt; if (G.banner.t >= G.banner.dur) { const a = G.banner.after; G.banner = null; if (a) a(); } }
     padNoticeT -= dt;
     renderScene(now / 1000);
-    if (['fight', 'intro', 'clear', 'finisher', 'win', 'over', 'roundEnd', 'pause'].includes(G.phase)) renderPortraits();
+    if (['fight', 'intro', 'clear', 'finisher', 'win', 'over', 'roundEnd', 'pause', 'finish', 'remate'].includes(G.phase)) renderPortraits();
     drawHUD(now / 1000);
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
-  window.__furia = { G, players, FIGHTERS, startMatch, toSelect, hit, joinP2, startWave, ko }; // para pruebas
+  window.__furia = { G, players, FIGHTERS, startMatch, toSelect, hit, joinP2, startWave, ko, startRemate, FATAL, STAGES, toStage, finalHit }; // para pruebas
 })();
 </script>
 </body>

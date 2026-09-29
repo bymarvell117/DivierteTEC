@@ -10,7 +10,7 @@ C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 |---|---|---|---|
 | **Mecaquack** · Equipo Maravilla | Aventura educativa de ingeniería | Gratis · destacado | WASD, Espacio, E, B, V · táctil en celular |
 | **Aerodron 3D** | Rally de drones en 3D (WebGL puro, sin librerías) | Gratis · destacado | ← → girar · ↑ ↓ altura · Espacio turbo · joystick táctil |
-| **Furia TEC** | Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato | Gratis · destacado | J1: A/D, W, S, F/G/H · J2: flechas, J/K/L · mando de Xbox con vibración |
+| **Furia TEC** | Pelea 3D con las mascotas de los Tecnológicos de Guanajuato: cooperativo y Kombate 1 vs 1 | Gratis · destacado | J1: A/D, W salta, S, F/G/H ligero·medio·pesado, T especial · J2: flechas, J/K/L, I · mando de Xbox con vibración |
 | **Astro Runner** | Runner espacial de baja gravedad | Gratis | Espacio / ↑ / tocar = saltar (doble salto) |
 | **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
 | **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
@@ -24,8 +24,16 @@ Aerodron 3D tiene 6 logros (uno oculto) y un motor 3D propio en WebGL: terreno g
 ruido, agua animada, niebla, aerogeneradores y minimapa. **Furia TEC** tiene 9 mascotas (Búho Blanco · Irapuato, Lince · Celaya, León · León,
 Carnero · Roque, Halcón · Uriangato, Jaguar · Abasolo, Gato Negro Brujo · Purísima del Rincón,
 Coyote · San Miguel de Allende, Puma · Salvatierra), cada una con especial y habilidad propios;
-modo cooperativo por oleadas (ataque combinado, revivir, jefe con FINAL TEC) y Versus; soporta
-mandos (Gamepad API) con vibración. Nombres, campus, colores y estadísticas se editan en el
+modo cooperativo por oleadas (ataque combinado, revivir, jefe con FINAL TEC) y **Kombate 1 vs 1**
+frenético: Torre contra la CPU (5 mascotas y el Rey Sombra), contragolpes, congelado de impacto,
+¡ACÁBALO! y una **Fatality caricaturesca por mascota** (convertir al rival en sapo, mandarlo a la
+luna, dejarlo plantado en el piso…). Movimientos: golpes ligero, medio y pesado, golpe bajo,
+barrido, gancho lanzador, patada giratoria, martillo y 3 aéreos, animados con fotogramas clave;
+se salta solo apuntando hacia arriba y se bloquea manteniendo atrás. Los golpes que conectan se
+encadenan y hay combos con nombre (TRIPLE, ¡FURIA TEC!, COMBO BRUTAL, BARRIDA LETAL, AL AIRE,
+MARTILLAZO…) con malabares en el aire. El golpe final invierte la imagen en blanco y negro con
+acercamiento de cámara. 5 escenarios: Templo Nocturno, Azotea del ITESI, Laboratorio de Robótica,
+Callejón de Guanajuato y Siete Luminarias. Soporta mandos (Gamepad API) con vibración. Nombres, campus, colores y estadísticas se editan en el
 arreglo `FIGHTERS` al inicio de `games/furia-tec/index.html`.
 Los demás juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
 `games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,

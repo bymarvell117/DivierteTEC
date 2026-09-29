@@ -53,11 +53,13 @@
     em_skull: { type: 'emoji', name: 'Calavera', rarity: 'raro', glyph: '💀', desc: 'Game over.', data: '💀' },
     em_rocket: { type: 'emoji', name: 'Cohete', rarity: 'epico', glyph: '🚀', desc: 'Al infinito.', data: '🚀' },
     em_trophy: { type: 'emoji', name: 'Trofeo', rarity: 'epico', glyph: '🏆', desc: 'Campeón.', data: '🏆' },
+    em_punch: { type: 'emoji', name: 'Remate', rarity: 'epico', glyph: '👊', desc: 'Para quien cierra con FATALITY.', data: '👊' },
     // Insignias
     badge_pioneer: { type: 'badge', name: 'Pionero', rarity: 'raro', glyph: '🚩', desc: 'Estuvo en DivierteTEC desde el principio.', data: '🚩' },
     badge_critic: { type: 'badge', name: 'Crítico', rarity: 'comun', glyph: '📝', desc: 'Escribió reseñas para la comunidad.', data: '📝' },
     badge_guard: { type: 'badge', name: 'Guardián', rarity: 'raro', glyph: '🛡️', desc: 'Ayudó a mantener segura la comunidad.', data: '🛡️' },
     badge_creator: { type: 'badge', name: 'Creador', rarity: 'epico', glyph: '🛠️', desc: 'Publicó un juego en DivierteTEC.', data: '🛠️' },
+    badge_torre: { type: 'badge', name: 'Campeón de la Torre', rarity: 'legendario', glyph: '🏯', desc: 'Conquistó la Torre Kombate de Furia TEC.', data: '🏯' },
     badge_pase: { type: 'badge', name: 'Miembro del Pase', rarity: 'epico', glyph: '🎟️', desc: 'Apoya a los creadores con el Pase DivierteTEC.', data: '🎟️' },
     badge_hackatec: { type: 'badge', name: 'Hackatec 2026', rarity: 'legendario', glyph: '🏅', desc: 'Edición regional InnovaTec 2026.', data: '🏅' }
   };
@@ -219,7 +221,7 @@
         ],
         news: [{ id: 'na1', title: 'Aerodron 3D: el primer juego 3D de DivierteTEC', body: 'Mundo 3D en WebGL que corre directo en tu navegador, sin instalar nada.', date: now - 30 * 60000 }] },
       { id: 'g_furia', title: 'Furia TEC', devId: 'u_dev', format: 'html', genre: 'Acción', tags: ['3D', 'Pelea', 'Cooperativo local', 'Compatible con mando', 'Tecnológicos de Guanajuato'],
-        short: 'Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato contra las Sombras.', description: 'Elige a tu mascota —Búho Blanco (Irapuato), Lince (Celaya), León (León), Carnero (Roque), Halcón (Uriangato), Jaguar (Abasolo), Gato Negro Brujo (Purísima del Rincón), Coyote (San Miguel de Allende) o Puma (Salvatierra)— cada una con su especial y habilidad propia. Modo cooperativo por oleadas con ataque combinado y revivir al compañero, jefe final con FINAL TEC, y modo Versus. Hasta 2 jugadores en teclado o con mandos de Xbox con vibración.',
+        short: 'Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato contra las Sombras.', description: 'Elige a tu mascota —Búho Blanco (Irapuato), Lince (Celaya), León (León), Carnero (Roque), Halcón (Uriangato), Jaguar (Abasolo), Gato Negro Brujo (Purísima del Rincón), Coyote (San Miguel de Allende) o Puma (Salvatierra)— cada una con su especial y habilidad propia. Modo cooperativo por oleadas con ataque combinado y revivir al compañero, jefe final con FINAL TEC, y modo Kombate 1 vs 1 frenético estilo arcade (contragolpes, congelado de impacto, ¡ACÁBALO! y una FATALITY caricaturesca por mascota) con la Torre contra la CPU. Ataques ligeros, medios, pesados, barridos, aéreos y combos encadenados en 5 escenarios de Guanajuato. Hasta 2 jugadores en teclado o con mandos de Xbox con vibración.',
         cover: { c1: '#d92a2a', c2: '#1a0a14', glyph: '🥋', angle: 150 }, featured: true, createdAt: now - 10 * 60000,
         pricing: { mode: 'free' },
         achievements: [
@@ -229,7 +231,11 @@
           { id: 'kombat_revive', name: 'No te dejo atrás', desc: 'Revive a tu compañero caído.', icon: '💚', goal: 0, reward: 'frame_ice' },
           { id: 'kombat_jefe', name: 'Rey caído', desc: 'Derrota al Rey Sombra.', icon: '👑', goal: 0, reward: 'frame_fire' },
           { id: 'kombat_final', name: 'Final TEC', desc: 'Remata al Rey Sombra con el FINAL TEC.', icon: '⚡', goal: 0, reward: 'theme_kombat' },
-          { id: 'kombat_versus', name: 'Retador', desc: 'Gana una partida Versus.', icon: '🥋', goal: 0, reward: 'av_ninja' },
+          { id: 'kombat_versus', name: 'Retador', desc: 'Gana una partida de Kombate 1 vs 1.', icon: '🥋', goal: 0, reward: 'av_ninja' },
+          { id: 'kombat_remate', name: 'Fatality TEC', desc: 'Termina una pelea 1 vs 1 con la FATALITY de tu mascota.', icon: '👊', goal: 0, reward: 'em_punch' },
+          { id: 'kombat_impecable', name: 'Victoria impecable', desc: 'Gana un round 1 vs 1 sin recibir daño.', icon: '🌟', goal: 0, reward: 'fx_stars' },
+          { id: 'kombat_brutal', name: 'Combo Brutal', desc: 'Conecta el COMBO BRUTAL: ligero, ligero, medio, pesado.', icon: '💢', goal: 0, reward: 'em_crown' },
+          { id: 'kombat_torre', name: 'Campeón de la Torre', desc: 'Conquista la Torre Kombate: 5 mascotas y el Rey Sombra.', icon: '🏯', goal: 0, reward: 'badge_torre' },
           { id: 'kombat_mando', name: 'Control total', desc: 'Juega con un mando.', icon: '🎮', goal: 0, reward: 'em_trophy' },
           { id: 'kombat_perfecto', name: 'Impecable', desc: 'Supera una oleada sin recibir daño.', icon: '✨', goal: 0, hidden: true, reward: 'av_dragon' }
         ],
@@ -263,7 +269,7 @@
     byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 7,
+      version: 8,
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },
