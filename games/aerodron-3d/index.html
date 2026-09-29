@@ -527,10 +527,9 @@
     if (state !== 'menu') {
       var dm = model(S.pos, S.yaw, -S.vy * 0.012, -S.turn * 0.45);
       draw(DRONE, dm);
+      // Cada hélice usa la matriz del dron: sigue su inclinación lateral y frontal
       [[2.8, 0], [-2.8, 0], [0, 2.8], [0, -2.8]].forEach(function (o, i) {
-        var c = Math.cos(S.yaw), s = Math.sin(S.yaw);
-        var wp = [S.pos[0] + o[0] * c + o[1] * s, S.pos[1] + 0.55 - o[0] * Math.sin(-S.turn * 0.45) * 0.9, S.pos[2] - o[0] * s + o[1] * c];
-        draw(ROTOR, model(wp, S.rotor * (i % 2 ? 1 : -1), 0, 0), [1, 1, 1], 0.2);
+        draw(ROTOR, mul(dm, model([o[0], 0.55, o[1]], S.rotor * (i % 2 ? 1 : -1), 0, 0)), [1, 1, 1], 0.2);
       });
     }
   }
