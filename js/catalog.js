@@ -24,6 +24,7 @@
     theme_arcade: { type: 'theme', name: 'Retro Arcade', rarity: 'raro', glyph: '🕹️', desc: 'Neones rosas y amarillos de salón recreativo.', data: 'arcade' },
     theme_cyber: { type: 'theme', name: 'Neón Cyberpunk', rarity: 'epico', glyph: '🌃', desc: 'Cian eléctrico sobre la noche de la ciudad.', data: 'cyber' },
     theme_gameboy: { type: 'theme', name: 'Pixel Boy', rarity: 'raro', glyph: '👾', desc: 'Los cuatro verdes de la portátil clásica.', data: 'gameboy' },
+    theme_kombat: { type: 'theme', name: 'Kombate', rarity: 'legendario', glyph: '🥋', desc: 'Carmesí y oro de la arena de Furia TEC.', data: 'kombat' },
     theme_space: { type: 'theme', name: 'Galaxia', rarity: 'epico', glyph: '🌌', desc: 'Violetas profundos y polvo de estrellas.', data: 'space' },
     theme_lava: { type: 'theme', name: 'Volcán', rarity: 'legendario', glyph: '🌋', desc: 'Magma, brasas y obsidiana.', data: 'lava' },
     // Marcos
@@ -217,6 +218,22 @@
           { id: 'dron_rasante', name: 'Vuelo rasante', desc: 'Vuela 5 segundos a menos de 3 m del agua.', icon: '🌊', goal: 0, hidden: true, reward: 'em_rocket' }
         ],
         news: [{ id: 'na1', title: 'Aerodron 3D: el primer juego 3D de DivierteTEC', body: 'Mundo 3D en WebGL que corre directo en tu navegador, sin instalar nada.', date: now - 30 * 60000 }] },
+      { id: 'g_furia', title: 'Furia TEC', devId: 'u_dev', format: 'html', genre: 'Acción', tags: ['3D', 'Pelea', 'Cooperativo local', 'Compatible con mando', 'Tecnológicos de Guanajuato'],
+        short: 'Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato contra las Sombras.', description: 'Elige a tu mascota —Búho Blanco (Irapuato), Lince (Celaya), León (León), Carnero (Roque), Halcón (Uriangato), Jaguar (Abasolo), Gato Negro Brujo (Purísima del Rincón), Coyote (San Miguel de Allende) o Puma (Salvatierra)— cada una con su especial y habilidad propia. Modo cooperativo por oleadas con ataque combinado y revivir al compañero, jefe final con FINAL TEC, y modo Versus. Hasta 2 jugadores en teclado o con mandos de Xbox con vibración.',
+        cover: { c1: '#d92a2a', c2: '#1a0a14', glyph: '🥋', angle: 150 }, featured: true, createdAt: now - 10 * 60000,
+        pricing: { mode: 'free' },
+        achievements: [
+          { id: 'kombat_ola1', name: 'Primera ronda', desc: 'Supera la oleada 1.', icon: '🥊', goal: 0, reward: 'em_fire' },
+          { id: 'kombat_combo', name: 'Combo x10', desc: 'Encadena 10 golpes seguidos.', icon: '💥', goal: 0, reward: 'fx_sparkle' },
+          { id: 'kombat_coop', name: 'Juntos somos más', desc: 'Lanza un ataque combinado con tu compañero.', icon: '🤝', goal: 0, reward: 'em_gg' },
+          { id: 'kombat_revive', name: 'No te dejo atrás', desc: 'Revive a tu compañero caído.', icon: '💚', goal: 0, reward: 'frame_ice' },
+          { id: 'kombat_jefe', name: 'Rey caído', desc: 'Derrota al Rey Sombra.', icon: '👑', goal: 0, reward: 'frame_fire' },
+          { id: 'kombat_final', name: 'Final TEC', desc: 'Remata al Rey Sombra con el FINAL TEC.', icon: '⚡', goal: 0, reward: 'theme_kombat' },
+          { id: 'kombat_versus', name: 'Retador', desc: 'Gana una partida Versus.', icon: '🥋', goal: 0, reward: 'av_ninja' },
+          { id: 'kombat_mando', name: 'Control total', desc: 'Juega con un mando.', icon: '🎮', goal: 0, reward: 'em_trophy' },
+          { id: 'kombat_perfecto', name: 'Impecable', desc: 'Supera una oleada sin recibir daño.', icon: '✨', goal: 0, hidden: true, reward: 'av_dragon' }
+        ],
+        news: [{ id: 'nf1', title: 'Furia TEC: ¡las mascotas de los Tecnológicos entran a la arena!', body: 'Pelea en cooperativo o versus, con teclado o mandos de Xbox con vibración.', date: now - 10 * 60000 }] },
     ];
     // Logros de ejemplo para los juegos de catálogo
     const genericAch = (prefix) => [
@@ -246,7 +263,7 @@
     byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 6,
+      version: 7,
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },

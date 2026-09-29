@@ -71,6 +71,12 @@
   --radius: 2px; --radius-lg: 4px; --font-display: "Courier New", ui-monospace, monospace;
   --shadow: 4px 4px 0 #306230; --shadow-lg: 8px 8px 0 #0f380f; color-scheme: light;
 }
+:root[data-theme="kombat"] {
+  --bg: #120608; --bg-2: #1a080c; --surface: #210b10; --surface-2: #2c0f15; --surface-3: #3a141b; --border: #5c1f27;
+  --text: #fff4e0; --text-2: #f3d7b0; --muted: #c9947a; --primary: #e0263a; --primary-2: #ff5a4a; --primary-soft: #3d1016;
+  --accent: #ffb321; --topbar: #0a0305; --topbar-text: #ffcf5a; --glow: 0 0 14px rgba(224, 38, 58, .55); color-scheme: dark;
+}
+:root[data-theme="kombat"] body { background-image: radial-gradient(ellipse at 50% 110%, #ffb32122, transparent 60%); background-attachment: fixed; }
 :root[data-theme="space"] {
   --bg: #070a1f; --bg-2: #0d1130; --surface: #131841; --surface-2: #1a2052; --surface-3: #242b66; --border: #2f377a;
   --text: #eef0ff; --text-2: #c9ccf5; --muted: #9398cc; --primary: #8b7bff; --primary-2: #b1a6ff; --primary-soft: #262a6b;

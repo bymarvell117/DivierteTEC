@@ -357,6 +357,7 @@ kbd { background: var(--surface-3); border: 1px solid var(--border); border-bott
 [data-swatch="cyber"] i:nth-child(1) { background: #07080f; } [data-swatch="cyber"] i:nth-child(2) { background: #00e5ff; } [data-swatch="cyber"] i:nth-child(3) { background: #ff2a6d; }
 [data-swatch="gameboy"] i:nth-child(1) { background: #0f380f; } [data-swatch="gameboy"] i:nth-child(2) { background: #8bac0f; } [data-swatch="gameboy"] i:nth-child(3) { background: #c4d98a; }
 [data-swatch="space"] i:nth-child(1) { background: #070a1f; } [data-swatch="space"] i:nth-child(2) { background: #8b7bff; } [data-swatch="space"] i:nth-child(3) { background: #5ee3ff; }
+[data-swatch="kombat"] i:nth-child(1) { background: #120608; } [data-swatch="kombat"] i:nth-child(2) { background: #e0263a; } [data-swatch="kombat"] i:nth-child(3) { background: #ffb321; }
 [data-swatch="lava"] i:nth-child(1) { background: #140605; } [data-swatch="lava"] i:nth-child(2) { background: #ff5a1f; } [data-swatch="lava"] i:nth-child(3) { background: #ffb321; }
 
 /* ---------- Panel de desarrollador ---------- */

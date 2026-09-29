@@ -10,6 +10,7 @@ C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 |---|---|---|---|
 | **Mecaquack** · Equipo Maravilla | Aventura educativa de ingeniería | Gratis · destacado | WASD, Espacio, E, B, V · táctil en celular |
 | **Aerodron 3D** | Rally de drones en 3D (WebGL puro, sin librerías) | Gratis · destacado | ← → girar · ↑ ↓ altura · Espacio turbo · joystick táctil |
+| **Furia TEC** | Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato | Gratis · destacado | J1: A/D, W, S, F/G/H · J2: flechas, J/K/L · mando de Xbox con vibración |
 | **Astro Runner** | Runner espacial de baja gravedad | Gratis | Espacio / ↑ / tocar = saltar (doble salto) |
 | **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
 | **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
@@ -20,7 +21,13 @@ Tecnológico Superior de Irapuato), adaptado a la plataforma: 10 logros con reco
 guardado de partida, guarida del jefe final en Selvarrón (se abre con 10 retos), controles
 táctiles, pausa y corrección de errores. Sus imágenes están en `games/mecaquack/img/`.
 Aerodron 3D tiene 6 logros (uno oculto) y un motor 3D propio en WebGL: terreno generado con
-ruido, agua animada, niebla, aerogeneradores y minimapa. Los demás juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
+ruido, agua animada, niebla, aerogeneradores y minimapa. **Furia TEC** tiene 9 mascotas (Búho Blanco · Irapuato, Lince · Celaya, León · León,
+Carnero · Roque, Halcón · Uriangato, Jaguar · Abasolo, Gato Negro Brujo · Purísima del Rincón,
+Coyote · San Miguel de Allende, Puma · Salvatierra), cada una con especial y habilidad propios;
+modo cooperativo por oleadas (ataque combinado, revivir, jefe con FINAL TEC) y Versus; soporta
+mandos (Gamepad API) con vibración. Nombres, campus, colores y estadísticas se editan en el
+arreglo `FIGHTERS` al inicio de `games/furia-tec/index.html`.
+Los demás juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
 `games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,
 ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 

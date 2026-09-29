@@ -10,7 +10,8 @@ const GAMES = {
   'neon-drift': 'g_neon',
   'quantum-puzzle': 'g_quantum',
   'mecaquack': 'g_mecaquack',
-  'aerodron-3d': 'g_aerodron'
+  'aerodron-3d': 'g_aerodron',
+  'furia-tec': 'g_furia'
 };
 const TEXT = /\.(html?|js|css|json|txt|svg)$/i;
 const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', mp3: 'audio/mpeg', ogg: 'audio/ogg', wav: 'audio/wav' };

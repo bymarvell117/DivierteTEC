@@ -9,6 +9,7 @@
     cyber: { name: 'Neón Cyberpunk', reward: 'theme_cyber' },
     gameboy: { name: 'Pixel Boy', reward: 'theme_gameboy' },
     space: { name: 'Galaxia', reward: 'theme_space' },
+    kombat: { name: 'Kombate', reward: 'theme_kombat' },
     lava: { name: 'Volcán', reward: 'theme_lava' }
   };
 
