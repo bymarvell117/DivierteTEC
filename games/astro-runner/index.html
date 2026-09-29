@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Astro Runner</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #050914; overflow: hidden; touch-action: none; user-select: none; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<!-- Solo para jugar fuera de DivierteTEC; la plataforma inyecta el SDK real -->
+<script src="../../sdk/divierte-tec-sdk.js" data-dt-sdk></script>
+<script>
+/* ASTRO RUNNER — runner espacial de baja gravedad.
+   Salta (doble salto) sobre meteoritos, recoge estrellas y llega lo más lejos posible.
+   Controles: Espacio / ↑ / W / clic / toque = saltar · P = pausa */
+(function () {
+  'use strict';
+  var SDK = window.DivierteTEC || { unlock: function () {}, progress: function () {}, setStat: function () {} };
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  var W, H, DPR, GROUND;
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    GROUND = Math.round(H * 0.8);
+  }
+  window.addEventListener('resize', resize); resize();
+
+  /* ---------- Guardado ---------- */
+  function load(k, d) { try { var v = localStorage.getItem('astro_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem('astro_' + k, JSON.stringify(v)); } catch (e) { /* nada */ } }
+  var best = load('best', 0), totalStars = load('stars', 0);
+
+  /* ---------- Sonido (WebAudio, sin archivos) ---------- */
+  var ac = null;
+  function beep(f1, f2, dur, type, vol) {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+      o.type = type || 'square'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+      g.gain.setValueAtTime(vol || 0.06, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur);
+    } catch (e) { /* sin audio */ }
+  }
+
+  /* ---------- Fondo parallax ---------- */
+  var layers = [0.05, 0.15, 0.35].map(function (sp, i) {
+    var arr = [];
+    for (var k = 0; k < 70 - i * 20; k++) arr.push({ x: Math.random() * 2000, y: Math.random() * 0.75, r: 0.5 + i * 0.6 + Math.random() * 0.6 });
+    return { sp: sp, stars: arr };
+  });
+
+  /* ---------- Estado ---------- */
+  var state = 'menu', paused = false;
+  var p, obs, pick, parts, speed, dist, runStars, time, spawnT, starT, shake, flags;
+  function reset() {
+    p = { x: 0, y: 0, vy: 0, jumps: 0, onGround: true, run: 0 };
+    obs = []; pick = []; parts = [];
+    speed = 330; dist = 0; runStars = 0; time = 0; spawnT = 1.2; starT = 0.6; shake = 0;
+    flags = { m1000: false, m5000: false, s60: false, lastProg: 0 };
+  }
+  reset();
+
+  function start() {
+    reset(); state = 'play';
+    SDK.unlock('astro_despegue');
+    beep(300, 700, 0.25, 'triangle', 0.08);
+  }
+  function jump() {
+    if (state !== 'play') { start(); return; }
+    if (paused) return;
+    if (p.jumps < 2) {
+      p.vy = p.jumps === 0 ? -640 : -560; p.jumps++; p.onGround = false;
+      beep(p.jumps === 1 ? 420 : 620, p.jumps === 1 ? 820 : 1100, 0.15, 'square', 0.05);
+      for (var i = 0; i < 8; i++) parts.push({ x: p.x - 6, y: p.y, vx: -Math.random() * 120, vy: Math.random() * 80, life: 0.5, c: '#8cc2ff' });
+    }
+  }
+  function gameOver() {
+    state = 'over'; shake = 0.4;
+    beep(300, 60, 0.6, 'sawtooth', 0.09);
+    for (var i = 0; i < 30; i++) parts.push({ x: p.x, y: p.y - 14, vx: (Math.random() - 0.5) * 420, vy: (Math.random() - 0.8) * 380, life: 1, c: i % 2 ? '#ffb321' : '#ff5a1f' });
+    var d = Math.floor(dist);
+    if (d > best) { best = d; save('best', best); }
+    SDK.progress('astro_1000', d);
+    SDK.setStat('Mejor distancia (m)', best);
+    SDK.setStat('Estrellas totales', totalStars);
+  }
+
+  /* ---------- Entrada ---------- */
+  window.addEventListener('keydown', function (e) {
+    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); if (!e.repeat) jump(); }
+    if (e.code === 'KeyP' && state === 'play') paused = !paused;
+  });
+  cv.addEventListener('pointerdown', function (e) { e.preventDefault(); jump(); });
+
+  /* ---------- Generación ---------- */
+  function spawnObstacle() {
+    var r = Math.random();
+    if (r < 0.62 || time < 8) {
+      var s = 18 + Math.random() * 18;
+      obs.push({ type: 'rock', x: W + 40, y: GROUND - s, r: s, rot: 0 });
+    } else if (r < 0.85) {
+      obs.push({ type: 'fly', x: W + 40, y: GROUND - 120 - Math.random() * 60, r: 16, rot: 0, wob: Math.random() * 6 });
+    } else {
+      var s2 = 16;
+      obs.push({ type: 'rock', x: W + 40, y: GROUND - s2, r: s2, rot: 0 });
+      obs.push({ type: 'rock', x: W + 80, y: GROUND - s2, r: s2, rot: 0 });
+    }
+    spawnT = Math.max(0.55, 1.5 - time * 0.012) * (0.75 + Math.random() * 0.6);
+  }
+  function spawnStars() {
+    var n = 3 + Math.floor(Math.random() * 3), base = GROUND - 60 - Math.random() * 110;
+    for (var i = 0; i < n; i++) pick.push({ x: W + 30 + i * 34, y: base - Math.sin(i / (n - 1 || 1) * Math.PI) * 40, t: Math.random() * 6 });
+    starT = 1.6 + Math.random() * 1.8;
+  }
+
+  /* ---------- Bucle ---------- */
+  var last = performance.now();
+  function tick(now) {
+    var dt = Math.min(0.033, (now - last) / 1000); last = now;
+    if (state === 'play' && !paused) update(dt);
+    else parts.forEach(function (q) { q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 500 * dt; q.life -= dt; });
+    parts = parts.filter(function (q) { return q.life > 0; });
+    if (shake > 0) shake -= dt;
+    draw(now / 1000);
+    requestAnimationFrame(tick);
+  }
+  function update(dt) {
+    time += dt;
+    speed = 330 + time * 9;
+    dist += speed * dt / 40;
+    p.x = Math.max(90, W * 0.18);
+    // Física de baja gravedad
+    p.vy += 1450 * dt; p.y += p.vy * dt;
+    if (p.y >= GROUND) { p.y = GROUND; p.vy = 0; if (!p.onGround) beep(120, 80, 0.06, 'triangle', 0.04); p.onGround = true; p.jumps = 0; }
+    p.run += dt * speed / 30;
+
+    spawnT -= dt; if (spawnT <= 0) spawnObstacle();
+    starT -= dt; if (starT <= 0) spawnStars();
+
+    obs.forEach(function (o) {
+      o.x -= speed * dt * (o.type === 'fly' ? 1.15 : 1); o.rot -= dt * 4;
+      if (o.type === 'fly') o.y += Math.sin(time * 3 + o.wob) * 0.6;
+      var dx = o.x - p.x, dy = (o.y) - (p.y - 20);
+      if (dx * dx + dy * dy < (o.r + 13) * (o.r + 13)) gameOver();
+    });
+    obs = obs.filter(function (o) { return o.x > -60; });
+    pick.forEach(function (s) {
+      s.x -= speed * dt; s.t += dt * 5;
+      var dx = s.x - p.x, dy = s.y - (p.y - 20);
+      if (!s.got && dx * dx + dy * dy < 30 * 30) {
+        s.got = true; runStars++; totalStars++; save('stars', totalStars);
+        beep(880, 1400, 0.08, 'square', 0.04);
+        SDK.progress('astro_estrellas', totalStars);
+        for (var i = 0; i < 6; i++) parts.push({ x: s.x, y: s.y, vx: (Math.random() - 0.5) * 200, vy: (Math.random() - 0.5) * 200, life: 0.4, c: '#ffd76a' });
+      }
+    });
+    pick = pick.filter(function (s) { return s.x > -30 && !s.got; });
+    parts.forEach(function (q) { q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 500 * dt; q.life -= dt; });
+
+    // Logros durante la carrera
+    var d = Math.floor(dist);
+    if (d - flags.lastProg >= 100) { flags.lastProg = d; SDK.progress('astro_1000', d); }
+    if (!flags.s60 && time >= 60) { flags.s60 = true; SDK.unlock('astro_intocable'); }
+    if (!flags.m5000 && d >= 5000) { flags.m5000 = true; SDK.unlock('astro_agujero'); }
+  }
+
+  /* ---------- Dibujo ---------- */
+  function draw(t) {
+    ctx.save();
+    if (shake > 0) ctx.translate((Math.random() - 0.5) * 12 * shake, (Math.random() - 0.5) * 12 * shake);
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#050914'); g.addColorStop(0.6, '#0d1b3d'); g.addColorStop(1, '#1a2f66');
+    ctx.fillStyle = g; ctx.fillRect(-20, -20, W + 40, H + 40);
+    // Planeta
+    var px = W * 0.78 - (dist * 0.3) % (W + 400), py = H * 0.28;
+    if (px < -200) px += W + 400;
+    var pg = ctx.createRadialGradient(px - 30, py - 30, 10, px, py, 90);
+    pg.addColorStop(0, '#ff9a5a'); pg.addColorStop(1, '#7a2a6a');
+    ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(px, py, 80, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#ffd76a88'; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(px, py, 130, 22, -0.3, 0, 7); ctx.stroke();
+    // Estrellas parallax
+    layers.forEach(function (L) {
+      ctx.fillStyle = '#ffffff';
+      L.stars.forEach(function (s) {
+        var x = ((s.x - dist * 40 * L.sp) % 2000 + 2000) % 2000;
+        if (x > W) return;
+        ctx.globalAlpha = 0.4 + 0.6 * Math.abs(Math.sin(t + s.x));
+        ctx.fillRect(x, s.y * GROUND, s.r, s.r);
+      });
+    });
+    ctx.globalAlpha = 1;
+    // Suelo lunar
+    ctx.fillStyle = '#2a3552'; ctx.fillRect(0, GROUND, W, H - GROUND);
+    ctx.fillStyle = '#3b4a70'; ctx.fillRect(0, GROUND, W, 5);
+    ctx.fillStyle = '#222b44';
+    for (var i = 0; i < 12; i++) {
+      var cx = ((i * 180 - dist * 40) % (W + 200) + W + 200) % (W + 200) - 100;
+      ctx.beginPath(); ctx.ellipse(cx, GROUND + 22 + (i % 3) * 14, 26 + (i % 4) * 8, 6, 0, 0, 7); ctx.fill();
+    }
+    // Estrellas recolectables
+    pick.forEach(function (s) { star(s.x, s.y + Math.sin(s.t) * 3, 10, '#ffd76a'); });
+    // Obstáculos
+    obs.forEach(function (o) {
+      ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot);
+      if (o.type === 'fly') {
+        ctx.fillStyle = '#ff5a1f55'; ctx.beginPath(); ctx.ellipse(18, 0, 26, 8, 0, 0, 7); ctx.fill();
+      }
+      ctx.fillStyle = o.type === 'fly' ? '#b0563a' : '#6b5a4e';
+      ctx.beginPath();
+      for (var k = 0; k < 9; k++) { var a = k / 9 * 6.283, rr = o.r * (0.82 + ((k * 37) % 7) / 30); ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#00000033'; ctx.beginPath(); ctx.arc(-o.r * 0.3, -o.r * 0.2, o.r * 0.25, 0, 7); ctx.fill();
+      ctx.restore();
+    });
+    // Astronauta
+    if (state !== 'over') astronaut(p.x, p.y);
+    parts.forEach(function (q) { ctx.globalAlpha = Math.max(0, q.life * 2); ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, 4, 4); });
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    hud();
+  }
+  function star(x, y, r, c) {
+    ctx.fillStyle = c; ctx.beginPath();
+    for (var i = 0; i < 10; i++) { var a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? r / 2.3 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+    ctx.closePath(); ctx.fill();
+  }
+  function astronaut(x, y) {
+    var leg = p.onGround ? Math.sin(p.run) * 6 : 4;
+    ctx.save(); ctx.translate(x, y);
+    // mochila jet
+    ctx.fillStyle = '#9aa7c0'; ctx.fillRect(-16, -34, 8, 18);
+    if (!p.onGround) { ctx.fillStyle = Math.random() > 0.5 ? '#ffb321' : '#ff5a1f'; ctx.beginPath(); ctx.moveTo(-15, -16); ctx.lineTo(-11, -4 - Math.random() * 10); ctx.lineTo(-8, -16); ctx.fill(); }
+    // piernas
+    ctx.fillStyle = '#e8eef8'; ctx.fillRect(-6, -14, 6, 14 - Math.max(0, leg)); ctx.fillRect(2, -14, 6, 14 - Math.max(0, -leg));
+    // cuerpo
+    ctx.fillStyle = '#f4f7fc'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-9, -36, 20, 24, 6) : ctx.rect(-9, -36, 20, 24); ctx.fill();
+    ctx.fillStyle = '#1a6fd8'; ctx.fillRect(-4, -30, 10, 5);
+    // casco
+    ctx.fillStyle = '#f4f7fc'; ctx.beginPath(); ctx.arc(2, -44, 12, 0, 7); ctx.fill();
+    ctx.fillStyle = '#1b2a4a'; ctx.beginPath(); ctx.ellipse(5, -44, 8, 6, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#8cc2ff'; ctx.fillRect(6, -47, 3, 2);
+    ctx.restore();
+  }
+  function text(s, x, y, size, color, align) {
+    ctx.font = '800 ' + size + 'px system-ui, sans-serif'; ctx.textAlign = align || 'left';
+    ctx.fillStyle = '#0008'; ctx.fillText(s, x + 2, y + 2); ctx.fillStyle = color || '#fff'; ctx.fillText(s, x, y);
+  }
+  function hud() {
+    text(Math.floor(dist) + ' m', 20, 38, 26);
+    text('★ ' + runStars, 20, 66, 18, '#ffd76a');
+    text('Récord: ' + best + ' m', W - 20, 34, 16, '#8cc2ff', 'right');
+    if (state === 'menu') overlay('ASTRO RUNNER', 'Salta con ESPACIO, ↑ o tocando la pantalla', 'Doble salto en el aire · evita los meteoritos · recoge estrellas');
+    if (state === 'over') overlay('¡IMPACTO!', Math.floor(dist) + ' m · ★ ' + runStars + (Math.floor(dist) >= best ? ' · ¡NUEVO RÉCORD!' : ''), 'Pulsa ESPACIO o toca para volver a despegar');
+    if (paused) overlay('PAUSA', 'Pulsa P para continuar', '');
+  }
+  function overlay(t1, t2, t3) {
+    ctx.fillStyle = '#050914aa'; ctx.fillRect(0, 0, W, H);
+    var s = Math.min(64, W / 9);
+    text(t1, W / 2, H / 2 - 30, s, '#ffffff', 'center');
+    text(t2, W / 2, H / 2 + 14, Math.min(22, W / 26), '#8cc2ff', 'center');
+    if (t3) text(t3, W / 2, H / 2 + 44, Math.min(16, W / 34), '#c6d6ee', 'center');
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

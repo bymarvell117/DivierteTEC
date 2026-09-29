@@ -1,4 +1,4 @@
-/* DivertiTEC — catálogo global de recompensas, logros de plataforma y datos semilla. */
+/* DivierteTEC — catálogo global de recompensas, logros de plataforma y datos semilla. */
 (function (DT) {
   'use strict';
 
@@ -38,6 +38,7 @@
     av_ninja: { type: 'avatar', name: 'Ninja', rarity: 'epico', glyph: '🥷', desc: 'Silencioso y letal.', data: '🥷' },
     av_dragon: { type: 'avatar', name: 'Dragón', rarity: 'legendario', glyph: '🐉', desc: 'Solo para los más persistentes.', data: '🐉' },
     av_astro: { type: 'avatar', name: 'Astronauta', rarity: 'raro', glyph: '🧑‍🚀', desc: 'Explorador de mundos.', data: '🧑‍🚀' },
+    av_gato: { type: 'avatar', name: 'Michi jardinero', rarity: 'epico', glyph: '🐈', desc: 'El gato que cuida Pixel Garden.', data: '🐈' },
     // Efectos (partículas que siguen al cursor)
     fx_sparkle: { type: 'effect', name: 'Destellos', rarity: 'raro', glyph: '✨', desc: 'Chispas doradas al mover el cursor.', data: 'sparkle' },
     fx_pixels: { type: 'effect', name: 'Píxeles', rarity: 'comun', glyph: '🟦', desc: 'Una estela de píxeles de colores.', data: 'pixels' },
@@ -51,10 +52,11 @@
     em_rocket: { type: 'emoji', name: 'Cohete', rarity: 'epico', glyph: '🚀', desc: 'Al infinito.', data: '🚀' },
     em_trophy: { type: 'emoji', name: 'Trofeo', rarity: 'epico', glyph: '🏆', desc: 'Campeón.', data: '🏆' },
     // Insignias
-    badge_pioneer: { type: 'badge', name: 'Pionero', rarity: 'raro', glyph: '🚩', desc: 'Estuvo en DivertiTEC desde el principio.', data: '🚩' },
+    badge_pioneer: { type: 'badge', name: 'Pionero', rarity: 'raro', glyph: '🚩', desc: 'Estuvo en DivierteTEC desde el principio.', data: '🚩' },
     badge_critic: { type: 'badge', name: 'Crítico', rarity: 'comun', glyph: '📝', desc: 'Escribió reseñas para la comunidad.', data: '📝' },
     badge_guard: { type: 'badge', name: 'Guardián', rarity: 'raro', glyph: '🛡️', desc: 'Ayudó a mantener segura la comunidad.', data: '🛡️' },
-    badge_creator: { type: 'badge', name: 'Creador', rarity: 'epico', glyph: '🛠️', desc: 'Publicó un juego en DivertiTEC.', data: '🛠️' },
+    badge_creator: { type: 'badge', name: 'Creador', rarity: 'epico', glyph: '🛠️', desc: 'Publicó un juego en DivierteTEC.', data: '🛠️' },
+    badge_pase: { type: 'badge', name: 'Miembro del Pase', rarity: 'epico', glyph: '🎟️', desc: 'Apoya a los creadores con el Pase DivierteTEC.', data: '🎟️' },
     badge_hackatec: { type: 'badge', name: 'Hackatec 2026', rarity: 'legendario', glyph: '🏅', desc: 'Edición regional InnovaTec 2026.', data: '🏅' }
   };
 
@@ -64,7 +66,7 @@
 
   /* Logros de plataforma: se evalúan con `check` sobre el estado del usuario. */
   DT.PLATFORM_ACH = [
-    { id: 'p_welcome', name: 'Bienvenido a DivertiTEC', desc: 'Entra por primera vez a la plataforma.', icon: '👋', reward: ['av_robot', 'badge_pioneer'],
+    { id: 'p_welcome', name: 'Bienvenido a DivierteTEC', desc: 'Entra por primera vez a la plataforma.', icon: '👋', reward: ['av_robot', 'badge_pioneer'],
       check: (s) => true },
     { id: 'p_first_play', name: 'Primera partida', desc: 'Juega cualquier juego en el navegador.', icon: '🎮', reward: ['theme_arcade'],
       check: (s) => s.sessions >= 1 },
@@ -113,26 +115,58 @@
     const now = Date.now();
     const games = [
       { id: 'g_astro', title: 'Astro Runner', devId: 'u_dev2', format: 'html', genre: 'Arcade', tags: ['Plataformas', 'Espacio', 'Un jugador'],
-        short: 'Corre, salta y esquiva meteoritos en un sistema solar que se desmorona.', description: 'Un endless runner espacial con física de baja gravedad, 40 niveles y jefes planetarios. Hecho en HTML5 Canvas.',
-        cover: { c1: '#1a6fd8', c2: '#0a1a3a', glyph: '🚀', angle: 160 }, featured: true, createdAt: now - 3 * DAY },
+        short: 'Corre, salta y esquiva meteoritos en la superficie de una luna con baja gravedad.', description: 'Runner infinito en HTML5 Canvas: doble salto con mochila propulsora, meteoritos rodantes y voladores, estrellas coleccionables y velocidad que no deja de subir. Controles: Espacio, flecha arriba o tocar la pantalla.',
+        cover: { c1: '#1a6fd8', c2: '#0a1a3a', glyph: '🚀', angle: 160 }, featured: true, createdAt: now - 3 * DAY,
+        pricing: { mode: 'free' },
+        achievements: [
+          { id: 'astro_despegue', name: 'Despegue', desc: 'Empieza tu primera carrera.', icon: '🚀', goal: 0, reward: 'em_gg' },
+          { id: 'astro_1000', name: 'Mil metros', desc: 'Recorre 1000 m en una carrera.', icon: '📏', goal: 1000, reward: 'fx_sparkle' },
+          { id: 'astro_estrellas', name: 'Coleccionista estelar', desc: 'Recoge 50 estrellas en total.', icon: '⭐', goal: 50, reward: 'av_alien' },
+          { id: 'astro_intocable', name: 'Intocable', desc: 'Sobrevive 60 segundos en una carrera.', icon: '🛡️', goal: 0, reward: 'frame_neon' },
+          { id: 'astro_agujero', name: 'Horizonte de sucesos', desc: 'Llega a 5000 m sin chocar.', icon: '🕳️', goal: 0, hidden: true, reward: 'em_rocket' }
+        ] },
       { id: 'g_cronicas', title: 'Crónicas de Tecnia', devId: 'u_dev', format: 'exe', genre: 'RPG', tags: ['Rol', 'Fantasía', 'Historia'],
         short: 'Un RPG por turnos ambientado en un tecnológico encantado.', description: 'Explora el campus de Tecnia, recluta compañeros de cada carrera y derrota al Rector Sombrío. Instalador para Windows.',
-        cover: { c1: '#7a3cff', c2: '#1b0f3a', glyph: '🗡️' }, featured: true, createdAt: now - 12 * DAY, download: { name: 'CronicasDeTecnia-Setup.exe', size: 184549376, platform: 'Windows 10/11 · 64 bits' } },
+        cover: { c1: '#7a3cff', c2: '#1b0f3a', glyph: '🗡️' }, featured: true, pricing: { mode: 'paid', price: 129 }, createdAt: now - 12 * DAY, download: { name: 'CronicasDeTecnia-Setup.exe', size: 184549376, platform: 'Windows 10/11 · 64 bits' } },
       { id: 'g_circuit', title: 'Circuit Clash', devId: 'u_dev2', format: 'cpp', genre: 'Estrategia', tags: ['Estrategia', 'Electrónica', 'PvP'],
         short: 'Estrategia en tiempo real donde construyes circuitos para ganar.', description: 'Compilado en C++ con SDL2. Conecta compuertas lógicas para alimentar tus torres y cortar la energía del rival.',
         cover: { c1: '#00b894', c2: '#003d33', glyph: '⚡' }, createdAt: now - 20 * DAY, download: { name: 'CircuitClash-linux-win.zip', size: 52428800, platform: 'Windows · Linux' } },
       { id: 'g_garden', title: 'Pixel Garden', devId: 'u_dev', format: 'html', genre: 'Simulación', tags: ['Relajante', 'Pixel art', 'Granja'],
-        short: 'Cultiva un jardín pixelado que crece incluso cuando no juegas.', description: 'Un idle de jardinería con 60 plantas, estaciones del año y un gato que te ayuda. Juega directo en el navegador.',
-        cover: { c1: '#5bd16b', c2: '#1d4d2a', glyph: '🌱' }, createdAt: now - 6 * DAY },
+        short: 'Cultiva un jardín pixelado que crece incluso cuando no juegas.', description: 'Juego idle de jardinería con estética de consola portátil: planta zanahorias, girasoles, calabazas y cactus estelares, cosecha monedas, desbloquea semillas y adopta a Michi, el gato que cosecha por ti. Las plantas crecen en tiempo real, aunque cierres el juego.',
+        cover: { c1: '#5bd16b', c2: '#1d4d2a', glyph: '🌱' }, createdAt: now - 6 * DAY,
+        pricing: { mode: 'pwyw', price: 20, min: 0, inPass: true },
+        achievements: [
+          { id: 'garden_cosecha', name: 'Primera cosecha', desc: 'Cosecha tu primera planta.', icon: '🥕', goal: 0, reward: 'em_fire' },
+          { id: 'garden_100', name: 'Buen año', desc: 'Gana 100 monedas en total.', icon: '🪙', goal: 100, reward: 'frame_pixel' },
+          { id: 'garden_botanico', name: 'Botánico', desc: 'Desbloquea las 4 semillas.', icon: '🌵', goal: 0, reward: 'fx_pixels' },
+          { id: 'garden_gato', name: 'Michi', desc: 'Adopta al gato jardinero.', icon: '🐈', goal: 0, reward: 'av_gato' },
+          { id: 'garden_dorada', name: 'Flor dorada', desc: 'Encuentra una flor dorada al cosechar (2 %).', icon: '🌼', goal: 0, hidden: true, reward: 'em_crown' }
+        ] },
       { id: 'g_neon', title: 'Neón Drift', devId: 'u_dev2', format: 'html', genre: 'Carreras', tags: ['Carreras', 'Synthwave', 'Arcade'],
-        short: 'Derrapes infinitos en una autopista synthwave.', description: 'Carreras arcade con música synthwave generada y tablas de puntaje. WebGL en tu navegador.',
-        cover: { c1: '#ff2a6d', c2: '#05070f', glyph: '🏎️' }, featured: true, createdAt: now - 1 * DAY },
+        short: 'Carreras arcade en una autopista synthwave infinita.', description: 'Autopista pseudo-3D de neón: cambia de carril, esquiva el tráfico, pasa rozando para ganar bonus de "casi choque" y usa el turbo para duplicar puntos. Controles: ← → y Espacio, o toques en móvil.',
+        cover: { c1: '#ff2a6d', c2: '#05070f', glyph: '🏎️' }, featured: true, createdAt: now - 1 * DAY,
+        pricing: { mode: 'paid', price: 49, discount: 30, inPass: true },
+        achievements: [
+          { id: 'drift_primera', name: 'Luz verde', desc: 'Corre tu primera carrera.', icon: '🚦', goal: 0, reward: 'em_gg' },
+          { id: 'drift_2000', name: 'Velocidad de crucero', desc: 'Consigue 2000 puntos en una carrera.', icon: '🏁', goal: 2000, reward: 'frame_ice' },
+          { id: 'drift_casi', name: 'Por un pelo', desc: 'Logra 20 casi choques en total.', icon: '😬', goal: 20, reward: 'em_skull' },
+          { id: 'drift_turbo', name: 'Nitro', desc: 'Usa el turbo 10 veces.', icon: '🔥', goal: 10, reward: 'fx_fire' },
+          { id: 'drift_leyenda', name: 'Leyenda de la autopista', desc: 'Sobrevive 3 minutos en una carrera.', icon: '🏆', goal: 0, hidden: true, reward: 'em_trophy' }
+        ] },
       { id: 'g_guardianes', title: 'Guardianes del Campus', devId: 'u_dev', format: 'exe', genre: 'Acción', tags: ['Acción', 'Cooperativo', 'Torre'],
         short: 'Defiende tu tecnológico de una invasión de bugs.', description: 'Tower defense cooperativo para 4 jugadores. Instalable en Windows y macOS.',
-        cover: { c1: '#ffb321', c2: '#5a2e00', glyph: '🛡️' }, createdAt: now - 30 * DAY, download: { name: 'Guardianes-Setup.exe', size: 314572800, platform: 'Windows · macOS' } },
+        cover: { c1: '#ffb321', c2: '#5a2e00', glyph: '🛡️' }, createdAt: now - 30 * DAY, pricing: { mode: 'paid', price: 89 }, download: { name: 'Guardianes-Setup.exe', size: 314572800, platform: 'Windows · macOS' } },
       { id: 'g_quantum', title: 'Quantum Puzzle', devId: 'u_dev2', format: 'html', genre: 'Puzle', tags: ['Puzle', 'Ciencia'],
-        short: 'Rompecabezas con partículas en superposición.', description: 'Cada pieza está en dos lugares a la vez hasta que la observas. 80 niveles.',
-        cover: { c1: '#00d2ff', c2: '#3a0ca3', glyph: '⚛️' }, createdAt: now - 2 * 3600000, status: 'pending' },
+        short: 'Colapsa partículas entrelazadas a su estado base.', description: 'Rompecabezas tipo "luces fuera" con física cuántica de mentira: al tocar una partícula cambian ella, sus vecinas y su pareja entrelazada. 10 niveles diseñados de 3×3 a 5×5, contador de movimientos, "par" por nivel y deshacer.',
+        cover: { c1: '#00d2ff', c2: '#3a0ca3', glyph: '⚛️' }, createdAt: now - 2 * 3600000, status: 'pending', submittedAt: now - 2 * 3600000,
+        pricing: { mode: 'paid', price: 25 },
+        achievements: [
+          { id: 'quantum_1', name: 'Primera observación', desc: 'Resuelve tu primer nivel.', icon: '👁️', goal: 0, reward: 'em_gg' },
+          { id: 'quantum_5', name: 'Superposición', desc: 'Resuelve 5 niveles.', icon: '🌀', goal: 5, reward: 'frame_gold' },
+          { id: 'quantum_optimo', name: 'Eficiencia cuántica', desc: 'Resuelve un nivel en el par de movimientos o menos.', icon: '⚡', goal: 0, reward: 'fx_sparkle' },
+          { id: 'quantum_todo', name: 'Colapso total', desc: 'Resuelve los 10 niveles.', icon: '⚛️', goal: 0, reward: 'theme_space' },
+          { id: 'quantum_sin_deshacer', name: 'Sin mirar atrás', desc: 'Resuelve 3 niveles seguidos sin deshacer.', icon: '🧑‍🚀', goal: 0, hidden: true, reward: 'av_astro' }
+        ] },
       { id: 'g_hackatec', title: 'Mi juego Hackatec', devId: 'u_dev', format: 'html', genre: 'Arcade', tags: ['Hackatec 2026', 'HTML5'],
         short: 'El juego de la fase local de Hackatec. ¡Sube aquí los archivos HTML!', description: 'Borrador listo para recibir el juego de la fase local. Desde el panel de desarrollador sube el .html o la carpeta completa, prueba los logros y envíalo a revisión.',
         cover: { c1: '#1a6fd8', c2: '#ff7a18', glyph: '🏆', angle: 120 }, createdAt: now - 1 * 3600000, status: 'draft',
@@ -154,6 +188,7 @@
       g.status = g.status || 'approved';
       g.achievements = g.achievements || genericAch(g.id.slice(2, 6));
       g.files = null;
+      g.pricing = Object.assign({ mode: 'free', price: 0, min: 0, discount: 0, inPass: false }, g.pricing);
       g.reviews = g.reviews || [];
       g.news = g.news || [];
       g.plays = g.status === 'approved' ? Math.floor(Math.random() * 900 + 100) : 0;
@@ -171,15 +206,15 @@
     byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 3,
+      version: 4,
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },
         { id: 'u_luna', name: 'luna_gamer', role: 'user', bio: 'Speedrunner casual.', status: 'active', createdAt: now - 90 * DAY },
         { id: 'u_troll', name: 'xX_troll_Xx', role: 'user', bio: '', status: 'active', createdAt: now - 3 * DAY },
-        { id: 'u_dev', name: 'PixelForge Studio', role: 'dev', bio: 'Equipo estudiantil de videojuegos. Hackatec 2026.', status: 'active', verified: true, createdAt: now - 60 * DAY },
-        { id: 'u_dev2', name: 'Nébula Games', role: 'dev', bio: 'Arcades y puzles para el navegador.', status: 'active', verified: false, createdAt: now - 25 * DAY },
-        { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Moderación de DivertiTEC.', status: 'active', createdAt: now - 120 * DAY }
+        { id: 'u_dev', name: 'PixelForge Studio', role: 'dev', bio: 'Equipo estudiantil de videojuegos. Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now - 60 * DAY },
+        { id: 'u_dev2', name: 'Nébula Games', role: 'dev', bio: 'Estudio independiente externo: arcades y puzles para el navegador.', status: 'active', verified: false, student: false, createdAt: now - 25 * DAY },
+        { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Moderación de DivierteTEC.', status: 'active', createdAt: now - 120 * DAY }
       ],
       games,
       library: {
@@ -201,6 +236,19 @@
         { id: 'rep2', type: 'game', targetId: 'g_circuit', reason: 'No funciona / enlace roto', text: 'El zip no abre en Linux.', by: 'u_player', date: now - 3 * DAY, status: 'open' }
       ],
       bannedWords: ['idiota', 'basura', 'estúpido'],
+      /* ---- Economía (ver js/economy.js y docs/MODELO-DE-NEGOCIO.md) ---- */
+      economy: { rateStudent: 0.12, rateExternal: 0.18, seedAllowance: 2000, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7 },
+      wallets: { u_player: 300, u_luna: 120, u_troll: 0, u_dev: 258, u_dev2: 48.13, u_admin: 0 },
+      purchases: { u_player: { g_cronicas: { date: now - 10 * DAY, paid: 129 } }, u_luna: { g_cronicas: { date: now - 6 * DAY, paid: 129 }, g_neon: { date: now - 2 * DAY, paid: 34.3 } } },
+      passes: { u_luna: { since: now - 10 * DAY, until: now + 20 * DAY } },
+      promos: [],
+      ledger: [
+        { id: 'l1', type: 'sale', date: now - 10 * DAY, from: 'u_player', to: 'u_dev', gameId: 'g_cronicas', gross: 129, commission: 0, net: 129, note: 'Semilla TEC (0 %)' },
+        { id: 'l2', type: 'sale', date: now - 6 * DAY, from: 'u_luna', to: 'u_dev', gameId: 'g_cronicas', gross: 129, commission: 0, net: 129, note: 'Semilla TEC (0 %)' },
+        { id: 'l3', type: 'pass', date: now - 10 * DAY, from: 'u_luna', to: 'platform', gross: 59, commission: 17.7, net: 41.3, note: 'Pase DivierteTEC · 1 mes' },
+        { id: 'l4', type: 'sale', date: now - 2 * DAY, from: 'u_luna', to: 'u_dev2', gameId: 'g_neon', gross: 34.3, commission: 6.17, net: 28.13, note: 'Estudio externo (18 %)' },
+        { id: 'l5', type: 'tip', date: now - 1 * DAY, from: 'u_luna', to: 'u_dev2', gameId: 'g_astro', gross: 20, commission: 0, net: 20, note: 'Propina' }
+      ],
       devRequests: [],
       log: [{ date: now - DAY, actor: 'u_admin', text: 'Aprobó «Neón Drift».' }]
     };

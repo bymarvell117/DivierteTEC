@@ -1,4 +1,4 @@
-/* DivertiTEC — editor visual de páginas de tienda y biblioteca.
+/* DivierteTEC — editor visual de páginas de tienda y biblioteca.
    Bloques arrastrables y redimensionables dentro del perímetro del lienzo,
    con formas (incluido un editor de polígonos punto por punto), capas,
    rotación, bordes, sombras, textos enriquecidos, imágenes, GIFs y videos. */

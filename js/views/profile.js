@@ -1,11 +1,11 @@
-/* DivertiTEC — perfil, inventario de recompensas y personalización. */
+/* DivierteTEC — perfil, inventario de recompensas y personalización. */
 (function (DT) {
   'use strict';
 
   /* ¿Qué logro entrega esta recompensa? (para mostrar cómo desbloquearla) */
   DT.rewardSources = (rid) => {
     const out = [];
-    DT.PLATFORM_ACH.forEach((a) => { if ([].concat(a.reward).includes(rid)) out.push(`Logro de DivertiTEC «${a.name}»: ${a.desc}`); });
+    DT.PLATFORM_ACH.forEach((a) => { if ([].concat(a.reward).includes(rid)) out.push(`Logro de DivierteTEC «${a.name}»: ${a.desc}`); });
     DT.state().games.filter((g) => g.status === 'approved' || g.devId === DT.me().id).forEach((g) => (g.achievements || []).forEach((a) => {
       if (a.reward === rid) out.push(`Logro «${a.hidden ? '???' : a.name}» en ${g.title}`);
     }));
@@ -87,7 +87,7 @@
 
         ${devGames.length ? `<h3 class="section-title">Juegos publicados</h3><div class="grid cols-4">${devGames.map((g) => `<a class="lib-tile" href="#/juego/${g.id}">${DT.coverHTML(g, 'fill')}<span>${DT.esc(g.title)}</span></a>`).join('')}</div>` : ''}
 
-        <h3 class="section-title">${DT.icon.trophy} Logros de DivertiTEC</h3>
+        <h3 class="section-title">${DT.icon.trophy} Logros de DivierteTEC</h3>
         <div class="grid cols-3">${DT.PLATFORM_ACH.map((a) => `
           <div class="ach-row big card ${pdone[a.id] ? 'got' : ''}"><span class="ach-ico">${a.icon}</span>
             <div><b>${DT.esc(a.name)}</b><small>${DT.esc(a.desc)}</small>

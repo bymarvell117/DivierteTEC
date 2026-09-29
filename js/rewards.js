@@ -1,4 +1,4 @@
-/* DivertiTEC — motor de logros y recompensas.
+/* DivierteTEC — motor de logros y recompensas.
    Flujo: juego (SDK) → runner (postMessage validado) → DT.rewards.unlockGame()
           → se guarda el logro → se entrega la recompensa al inventario → toast
           → se re-evalúan los logros de plataforma. */
@@ -39,7 +39,7 @@
     const g = DT.game(gid);
     if (!g) return false;
     const def = (g.achievements || []).find((a) => a.id === achId);
-    if (!def) { console.warn('[DivertiTEC] Logro desconocido:', achId); return false; }
+    if (!def) { console.warn('[DivierteTEC] Logro desconocido:', achId); return false; }
     if (opts.test) { // modo prueba: no se guarda nada
       achToast(def.icon, 'Logro desbloqueado', def.name, def.reward ? [def.reward] : [], true);
       return true;
@@ -99,7 +99,7 @@
       if (done[a.id] || !a.check(st)) return;
       done[a.id] = Date.now();
       const fresh = R.grant(uid, a.reward);
-      if (uid === s.currentUserId) achToast(a.icon, 'Logro de DivertiTEC', a.name, fresh);
+      if (uid === s.currentUserId) achToast(a.icon, 'Logro de DivierteTEC', a.name, fresh);
       any = true;
     });
     if (any) DT.emit('achievement');

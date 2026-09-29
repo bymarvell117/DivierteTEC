@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Neón Drift</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #05070f; overflow: hidden; touch-action: none; user-select: none; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script src="../../sdk/divierte-tec-sdk.js" data-dt-sdk></script>
+<script>
+/* NEÓN DRIFT — carreras arcade en una autopista synthwave pseudo-3D.
+   ← → / A D / tocar izquierda-derecha = cambiar de carril · ESPACIO / ↑ / botón = turbo */
+(function () {
+  'use strict';
+  var SDK = window.DivierteTEC || { unlock: function () {}, progress: function () {}, setStat: function () {} };
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  var W, H, HY, DPR;
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.clientWidth; H = cv.clientHeight; cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0); HY = H * 0.42;
+  }
+  window.addEventListener('resize', resize); resize();
+
+  function load(k, d) { try { var v = localStorage.getItem('drift_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem('drift_' + k, JSON.stringify(v)); } catch (e) { /* nada */ } }
+  var best = load('best', 0), nearTotal = load('near', 0), turboTotal = load('turbo', 0);
+
+  var ac = null, engine = null;
+  function audio() { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { /* nada */ } return ac; }
+  function beep(f1, f2, dur, type, vol) {
+    var a = audio(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+    o.type = type || 'square'; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(vol || 0.05, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur);
+  }
+  function startEngine() {
+    var a = audio(); if (!a || engine) return;
+    var o = a.createOscillator(), g = a.createGain(); o.type = 'sawtooth'; o.frequency.value = 55; g.gain.value = 0.02;
+    o.connect(g); g.connect(a.destination); o.start(); engine = { o: o, g: g };
+  }
+
+  /* Proyección: z = distancia hacia adelante; s = factor de escala */
+  var F = 28, ZMAX = 320;
+  function proj(x, z) { var s = F / (z + F); return { x: W / 2 + x * s * W * 0.34, y: HY + (H - HY) * s, s: s }; }
+
+  var state = 'menu', lane, px, cars, speed, dist, score, time, spawn, turbo, turboOn, near, turbos, flags, shake, stripes;
+  function reset() {
+    lane = 0; px = 0; cars = []; speed = 60; dist = 0; score = 0; time = 0; spawn = 1; turbo = 1; turboOn = false;
+    near = 0; turbos = 0; shake = 0; stripes = 0; flags = { legend: false, prog: 0 };
+  }
+  reset();
+  function start() { reset(); state = 'play'; startEngine(); SDK.unlock('drift_primera'); beep(200, 800, 0.4, 'sawtooth', 0.05); }
+  function crash() {
+    state = 'over'; shake = 0.6; beep(200, 40, 0.8, 'sawtooth', 0.1);
+    var s = Math.floor(score);
+    if (s > best) { best = s; save('best', best); }
+    SDK.progress('drift_2000', s); SDK.setStat('Mejor puntaje', best); SDK.setStat('Casi choques', nearTotal);
+  }
+  function move(d) { if (state !== 'play') { start(); return; } var n = Math.max(-1, Math.min(1, lane + d)); if (n !== lane) { lane = n; beep(500, 700, 0.05, 'triangle', 0.03); } }
+  function boost(on) {
+    if (state !== 'play') { if (on) start(); return; }
+    if (on && !turboOn && turbo > 0.25) {
+      turboOn = true; turbos++; turboTotal++; save('turbo', turboTotal); SDK.progress('drift_turbo', turboTotal); beep(300, 1200, 0.3, 'square', 0.04);
+    }
+    if (!on) turboOn = false;
+  }
+  window.addEventListener('keydown', function (e) {
+    if (e.repeat) return;
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') move(-1);
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') move(1);
+    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); boost(true); }
+  });
+  window.addEventListener('keyup', function (e) { if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') boost(false); });
+  cv.addEventListener('pointerdown', function (e) {
+    if (state !== 'play') { start(); return; }
+    if (e.clientY > H * 0.82 && Math.abs(e.clientX - W / 2) < 70) { boost(true); return; }
+    move(e.clientX < W / 2 ? -1 : 1);
+  });
+  cv.addEventListener('pointerup', function () { boost(false); });
+
+  var COLORS = ['#ff2a6d', '#00e5ff', '#ffd23f', '#a35cff', '#5bd16b'];
+  var last = performance.now();
+  function tick(now) {
+    var dt = Math.min(0.033, (now - last) / 1000); last = now;
+    if (state === 'play') update(dt);
+    if (shake > 0) shake -= dt;
+    if (engine) engine.o.frequency.value = state === 'play' ? 40 + speed * (turboOn ? 0.9 : 0.6) : 30;
+    if (engine) engine.g.gain.value = state === 'play' ? 0.02 : 0.004;
+    draw(now / 1000);
+    requestAnimationFrame(tick);
+  }
+  function update(dt) {
+    time += dt;
+    var base = 60 + time * 1.6;
+    if (turboOn) { turbo -= dt * 0.45; if (turbo <= 0) { turbo = 0; turboOn = false; } } else turbo = Math.min(1, turbo + dt * 0.12);
+    speed += ((turboOn ? base * 1.6 : base) - speed) * dt * 3;
+    dist += speed * dt; stripes = (stripes + speed * dt) % 20;
+    score += speed * dt * 0.15 * (turboOn ? 2 : 1);
+    px += (lane - px) * Math.min(1, dt * 12);
+
+    spawn -= dt;
+    if (spawn <= 0) {
+      var l = [-1, 0, 1][Math.floor(Math.random() * 3)];
+      if (!cars.some(function (c) { return c.z > ZMAX - 40 && c.lane === l; })) cars.push({ lane: l, z: ZMAX, v: 20 + Math.random() * 25, c: COLORS[Math.floor(Math.random() * COLORS.length)] });
+      if (time > 20 && Math.random() < 0.3) { var l2 = l === 1 ? -1 : l + 1; cars.push({ lane: l2, z: ZMAX + 20, v: 25, c: COLORS[Math.floor(Math.random() * COLORS.length)] }); }
+      spawn = Math.max(0.35, 1.2 - time * 0.01) * (0.6 + Math.random() * 0.7);
+    }
+    cars.forEach(function (c) {
+      var prev = c.z;
+      c.z -= (speed - c.v) * dt;
+      if (c.z < 6 && c.z > -4 && Math.abs(c.lane - px) < 0.55) crash();
+      if (prev >= 0 && c.z < 0 && !c.counted) {
+        c.counted = true;
+        if (Math.abs(c.lane - px) < 1.3 && Math.abs(c.lane - px) >= 0.55) {
+          near++; nearTotal++; save('near', nearTotal); score += 50; beep(900, 1300, 0.08, 'square', 0.03);
+          SDK.progress('drift_casi', nearTotal); popT = 0.8;
+        }
+      }
+    });
+    cars = cars.filter(function (c) { return c.z > -20; });
+    var s = Math.floor(score);
+    if (s - flags.prog >= 250) { flags.prog = s; SDK.progress('drift_2000', s); }
+    if (!flags.legend && time >= 180) { flags.legend = true; SDK.unlock('drift_leyenda'); }
+    if (popT > 0) popT -= dt;
+  }
+  var popT = 0;
+
+  function draw(t) {
+    ctx.save();
+    if (shake > 0) ctx.translate((Math.random() - 0.5) * 16 * shake, (Math.random() - 0.5) * 16 * shake);
+    // Cielo
+    var g = ctx.createLinearGradient(0, 0, 0, HY);
+    g.addColorStop(0, '#05070f'); g.addColorStop(0.6, '#2a0845'); g.addColorStop(1, '#ff2a6d');
+    ctx.fillStyle = g; ctx.fillRect(-20, -20, W + 40, HY + 20);
+    // Sol a rayas
+    var sr = Math.min(W, H) * 0.2, sx = W / 2, sy = HY - sr * 0.25;
+    var sg = ctx.createLinearGradient(0, sy - sr, 0, sy + sr); sg.addColorStop(0, '#ffd23f'); sg.addColorStop(1, '#ff2a6d');
+    ctx.save(); ctx.beginPath(); ctx.arc(sx, sy, sr, Math.PI, 0); ctx.clip();
+    ctx.fillStyle = sg; ctx.fillRect(sx - sr, sy - sr, sr * 2, sr);
+    ctx.fillStyle = '#2a0845';
+    for (var i = 0; i < 6; i++) ctx.fillRect(sx - sr, sy - sr * 0.45 + i * sr * 0.1 + (t * 8 % (sr * 0.1)), sr * 2, 2 + i * 1.2);
+    ctx.restore();
+    // Montañas
+    ctx.fillStyle = '#12032a'; ctx.beginPath(); ctx.moveTo(0, HY);
+    for (var x = 0; x <= W; x += W / 16) ctx.lineTo(x, HY - (Math.sin(x * 0.02 + 1) * 0.5 + 0.6) * H * 0.07 * ((x / W * 16) % 2 ? 1 : 0.5));
+    ctx.lineTo(W, HY); ctx.fill();
+    // Suelo con cuadrícula
+    ctx.fillStyle = '#0a0418'; ctx.fillRect(0, HY, W, H - HY);
+    ctx.strokeStyle = '#a35cff55'; ctx.lineWidth = 1;
+    for (var z = 20 - stripes; z < ZMAX; z += 20) { var a = proj(0, z); ctx.beginPath(); ctx.moveTo(0, a.y); ctx.lineTo(W, a.y); ctx.stroke(); }
+    for (var k = -8; k <= 8; k++) { var n1 = proj(k * 1.2, 0), f1 = proj(k * 1.2, ZMAX); ctx.beginPath(); ctx.moveTo(n1.x, H); ctx.lineTo(f1.x, f1.y); ctx.stroke(); }
+    // Carretera
+    var nl = proj(-1.75, 0), nr = proj(1.75, 0), fl = proj(-1.75, ZMAX), fr = proj(1.75, ZMAX);
+    ctx.fillStyle = '#140a26'; ctx.beginPath(); ctx.moveTo(nl.x, H); ctx.lineTo(fl.x, fl.y); ctx.lineTo(fr.x, fr.y); ctx.lineTo(nr.x, H); ctx.fill();
+    ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 3; ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.moveTo(nl.x, H); ctx.lineTo(fl.x, fl.y); ctx.moveTo(nr.x, H); ctx.lineTo(fr.x, fr.y); ctx.stroke();
+    ctx.shadowBlur = 0;
+    // Líneas de carril
+    ctx.fillStyle = '#ff2a6d';
+    [-0.5, 0.5].forEach(function (lx) {
+      for (var z = -stripes; z < ZMAX; z += 20) {
+        var a = proj(lx * 1.2, Math.max(0.1, z)), b = proj(lx * 1.2, z + 9);
+        ctx.beginPath(); ctx.moveTo(a.x - 3 * a.s, a.y); ctx.lineTo(b.x - 3 * b.s, b.y); ctx.lineTo(b.x + 3 * b.s, b.y); ctx.lineTo(a.x + 3 * a.s, a.y); ctx.fill();
+      }
+    });
+    // Autos (de lejos a cerca)
+    cars.slice().sort(function (a, b) { return b.z - a.z; }).forEach(function (c) { if (c.z > 0) car(c.lane * 1.2, c.z, c.c, false); });
+    if (state !== 'over' || Math.floor(t * 8) % 2) car(px * 1.2, 2, '#ffffff', true);
+    ctx.restore();
+    hud();
+  }
+  function car(x, z, color, me) {
+    var p = proj(x, z), w = p.s * W * 0.2, h = w * 0.45;
+    ctx.save(); ctx.translate(p.x, p.y);
+    ctx.shadowColor = color; ctx.shadowBlur = me ? 22 : 14;
+    ctx.fillStyle = '#0d0d1a'; ctx.fillRect(-w / 2, -h, w, h);
+    ctx.strokeStyle = color; ctx.lineWidth = Math.max(1, w * 0.04); ctx.strokeRect(-w / 2, -h, w, h);
+    ctx.fillStyle = color; ctx.fillRect(-w / 2 + w * 0.08, -h * 0.35, w * 0.22, h * 0.15); ctx.fillRect(w / 2 - w * 0.3, -h * 0.35, w * 0.22, h * 0.15);
+    ctx.fillStyle = color + '66'; ctx.fillRect(-w * 0.32, -h * 1.45, w * 0.64, h * 0.45);
+    if (me && turboOn) { ctx.fillStyle = '#00e5ff'; ctx.fillRect(-w * 0.3, 0, w * 0.15, h * (0.4 + Math.random() * 0.6)); ctx.fillRect(w * 0.15, 0, w * 0.15, h * (0.4 + Math.random() * 0.6)); }
+    ctx.restore();
+  }
+  function text(s, x, y, size, color, align) {
+    ctx.font = '800 ' + size + 'px system-ui, sans-serif'; ctx.textAlign = align || 'left';
+    ctx.shadowColor = color || '#fff'; ctx.shadowBlur = 10; ctx.fillStyle = color || '#fff'; ctx.fillText(s, x, y); ctx.shadowBlur = 0;
+  }
+  function hud() {
+    text(Math.floor(score) + '', 20, 40, 30, '#ffffff');
+    text(Math.round(speed * 1.8) + ' km/h', 20, 66, 16, '#00e5ff');
+    text('Récord ' + best, W - 20, 34, 16, '#ffd23f', 'right');
+    // Barra de turbo
+    ctx.fillStyle = '#ffffff22'; ctx.fillRect(W / 2 - 60, H - 26, 120, 8);
+    ctx.fillStyle = turboOn ? '#ffd23f' : '#00e5ff'; ctx.fillRect(W / 2 - 60, H - 26, 120 * turbo, 8);
+    text('TURBO', W / 2, H - 32, 11, '#c6b8ff', 'center');
+    if (popT > 0) text('¡CASI! +50', W / 2, HY + 40, 24, '#ffd23f', 'center');
+    if (state === 'menu') overlay('NEÓN DRIFT', '← → para cambiar de carril · ESPACIO para turbo', 'En móvil: toca izquierda/derecha y mantén el centro inferior para turbo');
+    if (state === 'over') overlay('CHOQUE', 'Puntaje ' + Math.floor(score) + ' · casi choques ' + near + (Math.floor(score) >= best ? ' · ¡RÉCORD!' : ''), 'Pulsa cualquier control para correr otra vez');
+  }
+  function overlay(a, b, c) {
+    ctx.fillStyle = '#05070fbb'; ctx.fillRect(0, 0, W, H);
+    text(a, W / 2, H / 2 - 24, Math.min(70, W / 8), '#ff2a6d', 'center');
+    text(b, W / 2, H / 2 + 16, Math.min(20, W / 28), '#00e5ff', 'center');
+    text(c, W / 2, H / 2 + 44, Math.min(14, W / 38), '#c6b8ff', 'center');
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

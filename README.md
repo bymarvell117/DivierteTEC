@@ -1,8 +1,28 @@
-# DivertiTEC
+# DivierteTEC
 
 Plataforma de publicación de videojuegos para **InnovaTec · Hackatec regional 2026**.
 Una tienda y biblioteca estilo Steam donde los estudiantes publican juegos HTML5,
 C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
+
+## Juegos incluidos (se juegan al instante, sin descargar)
+
+| Juego | Género | Precio en la demo | Controles |
+|---|---|---|---|
+| **Astro Runner** | Runner espacial de baja gravedad | Gratis | Espacio / ↑ / tocar = saltar (doble salto) |
+| **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
+| **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
+| **Quantum Puzzle** | Puzle de entrelazamiento (10 niveles) | $25 · en revisión | Clic en partículas |
+
+Cada uno tiene 5 logros (uno oculto) con recompensas. El código fuente está en
+`games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,
+ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
+
+## Modelo de negocio
+
+Comisión escalonada (0 % en los primeros $2,000 de estudios estudiantiles, luego 12 %;
+18 % para externos), **Pase DivierteTEC** de $59/mes que reparte el 70 % entre los estudios
+por tiempo jugado, destacados patrocinados y propinas. Todo con dinero simulado.
+Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
 
 ## Cómo abrirla
 
@@ -32,6 +52,10 @@ Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar
 6. **Enviar a revisión** → cambia a **Admin TEC** → *Revisión de juegos* → **Aprobar**.
 7. Cambia a **MARVELL117** → la tienda muestra el juego → *Agregar* → **Jugar**.
    Los logros entregan recompensas que se equipan en el **perfil** (temas, marcos, avatares…).
+8. **Tienda**: juega **Astro Runner** al instante; en **Pixel Garden** elige cuánto pagar;
+   suscríbete al **Pase** (`PASE` en la barra) y juega **Neón Drift** sin comprarlo. El
+   monedero (arriba a la derecha) muestra saldo y movimientos.
+9. **Admin TEC → Finanzas**: ingresos por fuente, reparto del fondo del Pase y promociones.
 
 ## Estructura
 
@@ -45,12 +69,17 @@ js/catalog.js            Recompensas, logros de plataforma y datos de ejemplo
 js/store.js              Estado (localStorage) y archivos (IndexedDB)
 js/theme.js              Temas y efectos de partículas
 js/rewards.js            Motor de logros → recompensas
-js/sdk/divertitec-sdk.js SDK para juegos + cargador del iframe
+js/economy.js            Monedero, compras, comisiones, Pase, promociones y libro de transacciones
+js/games/*.js            Juegos integrados empaquetados (generados)
+games/*/index.html       Código fuente de los juegos integrados
+tools/build-games.js     Empaqueta games/ en js/games/
+js/sdk/sdk.js            SDK para juegos + cargador del iframe
 js/runner.js             Ejecución segura de juegos HTML y descargas
 js/layout.js             Motor de páginas personalizables (formas, capas)
 js/views/*.js            Bienvenida, tienda, biblioteca, comunidad, perfil, dev, editor, admin
-sdk/divertitec-sdk.js    SDK independiente para probar juegos fuera de la plataforma
+sdk/divierte-tec-sdk.js  SDK independiente para probar juegos fuera de la plataforma
 docs/SDK-LOGROS.md       Guía paso a paso de logros y recompensas
+docs/MODELO-DE-NEGOCIO.md Propuesta de negocio, tasas y proyección
 ```
 
 ## Cómo se ejecutan los juegos HTML

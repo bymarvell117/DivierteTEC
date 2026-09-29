@@ -1,4 +1,4 @@
-/* DivertiTEC — comunidad: actividad reciente y tabla de cazadores de logros. */
+/* DivierteTEC — comunidad: actividad reciente y tabla de cazadores de logros. */
 (function (DT) {
   'use strict';
 
@@ -22,7 +22,7 @@
 
     app.innerHTML = `
       <section class="page">
-        <div class="page-head"><div><h1>Comunidad</h1><p>Lo que está pasando en DivertiTEC.</p></div></div>
+        <div class="page-head"><div><h1>Comunidad</h1><p>Lo que está pasando en DivierteTEC.</p></div></div>
         <div class="community">
           <div class="card">
             <h3>Actividad reciente</h3>

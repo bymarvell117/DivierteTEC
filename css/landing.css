@@ -1,4 +1,4 @@
-/* DivertiTEC — bienvenida cinematográfica (siempre oscura, acentos azules). */
+/* DivierteTEC — bienvenida cinematográfica (siempre oscura, acentos azules). */
 .landing { background: #060a12; color: #eaf2ff; overflow: clip; --blue: #3d8fff; --blue-2: #8cc2ff; }
 .landing a:not(.btn) { color: var(--blue-2); }
 .l-h2 { font: 800 clamp(30px, 5vw, 58px)/1.05 var(--font-display); text-align: center; margin: 0 0 36px; letter-spacing: -1px; }
@@ -25,9 +25,9 @@
 @keyframes floatIn { from { opacity: 0; transform: translateY(80px) scale(.8); } }
 .l-hero-content { position: relative; text-align: center; padding: 0 16px; z-index: 2; transform: translateY(calc(var(--h) * -80px)); opacity: calc(1 - var(--h) * 1.3); }
 .l-kicker { font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--blue-2); font-size: clamp(11px, 1.4vw, 14px); margin: 0 0 8px; animation: rise .8s .2s both; }
-.l-title { font: 900 clamp(48px, 13vw, 190px)/.9 var(--font-display); margin: 0; letter-spacing: -2px; display: flex; justify-content: center; }
+.l-title { font: 900 clamp(40px, 11.5vw, 170px)/.9 var(--font-display); margin: 0; letter-spacing: -2px; display: flex; justify-content: center; }
 .l-title span { display: inline-block; background: linear-gradient(180deg, #fff 30%, #8cc2ff); -webkit-background-clip: text; background-clip: text; color: transparent; animation: letterIn .9s cubic-bezier(.2, .9, .2, 1.1) both; animation-delay: calc(var(--i) * 60ms + .3s); filter: drop-shadow(0 10px 30px #1a6fd866); }
-.l-title span:nth-child(n+7) { background: linear-gradient(180deg, #6fb1ff, #1a6fd8); -webkit-background-clip: text; background-clip: text; }
+.l-title span:nth-child(n+9) { background: linear-gradient(180deg, #6fb1ff, #1a6fd8); -webkit-background-clip: text; background-clip: text; }
 @keyframes letterIn { from { opacity: 0; transform: translateY(60%) rotateX(80deg) scale(.6); filter: blur(10px); } }
 @keyframes rise { from { opacity: 0; transform: translateY(20px); } }
 .l-sub { font-size: clamp(16px, 2vw, 22px); color: #c6d6ee; max-width: 640px; margin: 18px auto 26px; animation: rise .8s 1s both; }

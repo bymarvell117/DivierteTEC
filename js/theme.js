@@ -1,4 +1,4 @@
-/* DivertiTEC — temas de página y efectos visuales desbloqueables. */
+/* DivierteTEC — temas de página y efectos visuales desbloqueables. */
 (function (DT) {
   'use strict';
 

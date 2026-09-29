@@ -1,11 +1,11 @@
-/* DivertiTEC — SDK de logros y cargador de juegos HTML.
+/* DivierteTEC — SDK de logros y cargador de juegos HTML.
 
    Aquí viven dos funciones que NO se ejecutan en la página principal: se
    convierten a texto (Function.toString) e se inyectan dentro del iframe del juego.
 
-   1) DT_SDK_INSTALL(bridge): crea window.DivertiTEC (API que usan los juegos).
+   1) DT_SDK_INSTALL(bridge): crea window.DivierteTEC (API que usan los juegos).
       - Dentro de la plataforma, `bridge` envía mensajes a la página padre.
-      - Fuera de la plataforma (archivo sdk/divertitec-sdk.js), `bridge` es null
+      - Fuera de la plataforma (archivo sdk/divierte-tec-sdk.js), `bridge` es null
         y el SDK funciona en "modo local": muestra los logros en consola y pantalla,
         así el juego no se rompe si se abre por separado.
 
@@ -18,7 +18,7 @@
   'use strict';
 
   function DT_SDK_INSTALL(bridge) {
-    if (window.DivertiTEC && window.DivertiTEC.__real) return;
+    if (window.DivierteTEC && window.DivierteTEC.__real) return;
     var unlocked = {};
     var readyCbs = [];
     var listeners = { unlock: [] };
@@ -36,7 +36,7 @@
     }
     function send(msg) {
       if (bridge) bridge(msg);
-      else console.log('[DivertiTEC SDK · modo local]', msg);
+      else console.log('[DivierteTEC SDK · modo local]', msg);
     }
 
     var api = {
@@ -62,7 +62,7 @@
       getInfo: function () { return info; },
       /** Llama a cb(info) cuando la plataforma está lista. */
       onReady: function (cb) { if (isReady) cb(info); else readyCbs.push(cb); },
-      /** Escucha desbloqueos: DivertiTEC.on('unlock', function(id){...}) */
+      /** Escucha desbloqueos: DivierteTEC.on('unlock', function(id){...}) */
       on: function (ev, cb) { (listeners[ev] = listeners[ev] || []).push(cb); },
       /** Guardado simple de partida (también funciona localStorage normal). */
       save: function (key, value) { try { localStorage.setItem('dt_' + key, JSON.stringify(value)); } catch (e) { /* nada */ } },
@@ -75,7 +75,8 @@
         readyCbs.splice(0).forEach(function (cb) { try { cb(info); } catch (e) { console.error(e); } });
       }
     };
-    window.DivertiTEC = api;
+    window.DivierteTEC = api;
+    window.DivertiTEC = api; // alias del nombre anterior, para juegos ya escritos
     if (!bridge) setTimeout(function () { api.__setReady(info); }, 0);
   }
 
@@ -139,7 +140,7 @@
       (0, eval)(SDK_SRC)(function (msg) { post(msg); });
       window.addEventListener('message', function (e) {
         var m = e.data;
-        if (m && m.__dt === 1 && m.type === 'unlocked' && window.DivertiTEC) window.DivertiTEC.__markUnlocked(m.id);
+        if (m && m.__dt === 1 && m.type === 'unlocked' && window.DivierteTEC) window.DivierteTEC.__markUnlocked(m.id);
       });
 
       var files = {};  // ruta → {buf, type}
@@ -227,7 +228,7 @@
         window.Audio.prototype = OAudio.prototype;
       }
 
-      window.DivertiTEC.__setReady(d.info);
+      window.DivierteTEC.__setReady(d.info);
       post({ type: 'booted' });
       var out = (doc.doctype ? '<!DOCTYPE html>' : '') + doc.documentElement.outerHTML;
       document.open();
@@ -241,8 +242,8 @@
   DT.SDK_SOURCE = '(' + DT_SDK_INSTALL.toString() + ')';
 
   /* Archivo independiente que los desarrolladores pueden incluir en su juego */
-  DT.SDK_STANDALONE = '/* DivertiTEC SDK v1.0.0 — incluye <script src="divertitec-sdk.js"></script> en tu juego.\n' +
-    '   Dentro de DivertiTEC la plataforma inyecta el SDK real; fuera de ella funciona en modo local. */\n' +
+  DT.SDK_STANDALONE = '/* DivierteTEC SDK v1.0.0 — incluye <script src="divierte-tec-sdk.js"></script> en tu juego.\n' +
+    '   Dentro de DivierteTEC la plataforma inyecta el SDK real; fuera de ella funciona en modo local. */\n' +
     DT.SDK_SOURCE + '(null);\n';
 
   /* Documento de arranque que se carga en el iframe (srcdoc) */

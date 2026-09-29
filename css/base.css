@@ -1,4 +1,4 @@
-/* DivertiTEC — tokens de diseño, temas y estructura general.
+/* DivierteTEC — tokens de diseño, temas y estructura general.
    Paleta reglamentaria por defecto: blanco, gris y azul. */
 :root, :root[data-theme="light"] {
   --bg: #eef2f7;
@@ -158,6 +158,18 @@ body[data-route="landing"] .mainnav a.active { color: #fff; }
 
 #fx-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
 
+@media (max-width: 1440px) {
+  .mainnav .nav-user { display: none; }
+  .mainnav a { padding-left: 9px; padding-right: 9px; letter-spacing: .3px; }
+}
+@media (max-width: 1320px) { .role-tag { display: none; } }
+@media (max-width: 1180px) {
+  .nav-toggle { display: inline-grid; order: 3; }
+  .mainnav { display: none; position: absolute; top: 60px; left: 0; right: 0; flex-direction: column; background: var(--topbar); padding: 8px 16px; box-shadow: var(--shadow-lg); }
+  .mainnav.open { display: flex; }
+  .mainnav a { padding: 12px 4px; border-bottom: 1px solid var(--border); }
+  .mainnav .nav-user { display: block; }
+}
 @media (max-width: 900px) {
   .cols-3, .cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .topbar-inner { gap: 10px; padding: 0 16px; }

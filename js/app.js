@@ -1,4 +1,4 @@
-/* DivertiTEC — arranque de la aplicación. */
+/* DivierteTEC — arranque de la aplicación. */
 (function (DT) {
   'use strict';
 

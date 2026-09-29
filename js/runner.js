@@ -1,11 +1,11 @@
-/* DivertiTEC — ejecución de juegos HTML en el navegador y descarga de ejecutables.
+/* DivierteTEC — ejecución de juegos HTML en el navegador y descarga de ejecutables.
    El juego corre en un <iframe sandbox="allow-scripts"> SIN allow-same-origin:
    no puede leer el localStorage de la plataforma ni tocar la página principal.
    La única vía de comunicación es postMessage, y aquí se valida cada mensaje. */
 (function (DT) {
   'use strict';
 
-  const SAVE_KEY = (uid, gid) => 'divertitec_save_' + uid + '_' + gid;
+  const SAVE_KEY = (uid, gid) => 'divierteTEC_save_' + uid + '_' + gid;
   let active = null;
 
   const mimeOf = (p) => {
@@ -70,14 +70,34 @@
     DT.emit('library');
   };
 
+  /* ---------- Juegos integrados (js/games/*.js) ---------- */
+  DT.BUILTIN = DT.BUILTIN || {};
+  DT.registerBuiltin = (gid, pkg) => { DT.BUILTIN[gid] = pkg; };
+  /* ¿Se puede jugar al instante en el navegador? (archivos subidos o integrados) */
+  DT.isInstant = (g) => !!g && g.format === 'html' && (!!g.files || !!DT.BUILTIN[g.id]);
+
+  /* Archivos de un juego: primero los subidos por el desarrollador (IndexedDB), luego los integrados */
+  DT.gameFiles = async (gid) => {
+    const g = DT.game(gid);
+    if (g && g.files) {
+      const list = await DT.files.list('game:' + gid + ':');
+      if (list.length) return { entry: g.files.entry, list };
+    }
+    const b = DT.BUILTIN[gid];
+    if (b) return { entry: b.entry, builtin: true, list: Object.keys(b.files).map((p) => ({ path: p, blob: new Blob([b.files[p]], { type: mimeOf(p) }) })) };
+    return null;
+  };
+
   /* ---------- Jugar en el navegador ---------- */
   DT.play = async (gid, opts) => {
     opts = opts || {};
     const g = DT.game(gid);
     if (!g) return;
     if (g.format !== 'html') return DT.download(gid);
-    const stored = await DT.files.list('game:' + gid + ':');
-    if (!stored.length || !g.files) {
+    // Juegos de pago: sin compra (o Pase) se abre la caja
+    if (!opts.test && DT.canAccess && !DT.canAccess(gid)) return DT.checkout(gid);
+    const pkg = await DT.gameFiles(gid);
+    if (!pkg) {
       DT.modal({
         title: 'Este juego aún no tiene archivos',
         body: DT.me().id === g.devId
@@ -91,6 +111,8 @@
 
     const me = DT.me();
     const test = !!opts.test;
+    // "Jugar ahora": el juego entra a la biblioteca sin descargar nada
+    if (!test && !DT.lib()[gid]) { DT.lib()[gid] = { added: Date.now(), playtime: 0, lastPlayed: Date.now(), source: DT.accessSource ? DT.accessSource(gid) : 'free' }; DT.rewards.checkPlatform(); DT.save(); }
     const unlocked = Object.entries(DT.userAch(me.id, gid)).filter(([, v]) => v.unlockedAt).map(([k]) => k);
     let save = {};
     if (!test) { try { save = JSON.parse(localStorage.getItem(SAVE_KEY(me.id, gid))) || {}; } catch (e) { save = {}; } }
@@ -141,16 +163,16 @@
       if (!m || m.__dt !== 1) return;
       switch (m.type) {
         case 'boot': {
-          const list = await DT.files.list('game:' + gid + ':');
+          const cur = await DT.gameFiles(gid);
           const payload = [];
           const transfer = [];
-          for (const f of list) {
+          for (const f of cur.list) {
             const buf = await f.blob.arrayBuffer();
             payload.push([f.path, buf, f.blob.type || mimeOf(f.path)]);
             transfer.push(buf);
           }
           frame.contentWindow.postMessage({
-            __dt: 1, type: 'load', entry: g.files.entry, files: payload, save,
+            __dt: 1, type: 'load', entry: cur.entry, files: payload, save,
             info: {
               user: { name: me.name, id: me.id },
               game: { id: g.id, title: g.title },
@@ -166,18 +188,18 @@
           break;
         case 'unlock':
           if (typeof m.id !== 'string') return;
-          if (test) logLine('info', 'DivertiTEC.unlock("' + m.id + '")');
+          if (test) logLine('info', 'DivierteTEC.unlock("' + m.id + '")');
           if (DT.rewards.unlockGame(me.id, gid, m.id, { test })) frame.contentWindow.postMessage({ __dt: 1, type: 'unlocked', id: m.id }, '*');
           else if (test && !(g.achievements || []).some((a) => a.id === m.id)) logLine('warn', 'El logro "' + m.id + '" no está definido en el panel.');
           refreshAch();
           break;
         case 'progress':
-          if (test) logLine('info', 'DivertiTEC.progress("' + m.id + '", ' + m.value + ')');
+          if (test) logLine('info', 'DivierteTEC.progress("' + m.id + '", ' + m.value + ')');
           DT.rewards.progress(me.id, gid, String(m.id), Number(m.value), { test });
           refreshAch();
           break;
         case 'stat':
-          if (test) { logLine('info', 'DivertiTEC.setStat("' + m.key + '", ' + JSON.stringify(m.value) + ')'); break; }
+          if (test) { logLine('info', 'DivierteTEC.setStat("' + m.key + '", ' + JSON.stringify(m.value) + ')'); break; }
           const st = DT.state().stats;
           ((st[me.id] = st[me.id] || {})[gid] = st[me.id][gid] || {})[String(m.key)] = m.value;
           DT.save();

@@ -1,4 +1,4 @@
-/* DivertiTEC — componentes reutilizables y vistas. */
+/* DivierteTEC — componentes reutilizables y vistas. */
 
 /* ---------- Botones y controles ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 16px; border-radius: 8px; border: 1px solid transparent; font: 600 14px var(--font); cursor: pointer; text-decoration: none; color: var(--text); background: var(--surface-3); transition: transform .08s, filter .15s, background .15s; white-space: nowrap; }
@@ -480,3 +480,67 @@ kbd { background: var(--surface-3); border: 1px solid var(--border); border-bott
 .cover.plain .cover-title { display: none; }
 .cover.plain .cover-glyph { font-size: 7em; opacity: .9; }
 .hero-info .btn, .blk-play .btn { white-space: normal; text-align: center; }
+
+/* ---------- Economía: precios, caja, monedero, planes ---------- */
+.wallet-chip { border: 1px solid var(--border); background: var(--surface-2); color: inherit; font: 700 13px var(--font); padding: 6px 12px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
+body[data-route="landing"] .wallet-chip { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
+.card-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.card-foot .price, .card-foot .owned { margin-top: 0; }
+.disc { background: #4c6b22; color: #beee11; font-weight: 800; font-size: 12px; padding: 2px 6px; border-radius: 4px; }
+s.muted { font-size: 13px; }
+.pass-tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); }
+.instant { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: #dcf5e6; color: #146c3b; }
+.owned-price { color: var(--success); }
+.pill.sponsored { background: #fff1d6; color: #8a5a00; }
+.buy-strip { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.buy-strip .price { font-size: 20px; }
+.blk-play { gap: 8px; }
+.blk-play .btn { flex: 1; width: auto; }
+.checkout { display: grid; grid-template-columns: 200px 1fr; gap: 18px; align-items: start; }
+.big-price { font: 800 28px var(--font-display); }
+.breakdown { background: var(--surface-2); border-radius: var(--radius); padding: 10px 12px; margin: 12px 0; display: grid; gap: 6px; font-size: 14px; }
+.breakdown > div { display: flex; justify-content: space-between; gap: 10px; }
+.breakdown .total { border-top: 1px solid var(--border); padding-top: 6px; font-size: 16px; }
+.breakdown .gain b { color: var(--success); }
+.small { font-size: 13px; }
+.wallet-head { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 12px; }
+.tr.tx { grid-template-columns: .9fr .9fr 2.2fr .8fr .8fr 1.6fr; }
+.price-mode { display: flex; flex-wrap: wrap; }
+.price-mode input { position: absolute; opacity: 0; }
+.price-mode span { display: block; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.price-mode input:checked + span { background: var(--surface); color: var(--primary); box-shadow: var(--shadow); }
+.plans-hero { text-align: center; padding: 30px 16px 10px; }
+.plans-hero h1 { font-size: clamp(30px, 5vw, 52px); }
+.plans-hero h1 span { color: var(--primary); }
+.plans-hero p { max-width: 640px; margin: 0 auto; color: var(--text-2); font-size: 17px; }
+.plan { position: relative; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.featured-plan { border: 2px solid var(--primary); box-shadow: var(--shadow-lg), var(--glow); }
+.ribbon { position: absolute; top: 14px; right: 14px; background: var(--primary); color: var(--on-primary); font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 20px; }
+.plan-price { font: 800 34px var(--font-display); }
+.plan-price small { font-size: 14px; color: var(--muted); font-weight: 500; }
+.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checks li { padding-left: 24px; position: relative; }
+.checks li::before { content: "✔"; position: absolute; left: 0; color: var(--success); font-weight: 800; }
+.pass-games { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 10px; }
+.pass-games a { text-decoration: none; color: var(--text); display: grid; gap: 6px; font-size: 14px; }
+.tier { text-align: center; }
+.tier-rate { font: 900 44px var(--font-display); color: var(--primary); }
+.calc { display: grid; gap: 6px; background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+.calc > div { display: flex; justify-content: space-between; gap: 10px; }
+.calc .total { border-top: 1px solid var(--border); padding-top: 6px; font-size: 17px; }
+.calc .gain b { color: var(--success); }
+.flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.flow > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; display: grid; min-width: 110px; flex: 1; }
+.flow > div.accent { border-color: var(--success); background: color-mix(in srgb, var(--success) 12%, var(--surface)); }
+.flow small { color: var(--muted); }
+.flow i { font-style: normal; font-weight: 800; color: var(--muted); }
+@media (max-width: 700px) { .checkout { grid-template-columns: 1fr; } .checkout .cover { max-width: 240px; } }
+@media (max-width: 560px) {
+  .wallet-chip { padding: 6px 9px; }
+  .wallet-chip .amt { display: none; }
+  .topbar-inner { gap: 6px; padding: 0 10px; }
+  .topbar-right { gap: 2px; }
+  .user-chip { padding: 4px; gap: 2px; }
+  .user-chip > .ico { display: none; }
+  .brand-mark { width: 30px; height: 30px; font-size: 17px; }
+}

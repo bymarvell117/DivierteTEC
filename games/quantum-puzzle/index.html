@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantum Puzzle</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { background: radial-gradient(ellipse at 50% 0%, #3a0ca3, #0b0726 70%); color: #e9e6ff; font: 15px system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 16px; user-select: none; }
+  h1 { margin: 0; font-size: 26px; letter-spacing: 3px; background: linear-gradient(90deg, #00d2ff, #c77dff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: #a9a3d9; margin: 4px 0 10px; font-size: 13px; text-align: center; }
+  .hud { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; }
+  .chip { background: #ffffff14; border: 1px solid #ffffff22; border-radius: 20px; padding: 6px 12px; }
+  button { font: 600 14px system-ui; color: #fff; background: #5a3fd1; border: 0; border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+  button.ghost { background: #ffffff14; }
+  button:disabled { opacity: .4; }
+  .board { position: relative; display: grid; gap: 12px; padding: 16px; border-radius: 20px; background: #0e0a2e; box-shadow: 0 0 40px #7b2ff733, inset 0 0 0 1px #ffffff18; }
+  .board svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .q { width: min(15vw, 64px); aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--pc, #ffffff22); background: radial-gradient(circle at 35% 30%, #2b2560, #120d33); cursor: pointer; position: relative; transition: transform .15s, box-shadow .25s, background .25s; }
+  .q.on { background: radial-gradient(circle at 35% 30%, #fff, #00d2ff 40%, #3a0ca3); box-shadow: 0 0 22px #00d2ff, 0 0 4px #fff inset; }
+  .q:hover { transform: scale(1.06); }
+  .q.flash { animation: flash .35s; }
+  @keyframes flash { 50% { transform: scale(.85); } }
+  .q[data-pair]::after { content: attr(data-pair); position: absolute; right: -4px; top: -6px; font-size: 11px; font-weight: 800; background: var(--pc); color: #0b0726; border-radius: 8px; padding: 0 4px; }
+  .levels { display: grid; grid-template-columns: repeat(5, 48px); gap: 8px; margin-top: 16px; }
+  .levels button { padding: 10px 0; background: #ffffff14; }
+  .levels button.done { background: #2d8a6a; }
+  .levels button.cur { outline: 2px solid #00d2ff; }
+  .win { position: fixed; inset: 0; background: #0b0726cc; display: none; place-items: center; z-index: 5; }
+  .win.show { display: grid; }
+  .win div { background: #1a1250; border: 1px solid #7b2ff7; border-radius: 20px; padding: 26px 30px; text-align: center; box-shadow: 0 0 60px #7b2ff766; }
+  .stars { font-size: 34px; letter-spacing: 6px; margin: 6px 0 12px; }
+  .rule { max-width: 520px; font-size: 13px; color: #b9b3e6; text-align: center; margin-top: 14px; }
+</style>
+</head>
+<body>
+<h1>⚛ QUANTUM PUZZLE</h1>
+<p class="sub">Colapsa todas las partículas a su estado base |0⟩</p>
+<div class="hud">
+  <span class="chip" id="lvl"></span><span class="chip" id="mv"></span>
+  <button class="ghost" id="undo">↶ Deshacer</button><button class="ghost" id="reset">⟲ Reiniciar</button>
+</div>
+<div class="board" id="board"></div>
+<div class="levels" id="levels"></div>
+<p class="rule">Al tocar una partícula cambian ella y sus vecinas (arriba, abajo, izquierda, derecha). Las partículas con la misma letra están <b>entrelazadas</b>: si tocas una, su pareja también cambia.</p>
+<div class="win" id="win"><div><h2 id="wt">¡Nivel completado!</h2><div class="stars" id="ws"></div><p id="wm"></p><button id="next">Siguiente nivel →</button></div></div>
+<script src="../../sdk/divierte-tec-sdk.js" data-dt-sdk></script>
+<script>
+/* QUANTUM PUZZLE — "luces fuera" con entrelazamiento cuántico. 10 niveles diseñados.
+   Cada nivel se genera aplicando su solución a un tablero vacío, así siempre tiene solución
+   y "par" = número de movimientos de esa solución. */
+(function () {
+  'use strict';
+  var SDK = window.DivierteTEC || { unlock: function () {}, progress: function () {}, setStat: function () {} };
+  var LEVELS = [
+    { n: 3, pairs: [], sol: [4] },
+    { n: 3, pairs: [], sol: [0, 8] },
+    { n: 3, pairs: [[0, 8]], sol: [0] },
+    { n: 4, pairs: [[0, 15]], sol: [5, 10] },
+    { n: 4, pairs: [[3, 12], [5, 10]], sol: [0, 6, 15] },
+    { n: 4, pairs: [[1, 14], [4, 11]], sol: [1, 4, 9, 12] },
+    { n: 5, pairs: [[0, 24]], sol: [6, 12, 18] },
+    { n: 5, pairs: [[2, 22], [10, 14]], sol: [2, 10, 16, 23] },
+    { n: 5, pairs: [[0, 24], [4, 20], [12, 7]], sol: [0, 7, 13, 21, 4] },
+    { n: 5, pairs: [[1, 23], [5, 19], [9, 15], [11, 13]], sol: [1, 5, 11, 17, 19, 22] }
+  ];
+  var PC = ['#ffd23f', '#ff5fa2', '#5bd16b', '#ff8c42'];
+  var save;
+  try { save = JSON.parse(localStorage.getItem('quantum_save')) || null; } catch (e) { save = null; }
+  save = save || { done: {}, best: {}, cur: 0, streak: 0 };
+
+  var L, cells, moves, hist, usedUndo;
+  function partner(L, i) { for (var k = 0; k < L.pairs.length; k++) { if (L.pairs[k][0] === i) return L.pairs[k][1]; if (L.pairs[k][1] === i) return L.pairs[k][0]; } return -1; }
+  function affect(L, i) {
+    var n = L.n, r = Math.floor(i / n), c = i % n, out = [i];
+    if (r > 0) out.push(i - n); if (r < n - 1) out.push(i + n); if (c > 0) out.push(i - 1); if (c < n - 1) out.push(i + 1);
+    var p = partner(L, i); if (p >= 0 && out.indexOf(p) < 0) out.push(p);
+    return out;
+  }
+  function apply(arr, L, i) { affect(L, i).forEach(function (j) { arr[j] ^= 1; }); }
+  function persist() { try { localStorage.setItem('quantum_save', JSON.stringify(save)); } catch (e) { /* nada */ } }
+
+  function loadLevel(k) {
+    save.cur = k; persist();
+    L = LEVELS[k]; cells = new Array(L.n * L.n).fill(0);
+    L.sol.forEach(function (i) { apply(cells, L, i); });
+    moves = 0; hist = []; usedUndo = false;
+    build(); render();
+  }
+  function build() {
+    var b = document.getElementById('board');
+    b.style.gridTemplateColumns = 'repeat(' + L.n + ', auto)';
+    b.innerHTML = cells.map(function (_, i) {
+      var pi = -1; L.pairs.forEach(function (p, k) { if (p[0] === i || p[1] === i) pi = k; });
+      return '<div class="q" data-i="' + i + '"' + (pi >= 0 ? ' data-pair="' + 'ABCD'[pi] + '" style="--pc:' + PC[pi] + '"' : '') + '></div>';
+    }).join('') + '<svg></svg>';
+    requestAnimationFrame(drawLinks);
+  }
+  function drawLinks() {
+    var b = document.getElementById('board'), svg = b.querySelector('svg'), br = b.getBoundingClientRect();
+    svg.innerHTML = L.pairs.map(function (p, k) {
+      var a = b.children[p[0]].getBoundingClientRect(), c = b.children[p[1]].getBoundingClientRect();
+      return '<line x1="' + (a.left - br.left + a.width / 2) + '" y1="' + (a.top - br.top + a.height / 2) + '" x2="' + (c.left - br.left + c.width / 2) + '" y2="' + (c.top - br.top + c.height / 2) +
+        '" stroke="' + PC[k] + '" stroke-width="2" stroke-dasharray="4 6" opacity=".55"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/></line>';
+    }).join('');
+  }
+  window.addEventListener('resize', function () { if (L) drawLinks(); });
+
+  function render() {
+    var b = document.getElementById('board');
+    cells.forEach(function (v, i) { b.children[i].classList.toggle('on', !!v); });
+    document.getElementById('lvl').textContent = 'Nivel ' + (save.cur + 1) + ' / ' + LEVELS.length;
+    document.getElementById('mv').textContent = 'Movimientos: ' + moves + ' · Par: ' + L.sol.length;
+    document.getElementById('undo').disabled = !hist.length;
+    document.getElementById('levels').innerHTML = LEVELS.map(function (_, k) {
+      var open = k === 0 || save.done[k - 1] || save.done[k];
+      return '<button class="' + (save.done[k] ? 'done ' : '') + (k === save.cur ? 'cur' : '') + '" data-l="' + k + '" ' + (open ? '' : 'disabled') + '>' + (open ? k + 1 : '🔒') + '</button>';
+    }).join('');
+  }
+
+  document.getElementById('board').addEventListener('click', function (e) {
+    var q = e.target.closest('.q'); if (!q) return;
+    var i = +q.dataset.i;
+    hist.push(cells.slice()); apply(cells, L, i); moves++;
+    affect(L, i).forEach(function (j) { var el = document.getElementById('board').children[j]; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); });
+    tone(300 + i * 25);
+    render();
+    if (cells.every(function (v) { return v === 0; })) win();
+  });
+  document.getElementById('undo').onclick = function () { if (!hist.length) return; cells = hist.pop(); moves++; usedUndo = true; render(); };
+  document.getElementById('reset').onclick = function () { loadLevel(save.cur); };
+  document.getElementById('levels').addEventListener('click', function (e) { var b = e.target.closest('[data-l]'); if (b && !b.disabled) loadLevel(+b.dataset.l); });
+  document.getElementById('next').onclick = function () { document.getElementById('win').classList.remove('show'); loadLevel(Math.min(LEVELS.length - 1, save.cur + 1)); };
+
+  function win() {
+    var k = save.cur, par = L.sol.length;
+    save.done[k] = true;
+    save.best[k] = Math.min(save.best[k] || 999, moves);
+    save.streak = usedUndo ? 0 : save.streak + 1;
+    persist();
+    var count = Object.keys(save.done).length;
+    SDK.unlock('quantum_1');
+    SDK.progress('quantum_5', count);
+    if (moves <= par) SDK.unlock('quantum_optimo');
+    if (count >= LEVELS.length) SDK.unlock('quantum_todo');
+    if (save.streak >= 3) SDK.unlock('quantum_sin_deshacer');
+    SDK.setStat('Niveles resueltos', count);
+    var stars = moves <= par ? 3 : moves <= par * 2 ? 2 : 1;
+    document.getElementById('ws').textContent = '★★★'.slice(0, stars) + '☆☆☆'.slice(0, 3 - stars);
+    document.getElementById('wm').textContent = moves + ' movimientos (par ' + par + ')' + (usedUndo ? '' : ' · sin deshacer');
+    document.getElementById('wt').textContent = count >= LEVELS.length && k === LEVELS.length - 1 ? '¡Dominaste el entrelazamiento!' : '¡Nivel completado!';
+    document.getElementById('next').style.display = k < LEVELS.length - 1 ? '' : 'none';
+    document.getElementById('win').classList.add('show');
+    [523, 659, 784].forEach(function (f, i) { setTimeout(function () { tone(f); }, i * 110); });
+  }
+  var ac = null;
+  function tone(f) {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+      o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 0.3);
+    } catch (e) { /* sin audio */ }
+  }
+  loadLevel(save.cur || 0);
+})();
+</script>
+</body>
+</html>

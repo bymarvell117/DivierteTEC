@@ -1,15 +1,15 @@
 # Guía: logros y recompensas en tu juego HTML
 
 Esta guía explica, paso a paso, cómo conectar un juego HTML con el sistema de
-logros de DivertiTEC y cómo cada logro entrega una recompensa (tema de página,
+logros de DivierteTEC y cómo cada logro entrega una recompensa (tema de página,
 marco de perfil, avatar, efecto, emoji o insignia).
 
 ## Cómo funciona
 
 ```
-Tu juego (iframe)                 DivertiTEC (página principal)
+Tu juego (iframe)                 DivierteTEC (página principal)
 ─────────────────                 ─────────────────────────────
-DivertiTEC.unlock('jefe_final') ─► runner.js valida que el mensaje venga de TU iframe
+DivierteTEC.unlock('jefe_final') ─► runner.js valida que el mensaje venga de TU iframe
                                    y que 'jefe_final' exista en tu panel
                                  ─► rewards.js guarda el logro y entrega la recompensa
                                  ─► aparece el aviso animado y el inventario se actualiza
@@ -17,8 +17,8 @@ DivertiTEC.unlock('jefe_final') ─► runner.js valida que el mensaje venga de 
 
 - El juego corre en un `<iframe sandbox="allow-scripts">`: no puede leer ni modificar
   los datos de la plataforma. La única vía de comunicación es `postMessage`.
-- El SDK (`window.DivertiTEC`) se **inyecta automáticamente**; no necesitas incluir nada.
-- `localStorage` funciona dentro del juego: DivertiTEC guarda la partida de cada jugador.
+- El SDK (`window.DivierteTEC`) se **inyecta automáticamente**; no necesitas incluir nada.
+- `localStorage` funciona dentro del juego: DivierteTEC guarda la partida de cada jugador.
 
 ## Paso 1 — Define los logros en el panel
 
@@ -43,48 +43,54 @@ DivertiTEC.unlock('jefe_final') ─► runner.js valida que el mensaje venga de 
 
 ```js
 // Logro directo (meta = 0)
-DivertiTEC.unlock('primer_nivel');
+DivierteTEC.unlock('primer_nivel');
 
 // Logro con meta (p. ej. meta = 1000): se desbloquea al llegar
-DivertiTEC.progress('puntos_1000', puntos);
+DivierteTEC.progress('puntos_1000', puntos);
 
 // Estadísticas libres que ve el jugador en su biblioteca
-DivertiTEC.setStat('record', puntos);
+DivierteTEC.setStat('record', puntos);
 
 // Datos del jugador y logros ya conseguidos
-DivertiTEC.onReady(function (info) {
+DivierteTEC.onReady(function (info) {
   console.log('Hola', info.user.name);
-  if (DivertiTEC.isUnlocked('jefe_final')) { /* mostrar skin dorada */ }
+  if (DivierteTEC.isUnlocked('jefe_final')) { /* mostrar skin dorada */ }
 });
 
 // Reaccionar a un desbloqueo
-DivertiTEC.on('unlock', function (id) { /* sonido de logro */ });
+DivierteTEC.on('unlock', function (id) { /* sonido de logro */ });
 ```
 
 Ejemplo real dentro de un juego:
 
 ```js
 function terminarNivel(nivel, danioRecibido) {
-  if (nivel === 1) DivertiTEC.unlock('primer_nivel');
-  if (danioRecibido === 0) DivertiTEC.unlock('sin_danio');
+  if (nivel === 1) DivierteTEC.unlock('primer_nivel');
+  if (danioRecibido === 0) DivierteTEC.unlock('sin_danio');
 }
 function sumarPuntos(n) {
   puntos += n;
-  DivertiTEC.progress('puntos_1000', puntos);
+  DivierteTEC.progress('puntos_1000', puntos);
 }
 ```
 
-### Probar el juego fuera de DivertiTEC
+### Probar el juego fuera de DivierteTEC
 
-Descarga el SDK desde el panel (**Descargar SDK**) o copia `sdk/divertitec-sdk.js`
+Descarga el SDK desde el panel (**Descargar SDK**) o copia `sdk/divierte-tec-sdk.js`
 en la carpeta de tu juego e inclúyelo:
 
 ```html
-<script src="divertitec-sdk.js"></script>
+<script src="divierte-tec-sdk.js"></script>
 ```
 
 Fuera de la plataforma funciona en **modo local**: muestra el logro en pantalla y en
-la consola, así el juego no falla. Dentro de DivertiTEC se usa el SDK real.
+la consola, así el juego no falla. Dentro de DivierteTEC se usa el SDK real.
+
+> El SDK antes se llamaba `DivertiTEC`. Ese nombre sigue funcionando como alias,
+> así que los juegos ya escritos no necesitan cambios; en código nuevo usa `DivierteTEC`.
+
+Los cuatro juegos integrados (`games/*/index.html`) son ejemplos completos de uso del SDK:
+`unlock`, `progress` con metas, `setStat` y guardado con `localStorage`.
 
 ## Paso 3 — Sube y prueba
 
@@ -92,7 +98,7 @@ la consola, así el juego no falla. Dentro de DivertiTEC se usa el SDK real.
    (HTML, JS, CSS, imágenes, audio, fuentes). Las rutas relativas se conectan solas,
    incluidas las que se piden con `fetch`, `new Image()`, `new Audio()` o `XMLHttpRequest`.
 2. Pulsa **Probar**: el juego abre en *modo prueba* con consola. Verás cada llamada
-   (`DivertiTEC.unlock(...)`), los errores de tu código y los avisos de logros,
+   (`DivierteTEC.unlock(...)`), los errores de tu código y los avisos de logros,
    **sin guardar nada**. Si un ID no existe en el panel, la consola lo avisa.
 3. También puedes simular cada logro con el botón ▶ de su fila.
 
@@ -104,7 +110,7 @@ agregarlo, jugarlo y ganar tus recompensas.
 
 ## Logros de la plataforma
 
-Además de los logros de cada juego, DivertiTEC tiene logros propios
+Además de los logros de cada juego, DivierteTEC tiene logros propios
 (`js/catalog.js → DT.PLATFORM_ACH`), por ejemplo *Primera partida* → tema Retro Arcade,
 *Maratón* (30 min) → tema Neón Cyberpunk, *Cazador de logros* (5 logros) → tema Galaxia.
 Para agregar uno nuevo basta con añadir un objeto con `id`, `name`, `desc`, `icon`,

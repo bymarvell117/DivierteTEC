@@ -1,4 +1,4 @@
-/* DivertiTEC — router por hash (#/ruta) y barra superior. */
+/* DivierteTEC — router por hash (#/ruta) y barra superior. */
 (function (DT) {
   'use strict';
 
@@ -9,6 +9,7 @@
     [/^#\/juego\/([\w-]+)$/, 'gamePage'],
     [/^#\/biblioteca(?:\/([\w-]+))?$/, 'library'],
     [/^#\/comunidad$/, 'community'],
+    [/^#\/planes$/, 'plans'],
     [/^#\/perfil(?:\/([\w-]+))?$/, 'profile'],
     [/^#\/dev$/, 'dev', 'dev'],
     [/^#\/dev\/juego\/([\w-]+)$/, 'devGame', 'dev'],
@@ -70,19 +71,21 @@
     const unread = me.role === 'admin' ? DT.state().reports.filter((x) => x.status === 'open').length + DT.state().games.filter((g) => g.status === 'pending').length : 0;
     DT.$('#topbar').innerHTML = `
       <div class="topbar-inner">
-        <a class="brand" href="#/" aria-label="DivertiTEC inicio">
-          <span class="brand-mark">D</span><span class="brand-name">Diverti<b>TEC</b></span>
+        <a class="brand" href="#/" aria-label="DivierteTEC inicio">
+          <span class="brand-mark">D</span><span class="brand-name">Divierte<b>TEC</b></span>
         </a>
         <button class="icon-btn nav-toggle" aria-label="Menú" data-navtoggle>${DT.icon.grid}</button>
         <nav class="mainnav" data-nav>
           <a href="#/tienda" class="${isActive(['store', 'gamePage'])}">TIENDA</a>
           <a href="#/biblioteca" class="${isActive(['library'])}">BIBLIOTECA</a>
           <a href="#/comunidad" class="${isActive(['community'])}">COMUNIDAD</a>
+          <a href="#/planes" class="${isActive(['plans'])}">PASE</a>
           ${me.role === 'dev' || me.role === 'admin' ? `<a href="#/dev" class="${isActive(['dev', 'devGame', 'editor'])}">DESARROLLADOR</a>` : ''}
           ${me.role === 'admin' ? `<a href="#/admin" class="${isActive(['admin'])}">ADMIN${unread ? `<span class="badge-count">${unread}</span>` : ''}</a>` : ''}
-          <a href="#/perfil" class="${isActive(['profile'])}">${DT.esc(me.name.toUpperCase())}</a>
+          <a href="#/perfil" class="nav-user ${isActive(['profile'])}">${DT.esc(me.name.toUpperCase())}</a>
         </nav>
         <div class="topbar-right">
+          <button class="wallet-chip" data-wallet title="Mi monedero">${DT.hasPass() ? '🎟️' : '💰'}<span class="amt"> ${DT.money(DT.wallet())}</span></button>
           <button class="icon-btn" data-dark title="${dark ? 'Tema claro' : 'Tema oscuro'}" aria-label="Cambiar tema">${dark ? DT.icon.sun : DT.icon.moon}</button>
           <div class="role-menu">
             <button class="user-chip" data-rolemenu aria-haspopup="true">${DT.avatarHTML(me, 30)}<span class="role-tag role-${me.role}">${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Admin' }[me.role]}</span>${DT.icon.chevDown}</button>
@@ -103,6 +106,7 @@
   document.addEventListener('click', (e) => {
     const t = e.target;
     if (t.closest('[data-dark]')) { DT.toggleDark(); return; }
+    if (t.closest('[data-wallet]')) { DT.walletModal(); return; }
     if (t.closest('[data-navtoggle]')) { DT.$('[data-nav]').classList.toggle('open'); return; }
     const dd = DT.$('[data-dropdown]');
     if (t.closest('[data-rolemenu]')) { dd.hidden = !dd.hidden; return; }

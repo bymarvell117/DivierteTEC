@@ -1,20 +1,32 @@
-/* DivertiTEC — tienda y página de tienda de cada juego. */
+/* DivierteTEC — tienda y página de tienda de cada juego. */
 (function (DT) {
   'use strict';
 
   const filters = { q: '', format: 'all', genre: 'all', sort: 'featured' };
 
-  /* Botonera principal según formato y si el usuario ya tiene el juego */
+  /* Botonera principal según precio, acceso (compra/Pase/gratis) y formato.
+     Los juegos HTML se juegan al instante: nunca se descargan. */
   DT.playButtonsHTML = (g) => {
+    const src = DT.accessSource(g.id);
     const owns = DT.owns(g.id);
-    if (!owns) return `<button class="btn success big" data-act="add" data-gid="${g.id}">${DT.icon.plus} Agregar a la biblioteca · Gratis</button>`;
-    if (g.format === 'html') return `<button class="btn success big" data-act="play" data-gid="${g.id}">${DT.icon.play} Jugar en el navegador</button>`;
+    if (!src) {
+      const p = DT.priceOf(g);
+      const label = p.mode === 'pwyw' ? 'Obtener · Paga lo que quieras' : `Comprar · ${DT.money(p.final)}`;
+      return `<button class="btn primary big" data-act="buy" data-gid="${g.id}">${DT.icon.gift} ${label}</button>` +
+        (g.pricing.inPass ? `<a class="btn ghost big" href="#/planes">🎟️ Incluido en el Pase</a>` : '');
+    }
+    if (g.format === 'html') {
+      const play = `<button class="btn success big" data-act="play" data-gid="${g.id}">${DT.icon.play} ${owns ? 'Jugar en el navegador' : 'Jugar ahora'}</button>`;
+      return owns ? play : play + `<button class="btn ghost big" data-act="add" data-gid="${g.id}">${DT.icon.plus} A mi biblioteca</button>`;
+    }
+    if (!owns) return `<button class="btn success big" data-act="add" data-gid="${g.id}">${DT.icon.plus} Agregar a la biblioteca · ${src === 'pass' ? 'con tu Pase' : 'Gratis'}</button>`;
     return `<button class="btn primary big" data-act="download" data-gid="${g.id}">${DT.icon.download} ${g.format === 'cpp' ? 'Descargar' : 'Instalar'}</button>`;
   };
 
   DT.addToLibrary = (gid) => {
+    if (!DT.canAccess(gid)) return DT.checkout(gid);
     const lib = DT.lib();
-    if (!lib[gid]) lib[gid] = { added: Date.now(), playtime: 0, lastPlayed: 0 };
+    if (!lib[gid]) lib[gid] = { added: Date.now(), playtime: 0, lastPlayed: 0, source: DT.accessSource(gid) };
     DT.toast(`${DT.icon.check} <b>${DT.esc(DT.game(gid).title)}</b> se agregó a tu biblioteca.`, { kind: 'ok' });
     DT.rewards.checkPlatform();
     DT.emit('library');
@@ -26,6 +38,7 @@
     if (!b || !b.dataset.gid) return;
     const gid = b.dataset.gid;
     if (b.dataset.act === 'add') DT.addToLibrary(gid);
+    else if (b.dataset.act === 'buy') DT.checkout(gid);
     else if (b.dataset.act === 'play') DT.play(gid);
     else if (b.dataset.act === 'download') DT.download(gid);
   });
@@ -58,13 +71,13 @@
         <div class="row"><b class="game-card-title">${DT.esc(g.title)}</b><span class="spacer"></span><span class="fmt fmt-${g.format}">${DT.formatShort[g.format]}</span></div>
         <small class="muted">${DT.esc(g.genre)} · ${DT.esc((DT.user(g.devId) || {}).name || '')}</small>
         <div class="tags">${(g.tags || []).slice(0, 3).map((t) => `<span class="tag">${DT.esc(t)}</span>`).join('')}</div>
-        ${DT.owns(g.id) ? `<span class="owned">${DT.icon.check} En tu biblioteca</span>` : '<span class="price">Gratis</span>'}
+        <div class="card-foot">${DT.owns(g.id) ? `<span class="owned">${DT.icon.check} En tu biblioteca</span>` : DT.priceTag(g)}${DT.isInstant(g) ? '<span class="instant" title="Se juega en el navegador, sin descargar">⚡ Al instante</span>' : ''}</div>
       </div>
     </a>`;
 
   DT.views.store = (app) => {
     const all = DT.gamesPublic();
-    const featured = all.filter((g) => g.featured);
+    const featured = all.filter((g) => g.featured).sort((a, b) => (DT.isSponsored(b) ? 1 : 0) - (DT.isSponsored(a) ? 1 : 0));
     const genres = [...new Set(all.map((g) => g.genre))].sort();
     app.innerHTML = `
       <section class="page">
@@ -73,7 +86,8 @@
             <div class="hero-slide ${i ? '' : 'on'}" data-slide="${i}">
               <a class="hero-art" href="#/juego/${g.id}">${DT.coverHTML(g, 'fill')}</a>
               <div class="hero-info">
-                <span class="pill">${DT.icon.star} Destacado</span>
+                ${DT.isSponsored(g) ? '<span class="pill sponsored">📣 Patrocinado</span>' : `<span class="pill">${DT.icon.star} Destacado</span>`}
+                <div class="row">${DT.priceTag(g)}</div>
                 <h2>${DT.esc(g.title)}</h2>
                 <p>${DT.esc(g.short)}</p>
                 <div class="tags">${g.tags.map((t) => `<span class="tag">${DT.esc(t)}</span>`).join('')}</div>
@@ -163,8 +177,13 @@
           </div>
           <div class="row">
             ${privileged ? `<a class="btn ghost" href="#/dev/editor/${g.id}/tienda">${DT.icon.edit} Editar página</a>` : ''}
+            <button class="btn ghost sm" data-tip>💙 Apoyar al estudio</button>
             <button class="btn ghost sm" data-report="game">${DT.icon.flag} Reportar</button>
           </div>
+        </div>
+        <div class="buy-strip">
+          <div class="row">${DT.priceTag(g)}${DT.isInstant(g) ? '<span class="instant">⚡ Jugable al instante en el navegador · sin descargas</span>' : ''}</div>
+          <div class="row">${DT.playButtonsHTML(g)}</div>
         </div>
 
         <div class="store-layout" data-layout></div>
@@ -174,6 +193,7 @@
             <h3>Información</h3>
             <dl class="specs">
               <dt>Formato</dt><dd>${DT.formatLabel[g.format]}</dd>
+              <dt>Precio</dt><dd>${{ free: 'Gratis', paid: DT.money(g.pricing.price), pwyw: 'Paga lo que quieras' }[g.pricing.mode]}${g.pricing.inPass ? ' · 🎟️ Pase' : ''}</dd>
               <dt>Género</dt><dd>${DT.esc(g.genre)}</dd>
               <dt>Desarrollador</dt><dd>${DT.esc(dev.name)}</dd>
               <dt>Publicado</dt><dd>${new Date(g.createdAt).toLocaleDateString('es-MX')}</dd>
@@ -215,6 +235,7 @@
 
     DT.renderLayout(DT.$('[data-layout]', app), g.storeLayout, g, { uid: me.id, playHTML: DT.playButtonsHTML });
 
+    DT.$('[data-tip]', app).onclick = () => DT.tipModal(g);
     DT.$$('[data-report]', app).forEach((b) => b.onclick = () => DT.reportModal(b.dataset.report, b.dataset.report === 'dev' ? g.devId : g.id, g.id));
     DT.$$('[data-report-review]', app).forEach((b) => b.onclick = () => DT.reportModal('review', b.dataset.reportReview, g.id));
     const form = DT.$('[data-review]', app);

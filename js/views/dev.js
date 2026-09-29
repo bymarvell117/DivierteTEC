@@ -1,4 +1,4 @@
-/* DivertiTEC — panel de desarrollador: juegos, subida de archivos, logros, novedades y estadísticas. */
+/* DivierteTEC — panel de desarrollador: juegos, subida de archivos, logros, novedades y estadísticas. */
 (function (DT) {
   'use strict';
 
@@ -11,35 +11,35 @@
 
   /* Página HTML de prueba del SDK (no es un juego: sirve para validar la subida y los logros) */
   const SDK_TEST_HTML = `<!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><title>Prueba del SDK DivertiTEC</title>
+<html lang="es"><head><meta charset="utf-8"><title>Prueba del SDK DivierteTEC</title>
 <style>body{font:16px system-ui;background:#0f1722;color:#e7edf5;margin:0;padding:24px}h1{margin:0 0 4px}button{font:inherit;margin:4px;padding:8px 14px;border:0;border-radius:8px;background:#1a6fd8;color:#fff;cursor:pointer}button.got{background:#1f9d55}.box{background:#1b2533;border-radius:10px;padding:14px;margin:14px 0}</style>
 </head><body>
-<h1>🧪 Prueba del SDK de DivertiTEC</h1>
-<p>Este archivo de ejemplo solo prueba la plataforma: cada botón llama a <code>DivertiTEC.unlock(id)</code>.</p>
+<h1>🧪 Prueba del SDK de DivierteTEC</h1>
+<p>Este archivo de ejemplo solo prueba la plataforma: cada botón llama a <code>DivierteTEC.unlock(id)</code>.</p>
 <div class="box"><b>Jugador:</b> <span id="who">…</span></div>
 <div class="box" id="achs"></div>
 <div class="box"><b>Progreso:</b> <button id="pts">+250 puntos</button> <span id="score">0</span>
-<p><small>Llama a <code>DivertiTEC.progress('puntos_1000', puntos)</code>. Se guarda con localStorage.</small></p></div>
+<p><small>Llama a <code>DivierteTEC.progress('puntos_1000', puntos)</code>. Se guarda con localStorage.</small></p></div>
 <script>
 var score = Number(localStorage.getItem('score') || 0);
 document.getElementById('score').textContent = score;
-DivertiTEC.onReady(function (info) {
+DivierteTEC.onReady(function (info) {
   document.getElementById('who').textContent = info.user.name + (info.test ? ' (modo prueba)' : '');
   var box = document.getElementById('achs');
   box.innerHTML = '<b>Logros definidos en el panel:</b><br>';
   info.achievements.forEach(function (a) {
     var b = document.createElement('button');
     b.textContent = a.icon + ' ' + a.name + ' (' + a.id + ')';
-    if (DivertiTEC.isUnlocked(a.id)) b.className = 'got';
-    b.onclick = function () { if (a.goal) DivertiTEC.progress(a.id, a.goal); else DivertiTEC.unlock(a.id); b.className = 'got'; };
+    if (DivierteTEC.isUnlocked(a.id)) b.className = 'got';
+    b.onclick = function () { if (a.goal) DivierteTEC.progress(a.id, a.goal); else DivierteTEC.unlock(a.id); b.className = 'got'; };
     box.appendChild(b);
   });
 });
 document.getElementById('pts').onclick = function () {
   score += 250; localStorage.setItem('score', score);
   document.getElementById('score').textContent = score;
-  DivertiTEC.progress('puntos_1000', score);
-  DivertiTEC.setStat('récord', score);
+  DivierteTEC.progress('puntos_1000', score);
+  DivierteTEC.setStat('récord', score);
 };
 </script></body></html>`;
 
@@ -67,6 +67,11 @@ document.getElementById('pts').onclick = function () {
           <div class="kpi"><small>Jugadores</small><b>${players.size}</b></div>
           <div class="kpi"><small>Logros desbloqueados</small><b>${unlocks}</b></div>
         </div>
+        <div class="grid cols-3 kpis">
+          <div class="kpi"><small>Ventas brutas</small><b>${DT.money(DT.devSalesTotal(me.id))}</b></div>
+          <div class="kpi"><small>Saldo del estudio</small><b>${DT.money(DT.wallet(me.id))}</b></div>
+          <div class="kpi"><small>Comisión actual</small><b>${(() => { const c = DT.commissionFor(me.id, 100); return c.freePart >= 100 ? '0 % <small>Semilla TEC</small>' : Math.round(c.rate * 100) + ' %'; })()}</b></div>
+        </div>
         <h3 class="section-title">Mis juegos</h3>
         <div class="dev-games">
           ${mine.map((g) => `
@@ -81,9 +86,9 @@ document.getElementById('pts').onclick = function () {
         <h3 class="section-title">${DT.icon.code} SDK de logros en 3 pasos</h3>
         <div class="grid cols-3 steps">
           <div class="card"><span class="step-n">1</span><h4>Define los logros</h4><p>En la pestaña <b>Logros</b> de tu juego crea cada logro con un <code>id</code>, su meta y la recompensa que entrega.</p></div>
-          <div class="card"><span class="step-n">2</span><h4>Llama al SDK</h4><p>DivertiTEC inyecta el SDK automáticamente en tu juego HTML:</p>
-            <pre class="code">DivertiTEC.unlock('jefe_final');
-DivertiTEC.progress('puntos_1000', score);</pre></div>
+          <div class="card"><span class="step-n">2</span><h4>Llama al SDK</h4><p>DivierteTEC inyecta el SDK automáticamente en tu juego HTML:</p>
+            <pre class="code">DivierteTEC.unlock('jefe_final');
+DivierteTEC.progress('puntos_1000', score);</pre></div>
           <div class="card"><span class="step-n">3</span><h4>Prueba y publica</h4><p>Usa <b>Probar</b> para ver los logros y la consola sin guardar nada. Después envía tu juego a revisión.</p>
             <button class="btn ghost sm" data-sdk>${DT.icon.download} Descargar SDK (modo local)</button></div>
         </div>
@@ -92,7 +97,7 @@ DivertiTEC.progress('puntos_1000', score);</pre></div>
     DT.$('[data-sdk]', app).onclick = () => {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([DT.SDK_STANDALONE], { type: 'text/javascript' }));
-      a.download = 'divertitec-sdk.js';
+      a.download = 'divierte-tec-sdk.js';
       a.click();
     };
     DT.$('[data-new]', app).onclick = () => {
@@ -131,7 +136,7 @@ DivertiTEC.progress('puntos_1000', score);</pre></div>
     const g = DT.game(gid);
     const me = DT.me();
     if (!g || (g.devId !== me.id && me.role !== 'admin')) return DT.views.notFound(app);
-    const tabs = [['info', 'Información'], ['files', g.format === 'html' ? 'Archivos del juego' : 'Descarga'], ['ach', 'Logros y recompensas'], ['pages', 'Páginas'], ['news', 'Novedades'], ['stats', 'Estadísticas']];
+    const tabs = [['info', 'Información'], ['files', g.format === 'html' ? 'Archivos del juego' : 'Descarga'], ['ach', 'Logros y recompensas'], ['sales', 'Precio y ventas'], ['pages', 'Páginas'], ['news', 'Novedades'], ['stats', 'Estadísticas']];
     if (!tabs.some(([k]) => k === ui.tab)) ui.tab = 'info';
 
     app.innerHTML = `
@@ -169,7 +174,7 @@ DivertiTEC.progress('puntos_1000', score);</pre></div>
       DT.render(true);
     };
     const body = DT.$('[data-body]', app);
-    ({ info: tabInfo, files: tabFiles, ach: tabAch, pages: tabPages, news: tabNews, stats: tabStats })[ui.tab](body, g);
+    ({ info: tabInfo, files: tabFiles, ach: tabAch, sales: tabSales, pages: tabPages, news: tabNews, stats: tabStats })[ui.tab](body, g);
     DT.media.hydrate(app);
   };
 
@@ -307,7 +312,7 @@ DivertiTEC.progress('puntos_1000', score);</pre></div>
         <div class="row"><h3 style="margin:0">${DT.icon.trophy} Logros del juego</h3><span class="spacer"></span>
           <button class="btn ghost sm" data-customreward>${DT.icon.gift} Crear recompensa personalizada</button>
           <button class="btn primary sm" data-addach>${DT.icon.plus} Agregar logro</button></div>
-        <p class="muted">Cada logro tiene un <b>id</b> que usarás en el código. Si pones una <b>meta</b> mayor que 0, el logro se desbloquea con <code>DivertiTEC.progress(id, valor)</code> al alcanzarla.</p>
+        <p class="muted">Cada logro tiene un <b>id</b> que usarás en el código. Si pones una <b>meta</b> mayor que 0, el logro se desbloquea con <code>DivierteTEC.progress(id, valor)</code> al alcanzarla.</p>
         <div class="ach-table">
           <div class="ach-th"><span>Icono</span><span>ID (código)</span><span>Nombre</span><span>Descripción</span><span>Meta</span><span>Oculto</span><span>Recompensa</span><span></span></div>
           ${(g.achievements || []).map((a, i) => `
@@ -359,10 +364,10 @@ DivertiTEC.progress('puntos_1000', score);</pre></div>
     DT.$('[data-customreward]', body).onclick = () => customRewardModal(() => { persist(true); DT.render(true); });
   }
 
-  const snippet = (g) => ['// El SDK se inyecta solo cuando el juego corre en DivertiTEC.',
-    '// Para probar fuera de la plataforma incluye: <script src="divertitec-sdk.js"></script>', '']
-    .concat((g.achievements || []).map((a) => a.goal ? `DivertiTEC.progress('${a.id}', valor);   // ${a.name}: meta ${a.goal}` : `DivertiTEC.unlock('${a.id}');   // ${a.name}`))
-    .concat(['', '// Opcional', "DivertiTEC.setStat('record', puntos);", 'DivertiTEC.onReady(function (info) { console.log(info.user.name); });']).join('\n');
+  const snippet = (g) => ['// El SDK se inyecta solo cuando el juego corre en DivierteTEC.',
+    '// Para probar fuera de la plataforma incluye: <script src="divierte-tec-sdk.js"></script>', '']
+    .concat((g.achievements || []).map((a) => a.goal ? `DivierteTEC.progress('${a.id}', valor);   // ${a.name}: meta ${a.goal}` : `DivierteTEC.unlock('${a.id}');   // ${a.name}`))
+    .concat(['', '// Opcional', "DivierteTEC.setStat('record', puntos);", 'DivierteTEC.onReady(function (info) { console.log(info.user.name); });']).join('\n');
 
   function customRewardModal(done) {
     const m = DT.modal({
@@ -385,6 +390,75 @@ DivertiTEC.progress('puntos_1000', score);</pre></div>
       DT.toast('Recompensa creada: ya puedes asignarla a un logro.', { kind: 'ok' });
       done();
     };
+  }
+
+  /* --- Pestaña: precio y ventas --- */
+  function tabSales(body, g) {
+    const s = DT.state();
+    const p = g.pricing;
+    const e = DT.econ();
+    const dev = DT.user(g.devId);
+    const sales = s.ledger.filter((x) => x.gameId === g.id && (x.type === 'sale' || x.type === 'tip'));
+    const c = DT.commissionFor(g.devId, 100);
+    const promo = s.promos.find((x) => x.gameId === g.id && x.status === 'pending');
+    body.innerHTML = `
+      <div class="grid cols-2">
+        <form class="card" data-price>
+          <h3>${DT.icon.gift} Modelo de precio</h3>
+          <div class="seg price-mode">${[['free', 'Gratis'], ['paid', 'Precio fijo'], ['pwyw', 'Paga lo que quieras']].map(([k, v]) => `<label><input type="radio" name="mode" value="${k}" ${p.mode === k ? 'checked' : ''}><span>${v}</span></label>`).join('')}</div>
+          <div class="form-grid" style="margin-top:12px">
+            <label class="field"><span>Precio / precio sugerido (MXN)</span><input type="number" name="price" min="0" step="1" value="${p.price || 0}"></label>
+            <label class="field"><span>Mínimo (paga lo que quieras)</span><input type="number" name="min" min="0" step="1" value="${p.min || 0}"></label>
+            <label class="field"><span>Descuento temporal (%)</span><input type="number" name="discount" min="0" max="90" step="5" value="${p.discount || 0}"></label>
+            <label class="field"><span>&nbsp;</span><label class="check"><input type="checkbox" name="inPass" ${p.inPass ? 'checked' : ''}> Incluir en el Pase DivierteTEC</label></label>
+          </div>
+          <p class="muted small">Al incluirlo en el Pase, los suscriptores lo juegan sin comprarlo y tu estudio recibe parte del fondo mensual (${Math.round(e.passDevShare * 100)} % de las suscripciones) según el tiempo jugado.</p>
+          <div class="breakdown" data-prev></div>
+          <div class="row"><span class="spacer"></span><button class="btn primary">Guardar precio</button></div>
+        </form>
+        <div>
+          <div class="card">
+            <h3>💼 Tu comisión</h3>
+            <p>${dev.student && dev.verified ? `Estudio <b>estudiantil verificado</b>: Semilla TEC de ${DT.money(e.seedAllowance)} sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta.${dev.student ? ' Pide la verificación a la administración para activar la Semilla TEC.' : ''}`}</p>
+            ${dev.student && dev.verified ? `<div class="bar"><i style="width:${Math.min(100, DT.devSalesTotal(dev.id) / e.seedAllowance * 100)}%"></i></div><small class="muted">${DT.money(Math.min(e.seedAllowance, DT.devSalesTotal(dev.id)))} de ${DT.money(e.seedAllowance)} usados de la Semilla TEC</small>` : ''}
+          </div>
+          <div class="card">
+            <h3>📣 Destacado patrocinado</h3>
+            <p>Aparece en el carrusel principal de la tienda durante ${e.promoDays} días por ${DT.money(e.promoPrice)} (se cobra del saldo del estudio: ${DT.money(DT.wallet(g.devId))}).</p>
+            ${DT.isSponsored(g) ? `<p class="ok">Activo hasta ${new Date(g.sponsoredUntil).toLocaleDateString('es-MX')}</p>` : promo ? '<span class="pill warn">Solicitud en revisión</span>'
+              : `<button class="btn primary sm" data-promo ${g.status !== 'approved' ? 'disabled title="Disponible cuando el juego esté publicado"' : ''}>Solicitar promoción</button>`}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>${DT.icon.chart} Ventas y propinas de este juego</h3>
+        <div class="grid cols-3 kpis">
+          <div class="kpi"><small>Ventas</small><b>${sales.filter((x) => x.type === 'sale').length}</b></div>
+          <div class="kpi"><small>Ingreso bruto</small><b>${DT.money(sales.reduce((t, x) => t + x.gross, 0))}</b></div>
+          <div class="kpi"><small>Recibido por el estudio</small><b>${DT.money(sales.reduce((t, x) => t + x.net, 0))}</b></div>
+        </div>
+        <div class="table">${sales.map(DT.txRow).join('') || '<p class="muted pad">Aún no hay ventas.</p>'}</div>
+      </div>`;
+    const f = DT.$('[data-price]', body);
+    const preview = () => {
+      const price = Math.max(0, Number(f.price.value) || 0) * (1 - (Number(f.discount.value) || 0) / 100);
+      const cc = DT.commissionFor(g.devId, price);
+      DT.$('[data-prev]', body).innerHTML = f.mode.value === 'free' ? '<div><span>Juego gratuito</span><b>$0</b></div>'
+        : `<div><span>Precio al público</span><b>${DT.money(price)}</b></div><div><span>Comisión (${DT.esc(cc.note)})</span><b>−${DT.money(cc.commission)}</b></div><div class="total"><span>Recibes por copia</span><b>${DT.money(cc.net)}</b></div>`;
+    };
+    f.addEventListener('input', preview);
+    preview();
+    f.onsubmit = (ev) => {
+      ev.preventDefault();
+      g.pricing = { mode: f.mode.value, price: Math.max(0, Number(f.price.value) || 0), min: Math.max(0, Number(f.min.value) || 0),
+        discount: Math.max(0, Math.min(90, Number(f.discount.value) || 0)), inPass: f.inPass.checked };
+      DT.log(`Actualizó el precio de «${g.title}».`);
+      DT.save();
+      DT.toast('Precio guardado.', { kind: 'ok' });
+      DT.render(true);
+    };
+    const pb = DT.$('[data-promo]', body);
+    if (pb) pb.onclick = () => { DT.requestPromo(g.id); DT.render(true); };
   }
 
   /* --- Pestaña: páginas personalizables --- */

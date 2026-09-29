@@ -1,4 +1,4 @@
-/* DivertiTEC — motor de layouts personalizados (páginas de tienda y biblioteca).
+/* DivierteTEC — motor de layouts personalizados (páginas de tienda y biblioteca).
    Un layout es { height, bg, blocks[] } sobre un lienzo lógico de 1000px de ancho que
    se escala para caber en cualquier pantalla. Cada bloque tiene posición, tamaño,
    rotación, capa (z) y forma (clip-path): rectángulo, círculo, triángulo, hexágono,

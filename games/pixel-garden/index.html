@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Garden</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font: 700 15px "Courier New", ui-monospace, monospace; color: #0f380f; user-select: none;
+    background: #9bbc0f; background-image: linear-gradient(#8bac0f 2px, transparent 2px), linear-gradient(90deg, #8bac0f 2px, transparent 2px);
+    background-size: 24px 24px; display: flex; flex-direction: column; align-items: center; padding: 14px;
+  }
+  h1 { margin: 4px 0 2px; font-size: 26px; letter-spacing: 2px; text-shadow: 3px 3px 0 #c4d98a; }
+  .bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
+  .coins { background: #0f380f; color: #ffd23f; padding: 6px 12px; box-shadow: 4px 4px 0 #306230; font-size: 18px; }
+  .seeds { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .seed { background: #c4d98a; border: 3px solid #0f380f; padding: 6px 10px; cursor: pointer; font: inherit; color: inherit; box-shadow: 3px 3px 0 #306230; min-width: 116px; text-align: left; }
+  .seed small { display: block; font-size: 11px; opacity: .8; }
+  .seed.on { background: #0f380f; color: #c4d98a; }
+  .seed.locked { opacity: .75; background: #8bac0f; }
+  .garden { display: grid; grid-template-columns: repeat(4, minmax(64px, 110px)); gap: 10px; margin: 14px 0; position: relative; }
+  .plot { aspect-ratio: 1; background: #5b3a1e; border: 4px solid #0f380f; box-shadow: 4px 4px 0 #306230; position: relative; cursor: pointer; display: grid; place-items: center; font-size: 40px;
+    background-image: repeating-linear-gradient(0deg, #6b4526 0 6px, #5b3a1e 6px 12px); image-rendering: pixelated; transition: transform .08s; }
+  .plot:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #306230; }
+  .plot.ready { animation: bounce 1s steps(2) infinite; }
+  .plot .grow { position: absolute; left: 6px; right: 6px; bottom: 6px; height: 7px; background: #0f380f; }
+  .plot .grow i { display: block; height: 100%; background: #9bbc0f; }
+  .plot .plant { filter: drop-shadow(2px 2px 0 #0f380f); }
+  @keyframes bounce { 50% { transform: translateY(-4px); } }
+  .pop { position: absolute; pointer-events: none; font-size: 16px; color: #ffd23f; text-shadow: 2px 2px 0 #0f380f; animation: up 0.9s forwards; z-index: 5; }
+  @keyframes up { to { transform: translateY(-40px); opacity: 0; } }
+  .cat { position: absolute; font-size: 30px; top: -38px; transition: left 1.2s steps(6); filter: drop-shadow(2px 2px 0 #0f380f); }
+  .shop { background: #c4d98a; border: 3px solid #0f380f; padding: 10px 14px; box-shadow: 4px 4px 0 #306230; max-width: 520px; width: 100%; }
+  .shop button { font: inherit; background: #0f380f; color: #ffd23f; border: 0; padding: 8px 12px; cursor: pointer; box-shadow: 3px 3px 0 #306230; }
+  .shop button:disabled { opacity: .5; cursor: default; }
+  .msg { min-height: 22px; margin-top: 6px; text-align: center; }
+  .help { font-size: 12px; opacity: .8; text-align: center; max-width: 520px; }
+</style>
+</head>
+<body>
+<h1>🌱 PIXEL GARDEN</h1>
+<div class="bar"><span class="coins">🪙 <span id="coins">0</span></span><span id="info"></span></div>
+<div class="seeds" id="seeds"></div>
+<div class="garden" id="garden"></div>
+<div class="shop" id="shop"></div>
+<div class="msg" id="msg"></div>
+<p class="help">Elige una semilla y toca una parcela vacía para plantar. Cuando la planta rebote, tócala para cosechar. ¡Tu jardín sigue creciendo aunque cierres el juego!</p>
+<script src="../../sdk/divierte-tec-sdk.js" data-dt-sdk></script>
+<script>
+/* PIXEL GARDEN — jardinería idle con crecimiento en tiempo real y un gato ayudante. */
+(function () {
+  'use strict';
+  var SDK = window.DivierteTEC || { unlock: function () {}, progress: function () {}, setStat: function () {} };
+  var SEEDS = [
+    { id: 'zanahoria', name: 'Zanahoria', icon: '🥕', cost: 1, sell: 3, time: 6, unlock: 0 },
+    { id: 'girasol', name: 'Girasol', icon: '🌻', cost: 4, sell: 11, time: 15, unlock: 25 },
+    { id: 'calabaza', name: 'Calabaza', icon: '🎃', cost: 12, sell: 36, time: 35, unlock: 90 },
+    { id: 'cactus', name: 'Cactus estelar', icon: '🌵', cost: 30, sell: 100, time: 70, unlock: 220 }
+  ];
+  var CAT_PRICE = 150, PLOTS = 12;
+  var byId = {}; SEEDS.forEach(function (s) { byId[s.id] = s; });
+
+  var def = { coins: 5, earned: 0, harvests: 0, unlocked: ['zanahoria'], plots: [], cat: false, golden: 0, sel: 'zanahoria' };
+  var g;
+  try { g = JSON.parse(localStorage.getItem('garden_save')) || def; } catch (e) { g = def; }
+  for (var i = 0; i < PLOTS; i++) g.plots[i] = g.plots[i] || null;
+  function persist() { try { localStorage.setItem('garden_save', JSON.stringify(g)); } catch (e) { /* nada */ } }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var garden = $('garden');
+
+  function say(t) { $('msg').textContent = t; }
+  function pop(el, t) {
+    var r = el.getBoundingClientRect(), d = document.createElement('div');
+    d.className = 'pop'; d.textContent = t; d.style.left = (r.left + r.width / 2 - 14 + scrollX) + 'px'; d.style.top = (r.top + scrollY) + 'px';
+    document.body.appendChild(d); setTimeout(function () { d.remove(); }, 900);
+  }
+  function progressOf(pl) { return Math.min(1, (Date.now() - pl.at) / (byId[pl.seed].time * 1000)); }
+
+  function plant(i) {
+    var s = byId[g.sel];
+    if (g.coins < s.cost) { say('No tienes monedas suficientes para ' + s.name + '.'); return false; }
+    g.coins -= s.cost; g.plots[i] = { seed: s.id, at: Date.now() };
+    persist(); return true;
+  }
+  function harvest(i, byCat) {
+    var pl = g.plots[i], s = byId[pl.seed];
+    var gain = s.sell, golden = Math.random() < 0.02;
+    if (golden) { gain += 50; g.golden++; SDK.unlock('garden_dorada'); say('✨ ¡Una FLOR DORADA! +50 monedas extra'); }
+    g.coins += gain; g.earned += gain; g.harvests++;
+    g.plots[i] = null;
+    pop(garden.children[i], (golden ? '🌼 ' : '') + '+' + gain);
+    SDK.unlock('garden_cosecha');
+    SDK.progress('garden_100', g.earned);
+    SDK.setStat('Monedas ganadas', g.earned);
+    SDK.setStat('Cosechas', g.harvests);
+    if (byCat && g.coins >= s.cost) { g.coins -= s.cost; g.plots[i] = { seed: s.id, at: Date.now() }; }
+    checkUnlocks(); persist();
+  }
+  function checkUnlocks() {
+    SEEDS.forEach(function (s) {
+      if (g.unlocked.indexOf(s.id) < 0 && g.earned >= s.unlock) {
+        g.unlocked.push(s.id); say('🎉 ¡Nueva semilla desbloqueada: ' + s.icon + ' ' + s.name + '!');
+      }
+    });
+    if (g.unlocked.length === SEEDS.length) SDK.unlock('garden_botanico');
+  }
+
+  garden.addEventListener('click', function (e) {
+    var el = e.target.closest('.plot'); if (!el) return;
+    var i = +el.dataset.i, pl = g.plots[i];
+    if (!pl) { if (plant(i)) say('Plantaste ' + byId[g.sel].name + '.'); }
+    else if (progressOf(pl) >= 1) harvest(i, false);
+    else say(byId[pl.seed].name + ': faltan ' + Math.ceil((1 - progressOf(pl)) * byId[pl.seed].time) + ' s.');
+    render();
+  });
+
+  function render() {
+    $('coins').textContent = g.coins;
+    $('info').textContent = 'Cosechas: ' + g.harvests + (g.cat ? ' · 🐈 ayudante activo' : '');
+    $('seeds').innerHTML = SEEDS.map(function (s) {
+      var un = g.unlocked.indexOf(s.id) >= 0;
+      return '<button class="seed ' + (g.sel === s.id ? 'on ' : '') + (un ? '' : 'locked') + '" data-seed="' + s.id + '" ' + (un ? '' : 'disabled') + '>' +
+        (un ? s.icon : '🔒') + ' ' + s.name + '<small>' + (un ? 'Cuesta ' + s.cost + ' · vende ' + s.sell + ' · ' + s.time + ' s' : 'Gana ' + s.unlock + ' monedas en total') + '</small></button>';
+    }).join('');
+    var html = '';
+    for (var i = 0; i < PLOTS; i++) {
+      var pl = g.plots[i];
+      if (!pl) { html += '<div class="plot" data-i="' + i + '" title="Parcela vacía"></div>'; continue; }
+      var pr = progressOf(pl), s = byId[pl.seed];
+      var icon = pr >= 1 ? s.icon : pr > 0.5 ? '🌿' : '🌱';
+      html += '<div class="plot ' + (pr >= 1 ? 'ready' : '') + '" data-i="' + i + '"><span class="plant" style="font-size:' + (22 + pr * 20) + 'px">' + icon + '</span>' +
+        (pr < 1 ? '<div class="grow"><i style="width:' + (pr * 100) + '%"></i></div>' : '') + '</div>';
+    }
+    html += g.cat ? '<div class="cat" id="cat" style="left:' + catX + '%">🐈</div>' : '';
+    garden.innerHTML = html;
+    $('shop').innerHTML = g.cat
+      ? '🐈 <b>Michi</b> cuida tu jardín: cosecha y vuelve a plantar solo.'
+      : '<b>Tienda:</b> 🐈 Adopta un gato jardinero que cosecha y replanta por ti. <button id="buycat" ' + (g.coins < CAT_PRICE ? 'disabled' : '') + '>Adoptar · ' + CAT_PRICE + ' 🪙</button>';
+  }
+  $('seeds').addEventListener('click', function (e) { var b = e.target.closest('[data-seed]'); if (b) { g.sel = b.dataset.seed; persist(); render(); } });
+  $('shop').addEventListener('click', function (e) {
+    if (e.target.id === 'buycat' && g.coins >= CAT_PRICE) {
+      g.coins -= CAT_PRICE; g.cat = true; persist(); SDK.unlock('garden_gato'); say('🐈 ¡Adoptaste a Michi!'); render();
+    }
+  });
+
+  /* Gato ayudante: cada 2.5 s cosecha una planta lista */
+  var catX = 0;
+  setInterval(function () {
+    if (!g.cat) return;
+    for (var i = 0; i < PLOTS; i++) {
+      var pl = g.plots[i];
+      if (pl && progressOf(pl) >= 1) { catX = (i % 4) * 25 + 5; harvest(i, true); render(); return; }
+    }
+    catX = Math.random() * 85; var c = $('cat'); if (c) c.style.left = catX + '%';
+  }, 2500);
+
+  checkUnlocks();
+  if (g.cat) SDK.unlock('garden_gato');
+  render();
+  setInterval(render, 500);
+  say(g.harvests ? '¡Bienvenido de vuelta! Tu jardín siguió creciendo.' : 'Empieza plantando zanahorias 🥕');
+})();
+</script>
+</body>
+</html>

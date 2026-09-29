@@ -1,4 +1,4 @@
-/* DivertiTEC — núcleo: namespace global, utilidades, iconos, modales y toasts.
+/* DivierteTEC — núcleo: namespace global, utilidades, iconos, modales y toasts.
    Se usan scripts clásicos (no ES modules) para que la página funcione abriendo
    index.html directamente desde el disco (file://), sin servidor. */
 window.DT = window.DT || {};

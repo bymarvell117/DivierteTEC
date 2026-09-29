@@ -1,4 +1,4 @@
-/* DivertiTEC — página de bienvenida animada (scroll cinematográfico). */
+/* DivierteTEC — página de bienvenida animada (scroll cinematográfico). */
 (function (DT) {
   'use strict';
 
@@ -20,7 +20,7 @@
         </div>
         <div class="l-hero-content">
           <p class="l-kicker">InnovaTec · Hackatec regional 2026</p>
-          <h1 class="l-title" aria-label="DivertiTEC">${'DIVERTITEC'.split('').map((c, i) => `<span style="--i:${i}">${c}</span>`).join('')}</h1>
+          <h1 class="l-title" aria-label="DivierteTEC">${'DIVIERTETEC'.split('').map((c, i) => `<span style="--i:${i}">${c}</span>`).join('')}</h1>
           <p class="l-sub">Crea. Publica. Juega. La plataforma de videojuegos hecha por y para estudiantes.</p>
           <div class="l-cta">
             <a class="btn primary big" href="#/tienda">${DT.icon.play} Explorar la tienda</a>
@@ -92,9 +92,9 @@
       </section>
 
       <footer class="l-footer">
-        <div class="brand"><span class="brand-mark">D</span><span class="brand-name">Diverti<b>TEC</b></span></div>
+        <div class="brand"><span class="brand-mark">D</span><span class="brand-name">Divierte<b>TEC</b></span></div>
         <p>Proyecto para InnovaTec · Hackatec regional 2026. Demostración offline: todos los datos viven en tu navegador.</p>
-        <a class="btn primary big" href="#/tienda">Entrar a DivertiTEC</a>
+        <a class="btn primary big" href="#/tienda">Entrar a DivierteTEC</a>
       </footer>
     </div>`;
 

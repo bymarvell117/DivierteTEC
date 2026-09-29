@@ -1,4 +1,4 @@
-/* DivertiTEC — biblioteca estilo Steam (colecciones, novedades, jugados recientemente). */
+/* DivierteTEC — biblioteca estilo Steam (colecciones, novedades, jugados recientemente). */
 (function (DT) {
   'use strict';
 
@@ -74,6 +74,8 @@
   };
 
   const playButton = (g, compact) => {
+    // Juegos del Pase con la suscripción vencida: se conservan en la biblioteca, pero hay que renovar o comprar
+    if (!DT.canAccess(g.id)) return `<a class="btn primary ${compact ? 'square' : 'big'}" href="#/planes" title="Tu Pase venció">🎟️${compact ? '' : ' RENOVAR PASE'}</a>`;
     if (g.format === 'html') return `<button class="btn play ${compact ? 'square' : 'big'}" data-act="play" data-gid="${g.id}">${DT.icon.play}${compact ? '' : ' JUGAR'}</button>`;
     const inst = (DT.lib()[g.id] || {}).installed;
     return `<button class="btn ${inst ? 'play' : 'primary'} ${compact ? 'square' : 'big'}" data-act="download" data-gid="${g.id}">${DT.icon.download}${compact ? '' : inst ? ' REINSTALAR' : ' INSTALAR'}</button>`;

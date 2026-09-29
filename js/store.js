@@ -1,11 +1,11 @@
-/* DivertiTEC — capa de datos.
+/* DivierteTEC — capa de datos.
    - Estado (usuarios, juegos, logros, reportes…) en localStorage como JSON.
    - Archivos binarios (juegos subidos, imágenes, videos) en IndexedDB.
    Todo vive en el navegador: no hace falta servidor para la demostración. */
 (function (DT) {
   'use strict';
 
-  const KEY = 'divertitec_state_v3';
+  const KEY = 'divierteTEC_state_v4';
   let state = null;
   const listeners = new Set();
 
@@ -13,7 +13,7 @@
 
   DT.load = () => {
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
-    if (!state || state.version !== 3) { state = DT.seedState(); DT.save(); }
+    if (!state || state.version !== 4) { state = DT.seedState(); DT.save(); }
     return state;
   };
 
@@ -86,7 +86,7 @@
   };
 
   /* ---------- IndexedDB: almacén de archivos ---------- */
-  const DB_NAME = 'divertitec_files';
+  const DB_NAME = 'divierteTEC_files';
   let dbp = null;
   const mem = new Map(); // respaldo si IndexedDB no está disponible
   const openDB = () => dbp || (dbp = new Promise((res) => {

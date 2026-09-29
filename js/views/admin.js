@@ -1,9 +1,9 @@
-/* DivertiTEC — panel de administración: revisión de juegos, desarrolladores,
+/* DivierteTEC — panel de administración: revisión de juegos, desarrolladores,
    reportes, moderación de contenido, destacados y registro de actividad. */
 (function (DT) {
   'use strict';
 
-  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['juegos', 'Catálogo', 'grid'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
+  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
     ['reportes', 'Reportes', 'flag'], ['moderacion', 'Moderación', 'shield'], ['registro', 'Registro', 'clock']];
 
   DT.views.admin = (app, tab) => {
@@ -17,12 +17,13 @@
           <h3>${DT.icon.shield} Administración</h3>
           ${TABS.map(([k, v, ic]) => `<a href="#/admin/${k}" class="${tab === k ? 'on' : ''}">${DT.icon[ic]}<span>${v}</span>
             ${k === 'revision' && pending.length ? `<b class="badge-count static">${pending.length}</b>` : ''}
+            ${k === 'finanzas' && s.promos.some((p) => p.status === 'pending') ? `<b class="badge-count static">${s.promos.filter((p) => p.status === 'pending').length}</b>` : ''}
             ${k === 'reportes' && openReports.length ? `<b class="badge-count static">${openReports.length}</b>` : ''}</a>`).join('')}
         </aside>
         <section class="admin-main" data-body></section>
       </div>`;
     const body = DT.$('[data-body]', app);
-    ({ resumen, revision, juegos, usuarios, reportes, moderacion, registro })[tab](body, s);
+    ({ resumen, revision, juegos, finanzas, usuarios, reportes, moderacion, registro })[tab](body, s);
     DT.media.hydrate(body);
   };
 
@@ -35,7 +36,7 @@
     const maxF = Math.max(1, ...byFormat.map(([, n]) => n));
     const totalTime = Object.values(s.library).reduce((t, lib) => t + Object.values(lib).reduce((a, e) => a + (e.playtime || 0), 0), 0);
     body.innerHTML = `
-      <div class="page-head"><div><h1>Resumen</h1><p>Estado general de DivertiTEC.</p></div></div>
+      <div class="page-head"><div><h1>Resumen</h1><p>Estado general de DivierteTEC.</p></div></div>
       <div class="grid cols-4 kpis">
         <div class="kpi"><small>Juegos publicados</small><b>${s.games.filter((g) => g.status === 'approved').length}</b></div>
         <div class="kpi warn"><small>Pendientes de revisión</small><b>${s.games.filter((g) => g.status === 'pending').length}</b></div>
@@ -135,6 +136,69 @@
     });
   }
 
+  function finanzas(body, s) {
+    const f = DT.financeSummary();
+    const e = s.economy;
+    const pending = s.promos.filter((p) => p.status === 'pending');
+    const bars = [['Comisiones por ventas', f.saleFees], ['Pase (30 % plataforma)', f.passPlatform], ['Destacados patrocinados', f.promos]];
+    const maxB = Math.max(1, ...bars.map((b) => b[1]));
+    body.innerHTML = `
+      <div class="page-head"><div><h1>Finanzas</h1><p>Modelo "Crece con tu estudio" · dinero simulado para la demostración.</p></div></div>
+      <div class="grid cols-4 kpis">
+        <div class="kpi"><small>Ventas brutas de juegos</small><b>${DT.money(f.sales)}</b></div>
+        <div class="kpi"><small>Ingresos de la plataforma</small><b>${DT.money(f.platform)}</b></div>
+        <div class="kpi"><small>Pagado a estudios</small><b>${DT.money(f.toDevs)}</b></div>
+        <div class="kpi"><small>Suscriptores del Pase</small><b>${f.subscribers}</b></div>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>De dónde vienen los ingresos</h3>
+          ${bars.map(([k, v]) => `<div class="stat-row"><span>${k}</span><div class="bar"><i style="width:${v / maxB * 100}%"></i></div><b>${DT.money(v)}</b></div>`).join('')}
+          <p class="muted small">Propinas (van completas a los estudios): ${DT.money(f.tips)}</p>
+          <hr>
+          <h3>🎟️ Fondo del Pase</h3>
+          <p>Pendiente de repartir: <b>${DT.money(f.fund)}</b> (${Math.round(e.passDevShare * 100)} % de las suscripciones).</p>
+          <button class="btn primary sm" data-distribute ${f.fund <= 0 ? 'disabled' : ''}>Repartir por tiempo jugado</button>
+        </div>
+        <form class="card" data-rates>
+          <h3>⚙️ Tasas y precios</h3>
+          <div class="form-grid">
+            <label class="field"><span>Comisión estudiantil (%)</span><input type="number" name="rateStudent" min="0" max="50" value="${Math.round(e.rateStudent * 100)}"></label>
+            <label class="field"><span>Comisión externa (%)</span><input type="number" name="rateExternal" min="0" max="50" value="${Math.round(e.rateExternal * 100)}"></label>
+            <label class="field"><span>Semilla TEC (MXN sin comisión)</span><input type="number" name="seedAllowance" min="0" value="${e.seedAllowance}"></label>
+            <label class="field"><span>Precio del Pase (MXN/mes)</span><input type="number" name="passPrice" min="0" value="${e.passPrice}"></label>
+            <label class="field"><span>Parte del Pase para estudios (%)</span><input type="number" name="passDevShare" min="0" max="100" value="${Math.round(e.passDevShare * 100)}"></label>
+            <label class="field"><span>Destacado patrocinado (MXN)</span><input type="number" name="promoPrice" min="0" value="${e.promoPrice}"></label>
+          </div>
+          <div class="row"><span class="spacer"></span><button class="btn primary sm">Guardar tasas</button></div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>📣 Solicitudes de promoción (${pending.length})</h3>
+        ${pending.map((p) => { const g = DT.game(p.gameId); return `<div class="log-row"><b>${DT.esc(g.title)}</b> · ${DT.esc((DT.user(p.devId) || {}).name)} · ${DT.money(p.price)} · ${DT.timeAgo(p.date)}
+          <div class="row"><button class="btn success sm" data-promo-ok="${p.id}">Aprobar</button><button class="btn ghost sm" data-promo-no="${p.id}">Rechazar y reembolsar</button></div></div>`; }).join('') || '<p class="muted">Sin solicitudes pendientes.</p>'}
+      </div>
+      <div class="card">
+        <h3>Libro de transacciones</h3>
+        <div class="table"><div class="tr tx th"><span>Fecha</span><span>Tipo</span><span>Movimiento</span><span>Monto</span><span>Comisión</span><span>Nota</span></div>
+        ${s.ledger.filter((x) => x.type !== 'topup').slice(0, 60).map(DT.txRow).join('')}</div>
+      </div>`;
+    DT.$('[data-distribute]', body).onclick = () => {
+      const out = DT.distributePassFund();
+      DT.toast('Fondo repartido: ' + out.map((o) => `${DT.esc(DT.user(o.devId).name)} ${DT.money(o.amount)}`).join(' · '), { kind: 'ok', ms: 5000 });
+    };
+    DT.$('[data-rates]', body).onsubmit = (ev) => {
+      ev.preventDefault();
+      const fm = ev.target;
+      Object.assign(e, { rateStudent: fm.rateStudent.value / 100, rateExternal: fm.rateExternal.value / 100, seedAllowance: +fm.seedAllowance.value,
+        passPrice: +fm.passPrice.value, passDevShare: fm.passDevShare.value / 100, promoPrice: +fm.promoPrice.value });
+      act('Actualizó las tasas de la plataforma.');
+      DT.toast('Tasas guardadas.', { kind: 'ok' });
+    };
+    DT.$$('[data-promo-ok]', body).forEach((b) => b.onclick = () => DT.decidePromo(b.dataset.promoOk, true));
+    DT.$$('[data-promo-no]', body).forEach((b) => b.onclick = () => DT.decidePromo(b.dataset.promoNo, false));
+  }
+
   function usuarios(body, s) {
     body.innerHTML = `
       <div class="page-head"><div><h1>Desarrolladores y usuarios</h1><p>Verifica estudios, suspende cuentas y asigna roles.</p></div></div>
@@ -149,13 +213,15 @@
             <span>${s.games.filter((g) => g.devId === u.id).length}</span>
             <span>${reps ? `<span class="pill warn">${reps}</span>` : '0'}</span>
             <span class="row nowrap">
-              ${u.role === 'dev' ? `<button class="btn ghost sm" data-verify="${u.id}">${u.verified ? 'Quitar verificación' : '✔ Verificar'}</button>` : ''}
+              ${u.role === 'dev' ? `<button class="btn ghost sm" data-verify="${u.id}">${u.verified ? 'Quitar verificación' : '✔ Verificar'}</button>
+                <button class="btn ghost sm" data-student="${u.id}" title="Define la comisión que paga">${u.student ? '🎓 Estudiantil' : '🏢 Externo'}</button>` : ''}
               ${u.id !== DT.me().id ? `<button class="btn ${u.status === 'suspended' ? 'ghost' : 'danger'} sm" data-suspend="${u.id}">${u.status === 'suspended' ? 'Reactivar' : 'Suspender'}</button>` : ''}
             </span></div>`;
         }).join('')}
       </div>
       <p class="muted">Suspender a un desarrollador oculta todos sus juegos de la tienda.</p>`;
     DT.$$('[data-verify]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.verify); u.verified = !u.verified; act(`${u.verified ? 'Verificó' : 'Quitó la verificación a'} ${u.name}.`); });
+    DT.$$('[data-student]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.student); u.student = !u.student; act(`Marcó a ${u.name} como estudio ${u.student ? 'estudiantil' : 'externo'}.`); });
     DT.$$('[data-suspend]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.suspend); u.status = u.status === 'suspended' ? 'active' : 'suspended'; act(`${u.status === 'suspended' ? 'Suspendió' : 'Reactivó'} a ${u.name}.`); });
     DT.$$('[data-role]', body).forEach((sel) => sel.onchange = () => { const u = DT.user(sel.dataset.role); u.role = sel.value; act(`Cambió el rol de ${u.name} a ${sel.value}.`); });
   }
