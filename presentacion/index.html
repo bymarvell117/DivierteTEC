@@ -98,10 +98,11 @@
   .list svg { width: 46px; height: 46px; flex: none; padding: 10px; background: var(--blue); stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; clip-path: polygon(0 0, 100% 0, 100% 74%, 74% 100%, 0 100%); }
 
   /* 7 · Modelo */
-  .model { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; }
+  .model { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 26px; }
   .tile { background: #fff; border: 1px solid var(--line); padding: 20px 18px 18px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); }
   .tile b { display: block; font-size: 52px; line-height: 1; font-weight: 900; color: var(--blue); letter-spacing: -1px; }
   .tile span { display: block; font-size: 19px; font-weight: 800; color: var(--navy); margin-top: 10px; }
+  .tile.eco { border-color: #1f8a4c; background: #eefaf2; } .tile.eco b { color: #1f8a4c; }
   .tile small { display: block; font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
   .proof { margin-top: 20px; background: var(--navy); color: #fff; padding: 18px 24px 18px; clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%); }
   .proof h3 { margin: 0 0 12px; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--yellow); }
@@ -391,6 +392,7 @@
       <div class="tile" data-a style="--d:.45"><b>0 %</b><span>Semilla TEC</span><small>Las 3 primeras semanas de cada juego TecNM sin comisión; luego 12 %.</small></div>
       <div class="tile" data-a style="--d:.6"><b>70 %</b><span>Pase mensual</span><small>De cada suscripción va a los estudios, según el tiempo jugado.</small></div>
       <div class="tile" data-a style="--d:.75"><b>+</b><span>Destacados</span><small>Los estudios pueden pagar por aparecer en portada.</small></div>
+      <div class="tile eco" data-a style="--d:.9"><b>5 %</b><span>Parque Irekua</span><small>De cada venta, lo absorbemos de nuestra comisión para educación ambiental.</small></div>
     </div>
     <div class="proof" data-a style="--d:1">
       <h3>Antecedentes · modelos que ya funcionan</h3>
@@ -402,7 +404,7 @@
       </div>
     </div>
     <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>10</span></div>
-    <aside>(≈50 s) Nuestro modelo: <b>ganamos cuando el estudio gana</b>. Todo juego gratuito es Paga lo que quieras. Cada juego de un estudio del TecNM no paga comisión en sus 3 primeras semanas y después paga 12 %. El 70 % del Pase va a los estudios. Y no es una apuesta a ciegas: <b>itch.io</b> y <b>Humble Bundle</b> ya demostraron el «paga lo que quieras», y <b>Epic</b> atrajo estudios cobrando 12 % frente al 30 % de Steam.</aside>
+    <aside>(≈50 s) Nuestro modelo: <b>ganamos cuando el estudio gana</b>. Todo juego gratuito es Paga lo que quieras. Cada juego de un estudio del TecNM no paga comisión en sus 3 primeras semanas y después paga 12 %. El 70 % del Pase va a los estudios. Además, de nuestra comisión <b>absorbemos un 5 % de cada venta para el Centro de Educación Ambiental del Parque Irekua</b> en Irapuato: el estudio recibe lo mismo. Y no es una apuesta a ciegas: <b>itch.io</b> y <b>Humble Bundle</b> ya demostraron el «paga lo que quieras», y <b>Epic</b> atrajo estudios cobrando 12 % frente al 30 % de Steam.</aside>
   </section>
 
   <!-- 11 · SCAMPER -->
@@ -432,12 +434,12 @@
       <div class="axis" data-a style="--d:.45"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg><b>Impacto social</b>
         <ul><li>Impulsa habilidades tecnológicas</li><li>Fortalece el entretenimiento mexicano</li><li>Apoyo económico a los estudios</li></ul></div>
       <div class="axis" data-a style="--d:.6"><svg viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15M5 19l7-7"/></svg><b>Sustentabilidad y sostenibilidad</b>
-        <ul><li>100 % digital: sin discos, empaques ni envíos</li><li>Corre en computadoras escolares</li><li>Se financia con comisiones bajas</li></ul></div>
+        <ul><li>100 % digital: sin discos, empaques ni envíos</li><li>5 % de cada venta al Parque Irekua (educación ambiental)</li><li>Se financia con comisiones bajas</li></ul></div>
       <div class="axis" data-a style="--d:.75"><svg viewBox="0 0 24 24"><path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 22V12M20.5 7 12 12 3.5 7"/></svg><b>Tecnologías emergentes</b>
         <ul><li>3D en el navegador (WebGL)</li><li>Mandos con vibración</li><li>Prototipo sin conexión</li></ul></div>
     </div>
     <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>12</span></div>
-    <aside>(≈30 s) <b>Inclusión y equidad:</b> cualquier alumno puede dar a conocer sus videojuegos, gratis, y los estudiantes verificados del TecNM reciben beneficios exclusivos. <b>Impacto social:</b> impulsa habilidades tecnológicas y un apoyo económico a los estudios. <b>Sustentabilidad:</b> es 100 % digital y corre en las computadoras de la escuela. <b>Tecnologías emergentes:</b> 3D en el navegador, mandos con vibración y un prototipo que funciona sin conexión.</aside>
+    <aside>(≈30 s) <b>Inclusión y equidad:</b> cualquier alumno puede dar a conocer sus videojuegos, gratis, y los estudiantes verificados del TecNM reciben beneficios exclusivos. <b>Impacto social:</b> impulsa habilidades tecnológicas y un apoyo económico a los estudios. <b>Sustentabilidad:</b> es 100 % digital y un 5 % de cada venta va al Centro de Educación Ambiental del Parque Irekua. <b>Tecnologías emergentes:</b> 3D en el navegador, mandos con vibración y un prototipo que funciona sin conexión.</aside>
   </section>
 
   <!-- 13 · CIERRE -->

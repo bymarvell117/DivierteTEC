@@ -80,7 +80,11 @@ ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 
 **Paga lo que quieras** como pilar para los juegos gratuitos, comisión escalonada (0 % durante las 3 primeras semanas de cada juego de estudios de estudiantes del TecNM verificados, luego 12 %;
 18 % para externos), **Pase DivierteTEC** de $59/mes que reparte el 70 % entre los estudios
-por tiempo jugado, destacados patrocinados y propinas. Todo con dinero simulado.
+por tiempo jugado, destacados patrocinados y propinas. De su comisión, DivierteTEC absorbe
+un **5 % de cada venta y de cada Pase para el Centro de Educación Ambiental del Parque
+Irekua** (Irapuato); el estudio recibe lo mismo. La página del Pase tiene una sección de
+**Transparencia** con el reparto y los totales, y la calculadora desglosa comisión,
+donativo y operación. Todo con dinero simulado.
 Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
 
 ## Estudios TecNM y preguntas frecuentes

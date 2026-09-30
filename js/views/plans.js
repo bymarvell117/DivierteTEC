@@ -2,6 +2,42 @@
 (function (DT) {
   'use strict';
 
+  const pctT = (r) => Math.round(r * 100) + ' %';
+
+  /* Transparencia: a dónde va el dinero, con los totales reales del libro de transacciones */
+  const transparency = (e) => {
+    const f = DT.financeSummary();
+    const cr = e.causeRate || 0;
+    return `<div class="card transp">
+      <h2 class="section-title">${DT.ic('leaf')} Transparencia: ${pctT(cr)} para la educación ambiental</h2>
+      <div class="transp-grid">
+        <div>
+          <p>DivierteTEC <b>absorbe de su propia comisión</b> un <b>${pctT(cr)} de cada venta</b> y de cada suscripción al Pase para el <b>${DT.esc(DT.CAUSE.name)}</b> (${DT.esc(DT.CAUSE.place)}). El estudio recibe exactamente lo mismo: el donativo sale de la parte de la plataforma. Durante la Semilla TEC no hay comisión, así que tampoco donativo.</p>
+          <p>El Centro se creó para la educación, sensibilización y aprendizaje sobre el medio ambiente (cambio climático, biodiversidad y recursos naturales) y se concibió con tecnología sustentable: paneles solares, cosecha de agua y ecotecnias. El Parque Irekua es un organismo público descentralizado del municipio de Irapuato.</p>
+          <p class="muted small">Acuerdo propuesto por DivierteTEC: se formalizará con el Parque Irekua al lanzar el sitio web. En esta demostración el dinero es simulado.</p>
+        </div>
+        <div>
+          <h4>Cómo se reparte cada comisión</h4>
+          <table class="faq-table">
+            <tr><th>Tipo de venta</th><th>Estudio</th><th>${DT.esc(DT.CAUSE.short)}</th><th>DivierteTEC</th></tr>
+            <tr><td>Juego TecNM en Semilla TEC</td><td>100 %</td><td>0 %</td><td>0 %</td></tr>
+            <tr><td>Juego TecNM</td><td>${pctT(1 - e.rateStudent)}</td><td>${pctT(Math.min(cr, e.rateStudent))}</td><td>${pctT(e.rateStudent - Math.min(cr, e.rateStudent))}</td></tr>
+            <tr><td>Juego de estudio externo</td><td>${pctT(1 - e.rateExternal)}</td><td>${pctT(Math.min(cr, e.rateExternal))}</td><td>${pctT(e.rateExternal - Math.min(cr, e.rateExternal))}</td></tr>
+            <tr><td>Pase DivierteTEC</td><td>${pctT(e.passDevShare)} (fondo)</td><td>${pctT(Math.min(cr, 1 - e.passDevShare))}</td><td>${pctT(1 - e.passDevShare - Math.min(cr, 1 - e.passDevShare))}</td></tr>
+            <tr><td>Propinas</td><td>100 %</td><td>0 %</td><td>0 %</td></tr>
+          </table>
+          <p class="muted small">La parte de DivierteTEC cubre la operación: alojamiento del sitio, procesador de pagos, revisión y moderación de contenido, y torneos.</p>
+          <h4>Hasta ahora en esta demostración</h4>
+          <div class="transp-kpis">
+            <div><small>Recibido por estudios</small><b>${DT.money(f.toDevs)}</b></div>
+            <div class="green"><small>Para el ${DT.esc(DT.CAUSE.short)}</small><b>${DT.money(f.toCause)}</b></div>
+            <div><small>Operación de DivierteTEC</small><b>${DT.money(f.platformNet)}</b></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  };
+
   DT.views.plans = (app) => {
     const e = DT.econ();
     const tp = DT.passPriceFor ? DT.passPriceFor() : e.passPrice;
@@ -75,13 +111,16 @@
               <li><b>Destacado patrocinado:</b> ${DT.money(e.promoPrice)} por ${e.promoDays} días en el carrusel principal (lo aprueba la administración).</li>
             </ul>
             <h3 style="margin-top:16px">¿A dónde va cada peso?</h3>
+            <p class="muted small">Venta de ${DT.money(100)} de un juego TecNM después de la Semilla:</p>
             <div class="flow">
               <div><b>Jugador</b><small>paga ${DT.money(100)}</small></div><i>→</i>
               <div class="accent"><b>Estudio</b><small>${DT.money(100 * (1 - e.rateStudent))}</small></div><i>+</i>
-              <div><b>DivierteTEC</b><small>${DT.money(100 * e.rateStudent)}: servidores, moderación, torneos</small></div>
+              <div class="green"><b>${DT.esc(DT.CAUSE.short)}</b><small>${DT.money(100 * Math.min(e.rateStudent, e.causeRate || 0))}: educación ambiental</small></div><i>+</i>
+              <div><b>DivierteTEC</b><small>${DT.money(100 * (e.rateStudent - Math.min(e.rateStudent, e.causeRate || 0)))}: operación</small></div>
             </div>
           </div>
         </div>
+        ${transparency(e)}
         <p class="muted small">Referencia de mercado: Steam cobra 30 % en su tramo estándar, Epic Games Store 12 % e itch.io deja elegir al estudio (10 % por defecto).</p>
       </section>`;
 
@@ -96,11 +135,15 @@
       const free = student ? price * early : 0;
       const rate = student ? e.rateStudent : e.rateExternal;
       const net = gross - (gross - free) * rate;
+      const cr = Math.min(rate, e.causeRate || 0);
+      const cause = (gross - free) * cr;
       const steam = gross * 0.7;
       DT.$('[data-calc]', app).innerHTML = `
         <div><span>Ventas brutas</span><b>${DT.money(gross)}</b></div>
         ${free ? `<div><span>Sin comisión (Semilla TEC)</span><b>${DT.money(free)}</b></div>` : ''}
         <div><span>Comisión DivierteTEC (${Math.round(rate * 100)} %)</span><b>−${DT.money(gross - net)}</b></div>
+        <div class="sub cause"><span>${DT.ic('leaf')} Para el ${DT.esc(DT.CAUSE.short)} (${pct(cr)} de las ventas con comisión)</span><b>${DT.money(cause)}</b></div>
+        <div class="sub"><span>Operación de DivierteTEC (${pct(rate - cr)})</span><b>${DT.money(gross - net - cause)}</b></div>
         <div class="total"><span>Tú recibes en DivierteTEC</span><b>${DT.money(net)}</b></div>
         <div><span>Con el 30 % estándar de Steam</span><b class="muted">${DT.money(steam)}</b></div>
         <div class="gain"><span>Diferencia a tu favor</span><b>+${DT.money(net - steam)}</b></div>`;

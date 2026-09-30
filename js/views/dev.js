@@ -549,7 +549,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
     const preview = () => {
       const price = Math.max(0, Number(f.price.value) || 0) * (1 - (Number(f.discount.value) || 0) / 100);
       const cc = DT.commissionFor(g.devId, price, g.id);
-      DT.$('[data-prev]', body).innerHTML = `${f.mode.value === 'pwyw' ? `<p class="small muted">${DT.icon.heart} En DivierteTEC los juegos gratuitos usan <b>Paga lo que quieras</b>: con mínimo $0 cualquiera lo juega al instante y quien quiera aporta. El precio de arriba es el <b>sugerido</b>; abajo, lo que recibes por cada aporte sugerido.</p>` : ''}<div><span>${f.mode.value === 'pwyw' ? 'Aporte sugerido' : 'Precio al público'}</span><b>${DT.money(price)}</b></div><div><span>Comisión (${DT.esc(cc.note)})</span><b>−${DT.money(cc.commission)}</b></div><div class="total"><span>Recibes por copia</span><b>${DT.money(cc.net)}</b></div>`;
+      DT.$('[data-prev]', body).innerHTML = `${f.mode.value === 'pwyw' ? `<p class="small muted">${DT.icon.heart} En DivierteTEC los juegos gratuitos usan <b>Paga lo que quieras</b>: con mínimo $0 cualquiera lo juega al instante y quien quiera aporta. El precio de arriba es el <b>sugerido</b>; abajo, lo que recibes por cada aporte sugerido.</p>` : ''}<div><span>${f.mode.value === 'pwyw' ? 'Aporte sugerido' : 'Precio al público'}</span><b>${DT.money(price)}</b></div><div><span>Comisión (${DT.esc(cc.note)})</span><b>−${DT.money(cc.commission)}</b></div>${cc.cause ? `<div class="sub"><span>${DT.ic('leaf')} De ella, ${DT.money(cc.cause)} van al ${DT.esc(DT.CAUSE.short)} (lo absorbe DivierteTEC)</span></div>` : ''}<div class="total"><span>Recibes por copia</span><b>${DT.money(cc.net)}</b></div>`;
     };
     f.addEventListener('input', preview);
     preview();

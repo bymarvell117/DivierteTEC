@@ -78,7 +78,7 @@
           <svg class="l-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M0 12h50M40 2l12 10-12 10" fill="none" stroke="currentColor" stroke-width="4"/></svg>
           <div class="l-node in-view" style="--d:.24s"><span class="l-node-ico">${DT.icon.ticket}</span><b>${Math.round(e.passDevShare * 100)} % del Pase</b><small>Se reparte entre estudios según el tiempo que juegas.</small></div>
           <svg class="l-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M0 12h50M40 2l12 10-12 10" fill="none" stroke="currentColor" stroke-width="4"/></svg>
-          <div class="l-node in-view" style="--d:.36s"><span class="l-node-ico">${DT.icon.rocket}</span><b>Nuevos juegos</b><small>El talento se queda en México y crea más.</small></div>
+          <div class="l-node in-view" style="--d:.36s"><span class="l-node-ico">${DT.ic('leaf')}</span><b>${Math.round((e.causeRate || 0) * 100)} % al Parque Irekua</b><small>De cada venta, desde nuestra comisión, para educación ambiental en Irapuato.</small></div>
         </div>
         <p class="l-note in-view">Cifras de esta demostración: ${DT.fmtTime(secs)} jugadas en la plataforma · dinero simulado.</p>
       </section>
@@ -121,7 +121,7 @@
           <article class="l-role in-view" style="--d:.1s"><div class="l-role-ico">${AX.social}</div><h3>Impacto social</h3>
             <p>Impulsa las habilidades tecnológicas y el entretenimiento hecho en México, con apoyo económico para los estudios: Semilla TEC, Pase y propinas.</p></article>
           <article class="l-role in-view" style="--d:.2s"><div class="l-role-ico">${AX.sust}</div><h3>Sustentabilidad y sostenibilidad</h3>
-            <p>Distribución 100 % digital, sin discos, empaques ni envíos. Juegos ligeros para las computadoras escolares y un modelo que se sostiene con comisiones bajas.</p></article>
+            <p>Distribución 100 % digital, sin discos, empaques ni envíos. Un 5 % de cada venta, absorbido de nuestra comisión, va al Centro de Educación Ambiental del Parque Irekua (Irapuato).</p></article>
           <article class="l-role in-view" style="--d:.3s"><div class="l-role-ico">${AX.tech}</div><h3>Tecnologías emergentes</h3>
             <p>Gráficos 3D con WebGL en el navegador, mandos con vibración, prototipo que funciona sin conexión y juegos aislados con un SDK de logros.</p></article>
         </div>

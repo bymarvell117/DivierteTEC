@@ -177,7 +177,7 @@
       <div class="page-head"><div><h1>Finanzas</h1><p>Modelo "Crece con tu estudio" · dinero simulado para la demostración.</p></div></div>
       <div class="grid cols-4 kpis">
         <div class="kpi"><small>Ventas brutas de juegos</small><b>${DT.money(f.sales)}</b></div>
-        <div class="kpi"><small>Ingresos de la plataforma</small><b>${DT.money(f.platform)}</b></div>
+        <div class="kpi"><small>Ingresos de la plataforma (netos)</small><b>${DT.money(f.platformNet)}</b><small>${DT.ic('leaf')} ${DT.money(f.toCause)} para el ${DT.esc(DT.CAUSE.short)}</small></div>
         <div class="kpi"><small>Pagado a estudios</small><b>${DT.money(f.toDevs)}</b></div>
         <div class="kpi"><small>Suscriptores del Pase</small><b>${f.subscribers}</b></div>
       </div>
@@ -186,6 +186,7 @@
           <h3>De dónde vienen los ingresos</h3>
           ${bars.map(([k, v]) => `<div class="stat-row"><span>${k}</span><div class="bar"><i style="width:${v / maxB * 100}%"></i></div><b>${DT.money(v)}</b></div>`).join('')}
           <p class="muted small">Propinas (van completas a los estudios): ${DT.money(f.tips)}</p>
+          <p class="small">${DT.ic('leaf')} Donativo al <b>${DT.esc(DT.CAUSE.name)}</b>: ${DT.money(f.toCause)} (${Math.round((e.causeRate || 0) * 100)} % de cada venta con comisión y de cada Pase, absorbido de la comisión).</p>
           <hr>
           <h3>${DT.icon.ticket} Fondo del Pase</h3>
           <p>Pendiente de repartir: <b>${DT.money(f.fund)}</b> (${Math.round(e.passDevShare * 100)} % de las suscripciones).</p>
@@ -198,6 +199,7 @@
             <label class="field"><span>Comisión externa (%)</span><input type="number" name="rateExternal" min="0" max="50" value="${Math.round(e.rateExternal * 100)}"></label>
             <label class="field"><span>Semilla TEC (semanas sin comisión por juego)</span><input type="number" name="seedWeeks" min="0" step="1" value="${Math.round(e.seedDays / 7)}"></label>
             <label class="field"><span>Precio del Pase (MXN/mes)</span><input type="number" name="passPrice" min="0" value="${e.passPrice}"></label>
+            <label class="field"><span>Donativo al ${DT.esc(DT.CAUSE.short)} (% de cada venta)</span><input type="number" name="causeRate" min="0" max="12" step="1" value="${Math.round((e.causeRate || 0) * 100)}"></label>
             <label class="field"><span>Parte del Pase para estudios (%)</span><input type="number" name="passDevShare" min="0" max="100" value="${Math.round(e.passDevShare * 100)}"></label>
             <label class="field"><span>Destacado patrocinado (MXN)</span><input type="number" name="promoPrice" min="0" value="${e.promoPrice}"></label>
           </div>
@@ -222,7 +224,7 @@
       ev.preventDefault();
       const fm = ev.target;
       Object.assign(e, { rateStudent: fm.rateStudent.value / 100, rateExternal: fm.rateExternal.value / 100, seedDays: Math.max(0, Math.round(+fm.seedWeeks.value)) * 7,
-        passPrice: +fm.passPrice.value, passDevShare: fm.passDevShare.value / 100, promoPrice: +fm.promoPrice.value });
+        passPrice: +fm.passPrice.value, passDevShare: fm.passDevShare.value / 100, promoPrice: +fm.promoPrice.value, causeRate: Math.max(0, +fm.causeRate.value) / 100 });
       act('Actualizó las tasas de la plataforma.');
       DT.toast('Tasas guardadas.', { kind: 'ok' });
     };

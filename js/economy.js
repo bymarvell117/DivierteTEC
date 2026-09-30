@@ -3,6 +3,9 @@
    - Venta de juegos: Semilla TEC (0 % durante las 3 primeras semanas de cada juego de un
      estudio TecNM verificado), luego 12 % estudios TecNM / 18 % estudios externos.
    - Pase DivierteTEC mensual: el 70 % va a un fondo que se reparte por tiempo jugado.
+   - Causa ambiental: DivierteTEC absorbe de su comisión un 5 % de cada venta (y de cada
+     Pase) para el Centro de Educación Ambiental del Parque Irekua (Irapuato). El estudio
+     recibe lo mismo; lo donado sale de la parte de la plataforma.
    - Promoción patrocinada en Destacados y propinas a desarrolladores.
    Cada movimiento queda en state.ledger (libro de transacciones). */
 (function (DT) {
@@ -67,6 +70,10 @@
 
   /* ---------- Comisión escalonada ---------- */
   DT.devSalesTotal = (devId) => S().ledger.filter((e) => e.type === 'sale' && e.to === devId).reduce((t, e) => t + e.gross, 0);
+  /* Causa ambiental que recibe el 5 % (ver docs/MODELO-DE-NEGOCIO.md) */
+  DT.CAUSE = { name: 'Centro de Educación Ambiental Parque Irekua', short: 'Parque Irekua', place: 'Irapuato, Gto.' };
+  const causeOf = (base, platformPart) => r2(Math.min(platformPart, base * (DT.econ().causeRate || 0)));
+
   /* Semilla TEC: cada juego de un estudio TecNM no paga comisión durante sus primeros
      seedDays días desde que se publica (g.createdAt se fija al aprobarlo). */
   DT.seedWeeks = () => Math.max(0, Math.round(DT.econ().seedDays / 7));
@@ -82,8 +89,9 @@
     const g = gameId ? DT.game(gameId) : null;
     const freePart = g && DT.inSeed(g) ? gross : 0;
     const commission = r2((gross - freePart) * rate);
+    const cause = causeOf(gross - freePart, commission);
     const note = freePart > 0 ? `Semilla TEC (0 %) · quedan ${DT.seedDaysLeft(g)} días` : (student ? 'Estudio TecNM' : 'Estudio externo') + ` (${Math.round(rate * 100)} %)`;
-    return { rate, student, freePart: r2(freePart), commission, net: r2(gross - commission), note };
+    return { rate, student, freePart: r2(freePart), commission, cause, platform: r2(commission - cause), net: r2(gross - commission), note };
   };
 
   /* ---------- Compra ---------- */
@@ -95,7 +103,7 @@
     const c = DT.commissionFor(g.devId, gross, g.id);
     credit(me.id, -gross);
     credit(g.devId, c.net);
-    if (gross > 0) record({ type: 'sale', from: me.id, to: g.devId, gameId: gid, gross, commission: c.commission, net: c.net, note: c.note });
+    if (gross > 0) record({ type: 'sale', from: me.id, to: g.devId, gameId: gid, gross, commission: c.commission, cause: c.cause, net: c.net, note: c.note });
     (S().purchases[me.id] = S().purchases[me.id] || {})[gid] = { date: Date.now(), paid: gross };
     const lib = DT.lib();
     if (!lib[gid]) lib[gid] = { added: Date.now(), playtime: 0, lastPlayed: 0, source: 'purchase' };
@@ -148,6 +156,7 @@
       m.el.querySelector('[data-breakdown]').innerHTML = `
         <div><span>${DT.esc((DT.user(g.devId) || {}).name)} recibe</span><b>${DT.money(c.net)}</b></div>
         <div><span>Comisión DivierteTEC <small class="muted">${DT.esc(c.note)}</small></span><b>${DT.money(c.commission)}</b></div>
+        ${c.cause ? `<div class="sub"><span>${DT.ic('leaf')} De ella, para el ${DT.esc(DT.CAUSE.name)}</span><b>${DT.money(c.cause)}</b></div>` : ''}
         <div class="total"><span>Total</span><b>${DT.money(a)}</b></div>`;
       m.el.querySelector('[data-pay]').textContent = a > 0 ? `${pwyw ? 'Aportar' : 'Pagar'} ${DT.money(a)}` : 'Obtener gratis';
     };
@@ -190,7 +199,7 @@
     const from = cur && cur.until > Date.now() ? cur.until : Date.now();
     S().passes[me.id] = { since: (cur && cur.since) || Date.now(), until: from + 30 * DAY };
     const fund = r2(price * e.passDevShare);
-    record({ type: 'pass', from: me.id, to: 'platform', gross: price, commission: r2(price - fund), net: fund, note: 'Pase DivierteTEC · 1 mes' + (price < e.passPrice ? ' · precio TecNM' : '') });
+    record({ type: 'pass', from: me.id, to: 'platform', gross: price, commission: r2(price - fund), cause: causeOf(price, r2(price - fund)), net: fund, note: 'Pase DivierteTEC · 1 mes' + (price < e.passPrice ? ' · precio TecNM' : '') });
     DT.rewards.grant(me.id, 'badge_pase');
     DT.log('Se suscribió al Pase DivierteTEC.');
     DT.toast(DT.icon.ticket + ' ¡Bienvenido al Pase DivierteTEC! Los juegos del Pase ya están disponibles.', { kind: 'ok' });
@@ -277,8 +286,10 @@
     const pass = sum('pass', 'gross');
     const passPlatform = sum('pass', 'commission');
     const promos = sum('promo', 'gross');
+    const toCause = r2(L.reduce((t, x) => t + (x.cause || 0), 0));
     return {
-      sales, saleFees, pass, passPlatform, promos,
+      sales, saleFees, pass, passPlatform, promos, toCause,
+      platformNet: r2(saleFees + passPlatform + promos - toCause),
       tips: sum('tip', 'gross'),
       platform: r2(saleFees + passPlatform + promos),
       toDevs: r2(sum('sale', 'net') + sum('tip', 'net') + sum('pass_payout', 'gross')),

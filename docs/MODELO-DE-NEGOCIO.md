@@ -4,7 +4,7 @@ DivierteTEC necesita dinero para servidores, moderación y eventos, pero su púb
 son estudiantes que publican su primer juego. Por eso el modelo tiene dos reglas:
 
 1. **Que publicar no cueste nada.** Los estudios de estudiantes del TecNM no pagan comisión
-   hasta que su juego empieza a vender en serio.
+   durante las primeras semanas de cada juego (Semilla TEC).
 2. **Que el dinero de los jugadores llegue a los creadores.** La plataforma cobra
    menos que las tiendas grandes y reparte la mayor parte del Pase entre los estudios.
 
@@ -49,6 +49,36 @@ Por qué: convierte a cada jugador satisfecho en un posible mecenas del talento
 mexicano sin poner barreras para probar los juegos, que es lo que más necesita un
 estudio TecNM que empieza.
 
+### Causa ambiental: 5 % para el Parque Irekua
+
+DivierteTEC **absorbe de su comisión un 5 % de cada venta y de cada suscripción al Pase**
+para el **Centro de Educación Ambiental del Parque Irekua** (Irapuato). El estudio recibe
+lo mismo; el donativo reduce solo la parte de la plataforma. En la Semilla TEC no hay
+comisión, así que tampoco donativo. Las propinas van completas al estudio.
+
+| Tipo | Estudio | Parque Irekua | DivierteTEC (operación) |
+|---|---|---|---|
+| Juego TecNM en Semilla TEC | 100 % | 0 % | 0 % |
+| Juego TecNM | 88 % | 5 % | 7 % |
+| Juego de estudio externo | 82 % | 5 % | 13 % |
+| Pase DivierteTEC | 70 % (fondo) | 5 % | 25 % |
+
+Por qué ahí:
+- El Centro de Educación Ambiental se creó para la educación, sensibilización y
+  aprendizaje sobre medio ambiente (cambio climático, biodiversidad, recursos naturales)
+  y se concibió con paneles solares, cosecha de agua y ecotecnias.
+- El Parque Irekua es un organismo público descentralizado del municipio de Irapuato; el
+  Programa Municipal de Gobierno 2024-2027 contempla ahí tecnologías limpias, uso
+  eficiente del agua y flora endémica.
+- El ITESI ya participa en las iniciativas ambientales del municipio (presentó las
+  acciones de sus estudiantes en ahorro de agua y energía, residuos y educación
+  ambiental). No es una alianza formal TecNM–Parque Irekua, pero sí un ecosistema de
+  colaboración que puede dar proyectos de residencia, servicio social o vinculación.
+
+Estado: acuerdo propuesto por DivierteTEC; se formalizará con el Parque Irekua al lanzar
+el sitio web. En la demo, cada venta guarda su donativo en el libro de transacciones y
+los totales se muestran en *Pase → Transparencia* y en *Admin → Finanzas*.
+
 ## 2. Pase DivierteTEC
 
 - $59 MXN al mes. Incluye los juegos marcados "Incluido en el Pase", 10 % de descuento
@@ -65,11 +95,14 @@ Venta de un juego TecNM en sus 3 primeras semanas (Semilla TEC):
   Jugador paga $100 ──► Estudio $100 ──► DivierteTEC $0
 
 Venta de un juego TecNM después de la Semilla:
-  Jugador paga $100 ──► Estudio $88 ──► DivierteTEC $12
+  Jugador paga $100 ──► Estudio $88
+                   └──► Parque Irekua $5 (absorbido de la comisión)
+                   └──► DivierteTEC $7 (operación)
 
 Suscripción al Pase:
   Jugador paga $59 ──► Fondo de estudios $41.30 (reparto por tiempo jugado)
-                  └──► DivierteTEC $17.70
+                  └──► Parque Irekua $2.95
+                  └──► DivierteTEC $14.75
 ```
 
 ## 4. Proyección sencilla (supuestos, no datos reales)
@@ -81,7 +114,8 @@ Escenario mensual con **500 jugadores activos** y **30 estudios**:
 | Pase | 15 % se suscribe → 75 × $59 = $4,425 | 30 % = **$1,327** |
 | Ventas | 300 copias × $40 promedio = $12,000 | ~13 % promedio (supuesto: parte de las ventas cae en la Semilla) = **$1,560** |
 | Destacados | 6 promociones × $150 | **$900** |
-| **Total** | | **≈ $3,790 MXN / mes** |
+| Donativo al Parque Irekua | 5 % de $4,425 del Pase + 5 % de $12,000 en ventas (si todas pagan comisión) | **−≈ $820** |
+| **Total** | | **≈ $2,970 MXN / mes** (y ≈ $820 para educación ambiental) |
 
 Además, los estudios reciben ≈ $10,440 de ventas y ≈ $3,100 del fondo del Pase.
 Costos a cubrir: alojamiento (hosting estático + backend pequeño), comisión del
