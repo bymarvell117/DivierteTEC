@@ -121,12 +121,12 @@
             <button class="user-chip" data-rolemenu aria-haspopup="true">${DT.avatarHTML(me, 30)}<span class="role-tag role-${me.role}">${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Admin' }[me.role]}</span>${DT.icon.chevDown}</button>
             <div class="dropdown" data-dropdown hidden>
               <div class="dropdown-title">Cambiar de rol (demo)</div>
-              ${DT.state().users.filter((u) => ['u_player', 'u_maravilla', 'u_admin', 'u_dev', 'u_luna'].includes(u.id)).map((u) => `
+              ${DT.state().users.filter((u) => ['u_player', 'u_maravilla', 'u_admin'].includes(u.id)).map((u) => `
                 <button class="dropdown-item ${u.id === me.id ? 'current' : ''}" data-switch="${u.id}">
                   ${DT.avatarHTML(u, 26)}<span><b>${DT.esc(u.name)}</b><small>${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}</small></span></button>`).join('')}
               <hr>
               <a class="dropdown-item" href="#/perfil">${DT.icon.gift}<span>Perfil y recompensas</span></a>
-              <button class="dropdown-item" data-simulate>${DT.icon.clock}<span>Simular +1 h de juego<small>Demo: ${['gamePage', 'library'].includes(r) && current.params[0] ? 'en este juego' : 'en toda tu biblioteca'}</small></span></button>
+              <button class="dropdown-item" data-simulate>${DT.icon.clock}<span>Simular +1 h de juego<small>Simulación para la presentación · ${['gamePage', 'library'].includes(r) && current.params[0] ? 'en este juego' : 'en toda tu biblioteca'}</small></span></button>
               <button class="dropdown-item" data-reset>${DT.icon.reset}<span>Restablecer demo</span></button>
             </div>
           </div>

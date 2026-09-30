@@ -13,8 +13,8 @@ C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 | **Furia TEC** | Pelea 3D con las mascotas de los Tecnológicos de Guanajuato: cooperativo y Kombate 1 vs 1 | Paga lo que quieras · destacado | J1: A/D, W salta, S, F/G/H ligero·medio·pesado, T especial · J2: flechas, J/K/L, I · mando de Xbox con vibración |
 | **Astro Runner** | Runner espacial de baja gravedad | Paga lo que quieras | Espacio / ↑ / tocar = saltar (doble salto) |
 | **Pixel Garden** | Jardinería idle en tiempo real | Paga lo que quieras · Pase | Clic en parcelas |
-| **Neón Drift** | Carreras synthwave pseudo‑3D | $49 (−30 %) · Pase | ← → carril · Espacio turbo |
-| **Quantum Puzzle** | Puzle de entrelazamiento (10 niveles) | $25 · en revisión | Clic en partículas |
+| **Neón Drift** | Carreras synthwave pseudo‑3D | $35 · Pase | ← → carril · Espacio turbo |
+| **Quantum Puzzle** | Puzle de entrelazamiento (10 niveles) | Paga lo que quieras | Clic en partículas |
 
 Mecaquack es el juego de la fase local de Hackatec del **Equipo Maravilla** (Instituto
 Tecnológico Superior de Irapuato), adaptado a la plataforma: 10 logros con recompensas,
@@ -75,7 +75,13 @@ Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar
 | Equipo Maravilla  | Desarrollador  | Subir juegos, logros, editor de páginas, estadísticas     |
 | Admin TEC         | Administrador  | Revisión de juegos, reportes, moderación, usuarios         |
 
-**Restablecer demo** (mismo menú) borra todo y vuelve a los datos de ejemplo.
+**Restablecer demo** (mismo menú) borra todo y vuelve al estado inicial.
+
+**Sin datos inventados:** la demo arranca solo con las 3 cuentas y los 7 juegos reales del
+Equipo Maravilla, sin reseñas, ventas, reportes ni partidas sembradas; los monederos
+empiezan en $0 (dinero simulado). Todo lo que aparece se genera en vivo durante la
+presentación. *Simular +1 h* (menú de usuario) queda marcado como simulación, y las
+reseñas que lo usan lo indican.
 
 ## Flujo para la presentación
 
@@ -93,7 +99,10 @@ Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar
 8. **Tienda**: juega **Astro Runner** al instante; en **Pixel Garden** elige cuánto pagar;
    suscríbete al **Pase** (`PASE` en la barra) y juega **Neón Drift** sin comprarlo. El
    monedero (arriba a la derecha) muestra saldo y movimientos.
-9. **Admin TEC → Finanzas**: ingresos por fuente, reparto del fondo del Pase y promociones.
+9. Con 2 h de juego (o *Simular +1 h* dos veces) escribe una **reseña**; repórtala desde otra cuenta
+   y modérala en **Admin TEC → Reportes**.
+10. **Admin TEC → Finanzas**: ingresos por fuente, reparto del fondo del Pase y promociones
+   generados por lo que hiciste en la demo.
 
 ## Estructura
 
@@ -106,7 +115,7 @@ css/angular.css          Capa de diseño angular (biseles, paralelogramos, franj
 js/core.js               Utilidades, iconos, modales, avisos
 js/art.js                Arte SVG propio: portadas, avatares, stickers, insignias, íconos
 js/fx.js                 Animaciones de la interfaz (inclinación, confeti, entradas)
-js/catalog.js            Recompensas, logros de plataforma y datos de ejemplo
+js/catalog.js            Recompensas, logros de plataforma y estado inicial
 js/store.js              Estado (localStorage) y archivos (IndexedDB)
 js/theme.js              Temas y efectos de partículas
 js/rewards.js            Motor de logros → recompensas

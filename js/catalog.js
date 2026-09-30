@@ -163,9 +163,9 @@
   DT.seedState = () => {
     const now = Date.now();
     const games = [
-      { id: 'g_astro', title: 'Astro Runner', devId: 'u_dev2', format: 'html', genre: 'Arcade', tags: ['Plataformas', 'Espacio', 'Un jugador'],
+      { id: 'g_astro', title: 'Astro Runner', devId: 'u_maravilla', format: 'html', genre: 'Arcade', tags: ['Plataformas', 'Espacio', 'Un jugador'],
         short: 'Corre, salta y esquiva meteoritos en la superficie de una luna con baja gravedad.', description: 'Runner infinito en HTML5 Canvas: doble salto con mochila propulsora, meteoritos rodantes y voladores, estrellas coleccionables y velocidad que no deja de subir. Controles: Espacio, flecha arriba o tocar la pantalla.',
-        cover: { c1: '#1a6fd8', c2: '#0a1a3a', art: 'astro', angle: 160 }, featured: true, createdAt: now - 3 * DAY,
+        cover: { c1: '#1a6fd8', c2: '#0a1a3a', art: 'astro', angle: 160 }, featured: true, createdAt: now,
         pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
           { id: 'astro_despegue', name: 'Despegue', desc: 'Empieza tu primera carrera.', icon: 'rocket', goal: 0, reward: 'em_gg' },
@@ -174,15 +174,9 @@
           { id: 'astro_intocable', name: 'Intocable', desc: 'Sobrevive 60 segundos en una carrera.', icon: 'shield', goal: 0, reward: 'frame_neon' },
           { id: 'astro_agujero', name: 'Horizonte de sucesos', desc: 'Llega a 5000 m sin chocar.', icon: 'planet', goal: 0, hidden: true, reward: 'em_rocket' }
         ] },
-      { id: 'g_cronicas', title: 'Crónicas de Tecnia', devId: 'u_dev', format: 'exe', genre: 'RPG', tags: ['Rol', 'Fantasía', 'Historia'],
-        short: 'Un RPG por turnos ambientado en un tecnológico encantado.', description: 'Explora el campus de Tecnia, recluta compañeros de cada carrera y derrota al Rector Sombrío. Instalador para Windows.',
-        cover: { c1: '#7a3cff', c2: '#1b0f3a', art: 'cronicas' }, featured: true, pricing: { mode: 'paid', price: 129 }, createdAt: now - 12 * DAY, download: { name: 'CronicasDeTecnia-Setup.exe', size: 184549376, platform: 'Windows 10/11 · 64 bits' } },
-      { id: 'g_circuit', title: 'Circuit Clash', devId: 'u_dev2', format: 'cpp', genre: 'Estrategia', tags: ['Estrategia', 'Electrónica', 'PvP'],
-        short: 'Estrategia en tiempo real donde construyes circuitos para ganar.', description: 'Compilado en C++ con SDL2. Conecta compuertas lógicas para alimentar tus torres y cortar la energía del rival.',
-        cover: { c1: '#00b894', c2: '#003d33', art: 'circuit' }, createdAt: now - 20 * DAY, download: { name: 'CircuitClash-linux-win.zip', size: 52428800, platform: 'Windows · Linux' } },
-      { id: 'g_garden', title: 'Pixel Garden', devId: 'u_dev', format: 'html', genre: 'Simulación', tags: ['Relajante', 'Pixel art', 'Granja'],
+      { id: 'g_garden', title: 'Pixel Garden', devId: 'u_maravilla', format: 'html', genre: 'Simulación', tags: ['Relajante', 'Pixel art', 'Granja'],
         short: 'Cultiva un jardín pixelado que crece incluso cuando no juegas.', description: 'Juego idle de jardinería con estética de consola portátil: planta zanahorias, girasoles, calabazas y cactus estelares, cosecha monedas, desbloquea semillas y adopta a Michi, el gato que cosecha por ti. Las plantas crecen en tiempo real, aunque cierres el juego.',
-        cover: { c1: '#5bd16b', c2: '#1d4d2a', art: 'garden' }, createdAt: now - 6 * DAY,
+        cover: { c1: '#5bd16b', c2: '#1d4d2a', art: 'garden' }, createdAt: now,
         pricing: { mode: 'pwyw', price: 20, min: 0, inPass: true },
         achievements: [
           { id: 'garden_cosecha', name: 'Primera cosecha', desc: 'Cosecha tu primera planta.', icon: 'sprout', goal: 0, reward: 'em_fire' },
@@ -191,10 +185,10 @@
           { id: 'garden_gato', name: 'Michi', desc: 'Adopta al gato jardinero.', icon: 'paw', goal: 0, reward: 'av_gato' },
           { id: 'garden_dorada', name: 'Flor dorada', desc: 'Encuentra una flor dorada al cosechar (2 %).', icon: 'sprout', goal: 0, hidden: true, reward: 'em_crown' }
         ] },
-      { id: 'g_neon', title: 'Neón Drift', devId: 'u_dev2', format: 'html', genre: 'Carreras', tags: ['Carreras', 'Synthwave', 'Arcade'],
+      { id: 'g_neon', title: 'Neón Drift', devId: 'u_maravilla', format: 'html', genre: 'Carreras', tags: ['Carreras', 'Synthwave', 'Arcade'],
         short: 'Carreras arcade en una autopista synthwave infinita.', description: 'Autopista pseudo-3D de neón: cambia de carril, esquiva el tráfico, pasa rozando para ganar bonus de "casi choque" y usa el turbo para duplicar puntos. Controles: ← → y Espacio, o toques en móvil.',
-        cover: { c1: '#ff2a6d', c2: '#05070f', art: 'neon' }, featured: true, createdAt: now - 1 * DAY,
-        pricing: { mode: 'paid', price: 49, discount: 30, inPass: true },
+        cover: { c1: '#ff2a6d', c2: '#05070f', art: 'neon' }, featured: true, createdAt: now,
+        pricing: { mode: 'paid', price: 35, inPass: true },
         achievements: [
           { id: 'drift_primera', name: 'Luz verde', desc: 'Corre tu primera carrera.', icon: 'raceflag', goal: 0, reward: 'em_gg' },
           { id: 'drift_2000', name: 'Velocidad de crucero', desc: 'Consigue 2000 puntos en una carrera.', icon: 'raceflag', goal: 2000, reward: 'frame_ice' },
@@ -202,13 +196,10 @@
           { id: 'drift_turbo', name: 'Nitro', desc: 'Usa el turbo 10 veces.', icon: 'flame', goal: 10, reward: 'fx_fire' },
           { id: 'drift_leyenda', name: 'Leyenda de la autopista', desc: 'Sobrevive 3 minutos en una carrera.', icon: 'trophy', goal: 0, hidden: true, reward: 'em_trophy' }
         ] },
-      { id: 'g_guardianes', title: 'Guardianes del Campus', devId: 'u_dev', format: 'exe', genre: 'Acción', tags: ['Acción', 'Cooperativo', 'Torre'],
-        short: 'Defiende tu tecnológico de una invasión de bugs.', description: 'Tower defense cooperativo para 4 jugadores. Instalable en Windows y macOS.',
-        cover: { c1: '#ffb321', c2: '#5a2e00', art: 'guardianes' }, createdAt: now - 30 * DAY, pricing: { mode: 'paid', price: 89 }, download: { name: 'Guardianes-Setup.exe', size: 314572800, platform: 'Windows · macOS' } },
-      { id: 'g_quantum', title: 'Quantum Puzzle', devId: 'u_dev2', format: 'html', genre: 'Puzle', tags: ['Puzle', 'Ciencia'],
+      { id: 'g_quantum', title: 'Quantum Puzzle', devId: 'u_maravilla', format: 'html', genre: 'Puzle', tags: ['Puzle', 'Ciencia'],
         short: 'Colapsa partículas entrelazadas a su estado base.', description: 'Rompecabezas tipo "luces fuera" con física cuántica de mentira: al tocar una partícula cambian ella, sus vecinas y su pareja entrelazada. 10 niveles diseñados de 3×3 a 5×5, contador de movimientos, "par" por nivel y deshacer.',
-        cover: { c1: '#00d2ff', c2: '#3a0ca3', art: 'quantum' }, createdAt: now - 2 * 3600000, status: 'pending', submittedAt: now - 2 * 3600000,
-        pricing: { mode: 'paid', price: 25 },
+        cover: { c1: '#00d2ff', c2: '#3a0ca3', art: 'quantum' }, createdAt: now,
+        pricing: { mode: 'pwyw', price: 20, min: 0 },
         achievements: [
           { id: 'quantum_1', name: 'Primera observación', desc: 'Resuelve tu primer nivel.', icon: 'eye', goal: 0, reward: 'em_gg' },
           { id: 'quantum_5', name: 'Superposición', desc: 'Resuelve 5 niveles.', icon: 'atom', goal: 5, reward: 'frame_gold' },
@@ -218,7 +209,7 @@
         ] },
       { id: 'g_mecaquack', title: 'Mecaquack', devId: 'u_maravilla', format: 'html', genre: 'Aventura', tags: ['Aventura', 'Educativo', 'Ingeniería', 'Pixel art', 'Hackatec 2026'],
         short: 'Un pato ingeniero recorre un archipiélago resolviendo retos de física y derrotando a los Tiburones de Tierra.', description: 'Los Tiburones de Tierra arrasaron el archipiélago y dispersaron a la parvada. Mecaquack, un pato ingeniero, recorre 10 islas resolviendo 19 retos de física, química y materiales (en fácil, normal o difícil), ensambla un dron-mochila para cruzar el océano, desbloquea 5 tecnologías y se enfrenta a Bombón, el chihuahua de agua salada. Juego de la fase local de InnovaTec Hackatec, hecho por el Equipo Maravilla del Instituto Tecnológico Superior de Irapuato.',
-        cover: { asset: 'g_mecaquack:img/cinematica4.png', c1: '#5b4fb3', c2: '#f39c12', motif: 'gamepad', pos: '60% 40%' }, featured: true, createdAt: now - 2 * 3600000,
+        cover: { asset: 'g_mecaquack:img/cinematica4.png', c1: '#5b4fb3', c2: '#f39c12', motif: 'gamepad', pos: '60% 40%' }, featured: true, createdAt: now,
         pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
           { id: 'meca_primer_reto', name: 'Primer invento', desc: 'Completa tu primer reto de ingeniería.', icon: 'gear', goal: 0, reward: 'em_fire' },
@@ -250,11 +241,10 @@
         libraryLayout: { height: 330, bg: '', blocks: [
           { id: 'ml1', type: 'media', asset: 'g_mecaquack:img/cinematica4.png', x: 0, y: 0, w: 1000, h: 330, z: 1, shape: 'slant', fit: 'cover' },
           { id: 'ml2', type: 'text', x: 40, y: 190, w: 560, h: 110, z: 2, color: '#ffffff', html: '<h1 style="text-shadow:3px 3px 0 #000;letter-spacing:3px">MECAQUACK</h1>' }
-        ] },
-        news: [{ id: 'nm1', title: '¡Mecaquack llega a DivierteTEC!', body: 'Ahora con guardado de partida, guarida del jefe en Selvarrón, controles táctiles y 10 logros con recompensas.', date: now - 2 * 3600000 }] },
-      { id: 'g_aerodron', title: 'Aerodron 3D', devId: 'u_dev2', format: 'html', genre: 'Carreras', tags: ['3D', 'WebGL', 'Vuelo', 'Contrarreloj'],
+        ] }, },
+      { id: 'g_aerodron', title: 'Aerodron 3D', devId: 'u_maravilla', format: 'html', genre: 'Carreras', tags: ['3D', 'WebGL', 'Vuelo', 'Contrarreloj'],
         short: 'Rally de drones en 3D: cruza 20 anillos sobre un archipiélago low-poly antes de quedarte sin batería.', description: 'Juego 3D hecho con WebGL puro, sin librerías: terreno generado con ruido, agua animada, aerogeneradores, nubes y cielo de atardecer. Pilota tu dron por un circuito de 20 anillos, recoge baterías, usa el turbo con cuidado y bate tu récord de vuelta. Controles: ← → girar, ↑ ↓ subir y bajar, Espacio turbo; joystick en pantallas táctiles.',
-        cover: { c1: '#ff9a6a', c2: '#1b2a5a', art: 'aerodron', angle: 170 }, featured: true, createdAt: now - 30 * 60000,
+        cover: { c1: '#ff9a6a', c2: '#1b2a5a', art: 'aerodron', angle: 170 }, featured: true, createdAt: now,
         pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
           { id: 'dron_despegue', name: 'Despegue', desc: 'Cruza tu primer anillo.', icon: 'drone', goal: 0, reward: 'em_gg' },
@@ -263,11 +253,10 @@
           { id: 'dron_record', name: 'Contrarreloj', desc: 'Completa el circuito en menos de 150 segundos.', icon: 'stopwatch', goal: 0, reward: 'theme_cyber' },
           { id: 'dron_baterias', name: 'Recargado', desc: 'Recoge 30 baterías en total.', icon: 'battery', goal: 30, reward: 'av_alien' },
           { id: 'dron_rasante', name: 'Vuelo rasante', desc: 'Vuela 5 segundos a menos de 3 m del agua.', icon: 'wave', goal: 0, hidden: true, reward: 'em_rocket' }
-        ],
-        news: [{ id: 'na1', title: 'Aerodron 3D: el primer juego 3D de DivierteTEC', body: 'Mundo 3D en WebGL que corre directo en tu navegador, sin instalar nada.', date: now - 30 * 60000 }] },
-      { id: 'g_furia', title: 'Furia TEC', devId: 'u_dev', format: 'html', genre: 'Acción', tags: ['3D', 'Pelea', 'Cooperativo local', 'Compatible con mando', 'Tecnológicos de Guanajuato'],
-        short: 'Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato contra las Sombras.', description: 'Elige a tu mascota —Búho Blanco (Irapuato), Lince (Celaya), León (León), Carnero (Roque), Halcón (Uriangato), Jaguar (Abasolo), Gato Negro Brujo (Purísima del Rincón), Coyote (San Miguel de Allende) o Puma (Salvatierra)— cada una con su especial y habilidad propia. Modo cooperativo por oleadas con ataque combinado y revivir al compañero, jefe final con FINAL TEC, y modo Kombate 1 vs 1 frenético estilo arcade (contragolpes, congelado de impacto, ¡ACÁBALO! y una FATALITY caricaturesca por mascota) con la Torre contra la CPU. Ataques ligeros, medios, pesados, barridos, aéreos y combos encadenados en 5 escenarios de Guanajuato. Hasta 2 jugadores en teclado o con mandos de Xbox con vibración.',
-        cover: { c1: '#d92a2a', c2: '#1a0a14', art: 'furia', angle: 150 }, featured: true, createdAt: now - 10 * 60000,
+        ], },
+      { id: 'g_furia', title: 'Furia TEC', devId: 'u_maravilla', format: 'html', genre: 'Acción', tags: ['3D', 'Pelea', 'Cooperativo local', 'Compatible con mando', 'Tecnológicos de Guanajuato'],
+        short: 'Pelea cooperativa 3D con las mascotas de los Tecnológicos de Guanajuato contra las Sombras.', description: 'Elige a tu mascota —Búho Blanco (Irapuato), Lince (Celaya), León (León), Carnero (Roque), Halcón (Uriangato), Jaguar (Abasolo), Gato Negro Brujo (Purísima del Rincón), Coyote (San Miguel de Allende) o Puma (Salvatierra)— cada una con su especial y habilidad propia. Modo cooperativo por oleadas con ataque combinado y revivir al compañero, jefe final con FINAL TEC, y modo Kombate 1 vs 1 frenético estilo arcade (contragolpes, congelado de impacto, ¡ACÁBALO! y una FATALITY caricaturesca por mascota) con la Torre contra la CPU. Ataques ligeros, medios, pesados, barridos, aéreos y combos encadenados en 5 escenarios. Hasta 2 jugadores en teclado o con mandos de Xbox con vibración.',
+        cover: { c1: '#d92a2a', c2: '#1a0a14', art: 'furia', angle: 150 }, featured: true, createdAt: now,
         pricing: { mode: 'pwyw', price: 25, min: 0 },
         achievements: [
           { id: 'kombat_ola1', name: 'Primera ronda', desc: 'Supera la oleada 1.', icon: 'fist', goal: 0, reward: 'em_fire' },
@@ -283,8 +272,7 @@
           { id: 'kombat_torre', name: 'Campeón de la Torre', desc: 'Conquista la Torre Kombate: 5 mascotas y el Rey Sombra.', icon: 'castle', goal: 0, reward: 'badge_torre' },
           { id: 'kombat_mando', name: 'Control total', desc: 'Juega con un mando.', icon: 'gamepad', goal: 0, reward: 'em_trophy' },
           { id: 'kombat_perfecto', name: 'Impecable', desc: 'Supera una oleada sin recibir daño.', icon: 'sparkle', goal: 0, hidden: true, reward: 'av_dragon' }
-        ],
-        news: [{ id: 'nf1', title: 'Furia TEC: ¡las mascotas de los Tecnológicos entran a la arena!', body: 'Pelea en cooperativo o versus, con teclado o mandos de Xbox con vibración.', date: now - 10 * 60000 }] },
+        ], },
     ];
     // Logros de ejemplo para los juegos de catálogo
     const genericAch = (prefix) => [
@@ -299,54 +287,25 @@
       g.pricing = Object.assign({ mode: 'pwyw', price: 20, min: 0, discount: 0, inPass: false }, g.pricing);
       g.reviews = g.reviews || [];
       g.news = g.news || [];
-      g.plays = g.status === 'approved' ? Math.floor(Math.random() * 900 + 100) : 0;
+      g.plays = 0; // solo se cuentan partidas reales
       g.storeLayout = g.storeLayout || DT.defaultStoreLayout(g);
       g.libraryLayout = g.libraryLayout || DT.defaultLibraryLayout(g);
       g.reviewNote = '';
-      g.compliance = g.compliance || { age: 'Todo público', brand: 'no', credits: 'Arte, música y código originales del estudio.' };
+      g.compliance = g.compliance || { age: 'Todo público', brand: 'no', credits: 'Arte, sonido y código originales del Equipo Maravilla.' };
     });
-    byId0(games, 'g_furia').compliance = { age: '+10', brand: 'con', credits: 'Mascotas usadas con autorización de cada campus (demostración). Motor WebGL y arte originales de PixelForge Studio.' };
+    byId0(games, 'g_furia').compliance = { age: '+10', brand: 'no', credits: 'Mascotas de los Tecnológicos de Guanajuato representadas como homenaje, sin logotipos. Motor WebGL, modelos y arte originales del Equipo Maravilla.' };
     byId0(games, 'g_mecaquack').compliance = { age: 'Todo público', brand: 'no', credits: 'Arte y código originales del Equipo Maravilla (ITESI).' };
-    const byId = Object.fromEntries(games.map((g) => [g.id, g]));
-    byId.g_astro.news.push({ id: 'n1', title: '¡Actualización 1.2 disponible!', body: 'Nuevo planeta helado y 5 niveles extra.', date: now - 7 * DAY });
-    byId.g_cronicas.news.push({ id: 'n2', title: 'Diario de desarrollo #8 — El Rector Sombrío', body: 'Te contamos cómo diseñamos al jefe final.', date: now - 2 * 3600000 });
-    byId.g_neon.news.push({ id: 'n3', title: '7 días para el torneo de derrapes', body: 'Prepara tus mejores tiempos.', date: now - 14 * DAY });
-    byId.g_garden.news.push({ id: 'n4', title: 'Concurso: el jardín mejor decorado', body: 'Comparte tu jardín en la comunidad.', date: now - 3 * DAY });
-    byId.g_astro.reviews.push({ id: 'r1', userId: 'u_luna', up: true, stars: 5, hours: 4.2, helpful: ['u_dev', 'u_troll'], text: 'Súper adictivo, los jefes están geniales :fuego:', date: now - 2 * DAY });
-    byId.g_cronicas.reviews.push({ id: 'r2', userId: 'u_luna', up: true, stars: 4, hours: 12.5, helpful: ['u_player'], text: 'La historia me atrapó desde el inicio.', date: now - 5 * DAY });
-    byId.g_furia.reviews.push({ id: 'r4', userId: 'u_luna', up: true, stars: 5, hours: 3.1, helpful: ['u_player', 'u_dev2'], text: 'Las Fatalities están buenísimas :risa: El gato brujo convirtiéndote en sapo no tiene precio.', date: now - 3 * 3600000 });
-    byId.g_garden.reviews.push({ id: 'r5', userId: 'u_luna', up: true, stars: 4, hours: 6, helpful: [], text: 'Relajante para después de clases. Quiero más semillas :corazon:', date: now - 4 * DAY });
-    byId.g_astro.reviews.push({ id: 'r6', userId: 'u_player', up: true, stars: 4, hours: 2.4, helpful: ['u_luna'], text: 'Muy buen runner, el doble salto se siente bien.', date: now - 6 * DAY });
-    byId.g_neon.reviews.push({ id: 'r3', userId: 'u_troll', up: false, stars: 1, hours: 2.1, helpful: [], text: 'Este juego es basura, el desarrollador es un idiota.', date: now - 1 * DAY, flagged: true });
 
     return {
-      version: 9,
+      version: 10,
       currentUserId: 'u_player',
       users: [
-        { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now - 40 * DAY },
-        { id: 'u_luna', name: 'luna_gamer', role: 'user', bio: 'Speedrunner casual.', status: 'active', createdAt: now - 90 * DAY },
-        { id: 'u_troll', name: 'xX_troll_Xx', role: 'user', bio: '', status: 'active', createdAt: now - 3 * DAY },
-        { id: 'u_dev', name: 'PixelForge Studio', role: 'dev', bio: 'Equipo estudiantil de videojuegos. Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now - 60 * DAY },
-        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now - 30 * DAY },
-        { id: 'u_dev2', name: 'Nébula Games', role: 'dev', bio: 'Estudio independiente externo: arcades y puzles para el navegador.', status: 'active', verified: false, student: false, createdAt: now - 25 * DAY },
-        { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Moderación de DivierteTEC.', status: 'active', createdAt: now - 120 * DAY }
+        { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now },
+        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now },
+        { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Cuenta de administración para la demostración.', status: 'active', createdAt: now }
       ],
       games,
-      library: {
-        u_player: {
-          g_astro: { added: now - 10 * DAY, playtime: 3 * 3600 + 1200, lastPlayed: now - 6 * DAY },
-          g_cronicas: { added: now - 8 * DAY, playtime: 2 * 3600 + 1800, lastPlayed: now - 2 * DAY }
-        },
-        u_luna: {
-          g_astro: { added: now - 20 * DAY, playtime: 4.2 * 3600, lastPlayed: now - 2 * DAY },
-          g_cronicas: { added: now - 6 * DAY, playtime: 12.5 * 3600, lastPlayed: now - DAY },
-          g_furia: { added: now - DAY, playtime: 3.1 * 3600, lastPlayed: now - 3 * 3600000 },
-          g_garden: { added: now - 9 * DAY, playtime: 6 * 3600, lastPlayed: now - 4 * DAY },
-          g_neon: { added: now - 2 * DAY, playtime: 1.5 * 3600, lastPlayed: now - DAY }
-        },
-        u_troll: { g_neon: { added: now - 3 * DAY, playtime: 2.1 * 3600, lastPlayed: now - DAY } },
-        u_maravilla: { g_mecaquack: { added: now, playtime: 0, lastPlayed: 0 } }
-      },
+      library: {},
       achievements: {},   // userId -> gameId -> achId -> {unlockedAt, progress}
       platformAch: {},    // userId -> achId -> unlockedAt
       stats: {},          // userId -> gameId -> {key: value}
@@ -354,26 +313,17 @@
       inventory: {},      // userId -> [rewardId]
       equipped: {},       // userId -> {theme, dark, frame, avatar, effect, badge}
       customRewards: {},  // recompensas creadas por desarrolladores
-      reports: [
-        { id: 'rep1', type: 'review', targetId: 'r3', gameId: 'g_neon', reason: 'Lenguaje ofensivo', text: 'Insulta al desarrollador.', by: 'u_luna', date: now - 20 * 3600000, status: 'open' },
-        { id: 'rep2', type: 'game', targetId: 'g_circuit', reason: 'No funciona / enlace roto', text: 'El zip no abre en Linux.', by: 'u_player', date: now - 3 * DAY, status: 'open' }
-      ],
+      reports: [],
       bannedWords: ['idiota', 'basura', 'estúpido'],
       /* ---- Economía (ver js/economy.js y docs/MODELO-DE-NEGOCIO.md) ---- */
       economy: { rateStudent: 0.12, rateExternal: 0.18, seedAllowance: 2000, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7 },
-      wallets: { u_maravilla: 0, u_player: 300, u_luna: 120, u_troll: 0, u_dev: 258, u_dev2: 48.13, u_admin: 0 },
-      purchases: { u_player: { g_cronicas: { date: now - 10 * DAY, paid: 129 } }, u_luna: { g_cronicas: { date: now - 6 * DAY, paid: 129 }, g_neon: { date: now - 2 * DAY, paid: 34.3 } } },
-      passes: { u_luna: { since: now - 10 * DAY, until: now + 20 * DAY } },
+      wallets: { u_maravilla: 0, u_player: 0, u_admin: 0 }, // saldo simulado: se recarga con el botón de demostración
+      purchases: {},
+      passes: {},
       promos: [],
-      ledger: [
-        { id: 'l1', type: 'sale', date: now - 10 * DAY, from: 'u_player', to: 'u_dev', gameId: 'g_cronicas', gross: 129, commission: 0, net: 129, note: 'Semilla TEC (0 %)' },
-        { id: 'l2', type: 'sale', date: now - 6 * DAY, from: 'u_luna', to: 'u_dev', gameId: 'g_cronicas', gross: 129, commission: 0, net: 129, note: 'Semilla TEC (0 %)' },
-        { id: 'l3', type: 'pass', date: now - 10 * DAY, from: 'u_luna', to: 'platform', gross: 59, commission: 17.7, net: 41.3, note: 'Pase DivierteTEC · 1 mes' },
-        { id: 'l4', type: 'sale', date: now - 2 * DAY, from: 'u_luna', to: 'u_dev2', gameId: 'g_neon', gross: 34.3, commission: 6.17, net: 28.13, note: 'Estudio externo (18 %)' },
-        { id: 'l5', type: 'tip', date: now - 1 * DAY, from: 'u_luna', to: 'u_dev2', gameId: 'g_astro', gross: 20, commission: 0, net: 20, note: 'Propina' }
-      ],
+      ledger: [],
       devRequests: [],
-      log: [{ date: now - DAY, actor: 'u_admin', text: 'Aprobó «Neón Drift».' }]
+      log: []
     };
   };
 })(window.DT);

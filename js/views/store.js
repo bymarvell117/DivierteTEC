@@ -34,7 +34,7 @@
   DT.simulatePlay = (gid, secs) => {
     const lib = DT.lib();
     const ids = gid ? [gid] : Object.keys(lib);
-    ids.forEach((id) => { if (lib[id]) { lib[id].playtime = (lib[id].playtime || 0) + (secs || 3600); lib[id].lastPlayed = Date.now(); } });
+    ids.forEach((id) => { if (lib[id]) { lib[id].playtime = (lib[id].playtime || 0) + (secs || 3600); lib[id].simulated = (lib[id].simulated || 0) + (secs || 3600); } });
     DT.rewards.checkPlatform();
     DT.toast(`${DT.icon.clock} Demo: +${Math.round((secs || 3600) / 60)} min de juego ${gid ? 'en ' + DT.esc(DT.game(gid).title) : 'en toda tu biblioteca'}.`, { kind: 'ok' });
     DT.emit('library');
@@ -206,9 +206,9 @@
     const reviewGate = !DT.owns(g.id) ? `<div class="rv-gate">${DT.icon.lock}<div><b>Juega para opinar</b><small>Agrega el juego a tu biblioteca y juega <b>2 horas</b> para calificarlo. Así las reseñas vienen de quien de verdad lo jugó.</small></div></div>`
       : played < need ? `<div class="rv-gate">
           <svg class="rv-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="var(--surface-3)" stroke-width="6"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="${2 * Math.PI * 18 * played / need} 200" transform="rotate(-90 22 22)"/></svg>
-          <div><b>Has jugado ${DT.fmtTime(played)} de 2 h</b><small>Te faltan ${DT.fmtTime(need - played)} para poder calificar este juego.</small>
+          <div><b>Has jugado ${DT.fmtTime(played)} de 2 h</b>${(DT.lib()[g.id] || {}).simulated ? ' <span class="pill warn">incluye tiempo simulado</span>' : ''}<small>Te faltan ${DT.fmtTime(need - played)} para poder calificar este juego.</small>
           <div class="row">${DT.isInstant(g) ? `<button class="btn success sm" data-act="play" data-gid="${g.id}">${DT.icon.play} Seguir jugando</button>` : `<a class="btn ghost sm" href="#/biblioteca/${g.id}">${DT.icon.clock} Abrir el lanzador</a>`}
-          <button class="btn ghost sm" data-act="simulate" data-gid="${g.id}" title="Solo para la demostración">${DT.icon.clock} Simular +1 h (demo)</button></div></div></div>`
+          <button class="btn ghost sm" data-act="simulate" data-gid="${g.id}" title="Agrega tiempo simulado, marcado como tal, para mostrar la regla en la presentación">${DT.icon.clock} Simular +1 h (demo)</button></div></div></div>`
       : `<form class="review-form" data-review>
           <div class="row"><b>${mineRv ? 'Edita tu reseña' : 'Califica el juego'}</b><span class="muted small">${DT.icon.clock} ${DT.fmtTime(played)} jugadas</span></div>
           <div class="star-pick" data-stars>${[1, 2, 3, 4, 5].map((n) => `<button type="button" data-star="${n}" class="${(mineRv ? mineRv.stars : 0) >= n ? 'on' : ''}" aria-label="${n} estrellas">${DT.icon.star}</button>`).join('')}</div>
@@ -283,7 +283,7 @@
                 const u = DT.user(r.userId) || { name: '¿?', id: '' };
                 const useful = (r.helpful || []).length, voted = (r.helpful || []).includes(me.id);
                 return `<article class="review ${r.up ? 'up' : 'down'}">
-                  <header>${DT.avatarHTML(u, 34)}<div><b>${DT.esc(u.name)}</b>${r.stars ? DT.starsHTML(r.stars) : ''}<small>${r.up ? DT.icon.thumbUp + ' Recomendado' : DT.icon.thumbDown + ' No recomendado'} · ${r.hours ? `${r.hours.toFixed(1)} h jugadas al reseñar · ` : ''}${DT.timeAgo(r.date)}${r.edited ? ' · editada' : ''}</small></div>
+                  <header>${DT.avatarHTML(u, 34)}<div><b>${DT.esc(u.name)}</b>${r.stars ? DT.starsHTML(r.stars) : ''}<small>${r.up ? DT.icon.thumbUp + ' Recomendado' : DT.icon.thumbDown + ' No recomendado'} · ${r.hours ? `${r.hours.toFixed(1)} h jugadas al reseñar${r.simulated ? ' (incluye tiempo simulado para la demo)' : ''} · ` : ''}${DT.timeAgo(r.date)}${r.edited ? ' · editada' : ''}</small></div>
                   <button class="icon-btn sm" title="Reportar reseña" data-report-review="${r.id}">${DT.icon.flag}</button></header>
                   <p>${DT.stickerize(DT.esc(DT.censor(r.text)))}</p>
                   <footer><button class="rv-help ${voted ? 'on' : ''}" data-helpful="${r.id}" ${r.userId === me.id ? 'disabled' : ''}>${DT.icon.thumbUp} ¿Te fue útil? · ${useful}</button></footer></article>`;
@@ -320,7 +320,7 @@
         if (!stars) { DT.toast('Elige de 1 a 5 estrellas.', { kind: 'warn' }); return; }
         if (!DT.canReview(g.id)) { DT.toast('Necesitas 2 horas de juego para calificar.', { kind: 'warn' }); return; }
         const flagged = DT.hasBanned(text);
-        const data = { up: form.up.value === '1', stars, text, flagged, hours: Math.round(played / 360) / 10 };
+        const data = { up: form.up.value === '1', stars, text, flagged, hours: Math.round(played / 360) / 10, simulated: !!((DT.lib()[g.id] || {}).simulated) };
         let r = mineRv;
         if (r) Object.assign(r, data, { edited: Date.now() });
         else { r = Object.assign({ id: DT.uid('r'), userId: me.id, date: Date.now(), helpful: [] }, data); g.reviews.push(r); }

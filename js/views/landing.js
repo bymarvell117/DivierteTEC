@@ -66,8 +66,8 @@
 
       <section class="l-stats">
         <div data-count="${instant.length}"><b>0</b><span>juegos para jugar ya</span></div>
-        <div data-count="${plays}"><b>0</b><span>partidas jugadas</span></div>
-        <div data-count="${devs}"><b>0</b><span>estudios mexicanos</span></div>
+        <div data-count="${plays}"><b>0</b><span>partidas jugadas aquí</span></div>
+        <div data-count="${devs}"><b>0</b><span>${devs === 1 ? 'estudio mexicano' : 'estudios mexicanos'}</span></div>
         <div data-count="${paid}" data-prefix="$"><b>0</b><span>MXN pagados a estudios</span></div>
       </section>
 
@@ -105,10 +105,10 @@
       </section>
 
       <section class="l-featured">
-        <h2 class="l-h2 in-view">Lo más jugado</h2>
+        <h2 class="l-h2 in-view">${plays ? 'Lo más jugado' : 'Destacados'}</h2>
         <div class="l-feat-row">
           ${games.slice().sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 4).map((g, i) => `
-            <div class="l-feat in-view" style="--d:${i * .1}s"><a href="#/juego/${g.id}">${DT.coverHTML(g)}</a><div><b>${DT.esc(g.title)}</b><small>${(g.plays || 0).toLocaleString('es-MX')} partidas · ${DT.formatLabel[g.format]}</small></div>
+            <div class="l-feat in-view" style="--d:${i * .1}s"><a href="#/juego/${g.id}">${DT.coverHTML(g)}</a><div><b>${DT.esc(g.title)}</b><small>${g.plays ? g.plays.toLocaleString('es-MX') + ' partidas · ' : ''}${DT.formatLabel[g.format]}</small></div>
             ${DT.isInstant(g) ? `<button class="btn success sm" data-act="play" data-gid="${g.id}">${DT.icon.play} Jugar</button>` : `<a class="btn ghost sm" href="#/juego/${g.id}">Ver juego</a>`}</div>`).join('')}
         </div>
       </section>

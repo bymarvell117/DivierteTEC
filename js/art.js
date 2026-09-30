@@ -176,17 +176,6 @@
       <path d="M121 102l-10 8M135 101l11-7" stroke="#eef3ff" stroke-width="6" stroke-linecap="round"/>
       <circle cx="129" cy="86" r="12" fill="#eef3ff"/><ellipse cx="133" cy="86" rx="7.5" ry="5.5" fill="#1ec8ff"/><path d="M129 83c2-1 4-1 6 0" stroke="#fff" stroke-width="1.5"/></g>
       <path d="M150 96q40-40 80 0" stroke="#ffd23f" stroke-width="2" stroke-dasharray="3 5" fill="none"/>`,
-    cronicas: (u) => `<defs>${lg(u + 'a', '#ffb454', '#5a1f5e', 1)}</defs><rect width="320" height="180" fill="url(#${u}a)"/><circle cx="96" cy="70" r="26" fill="#ffe3a3" opacity=".9"/>
-      <path d="M0 120L50 70l40 34 46-52 52 60 44-40 50 44 38-26V180H0z" fill="#7a2c64"/><path d="M0 140l60-34 50 26 60-40 60 36 50-26 40 20V180H0z" fill="#4a1848"/>
-      <path d="M180 108v-34h8v-8h6v8h8v-14h6v14h8v-8h6v8h8v34z" fill="#2a0e2c"/><path d="M200 52v-18l14 5-14 5" fill="#ffd23f"/><rect x="204" y="92" width="8" height="16" fill="#ffcf6b"/>
-      <path d="M0 160h320v20H0z" fill="#2a0e2c"/>
-      <g transform="rotate(-38 250 120)"><rect x="244" y="44" width="10" height="100" fill="#dfe6f1"/><path d="M244 44l5-12 5 12z" fill="#dfe6f1"/><rect x="232" y="140" width="34" height="7" rx="2" fill="#ffb321"/><rect x="245" y="147" width="8" height="18" fill="#7a3e1a"/><circle cx="249" cy="168" r="5" fill="#ffb321"/></g>`,
-    circuit: (u) => `<rect width="320" height="180" fill="#062a1f"/>${Array.from({ length: 9 }, (_, i) => `<path d="M0 ${i * 20 + 10}h320" stroke="#0c3a2b" stroke-width="1"/>`).join('')}
-      <path d="M20 40h60l20 20h40M20 140h50l30-30h40M300 40h-60l-20 20h-40M300 140h-50l-30-30h-40M160 20v40M160 160v-40" stroke="#1dd48b" stroke-width="3" fill="none"/>
-      ${[[20, 40], [20, 140], [300, 40], [300, 140], [160, 20], [160, 160]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5" fill="#062a1f" stroke="#1dd48b" stroke-width="3"/>`).join('')}
-      <g><rect x="60" y="62" width="60" height="56" rx="4" fill="#1a6fd8"/>${[0, 1, 2, 3].map((i) => `<rect x="${66 + i * 13}" y="54" width="5" height="8" fill="#9fb4d8"/><rect x="${66 + i * 13}" y="118" width="5" height="8" fill="#9fb4d8"/>`).join('')}<rect x="76" y="78" width="28" height="24" fill="#0b3a7a"/></g>
-      <g><rect x="200" y="62" width="60" height="56" rx="4" fill="#d92a2a"/>${[0, 1, 2, 3].map((i) => `<rect x="${206 + i * 13}" y="54" width="5" height="8" fill="#e8a4a4"/><rect x="${206 + i * 13}" y="118" width="5" height="8" fill="#e8a4a4"/>`).join('')}<rect x="216" y="78" width="28" height="24" fill="#7a1010"/></g>
-      <path class="art-pulse" d="M166 58l-18 34h14l-8 30 22-38h-14l8-26z" fill="#ffd23f"/>`,
     garden: (u) => { let px = ''; const f = (x, y, c) => { px += `<rect x="${x}" y="${y}" width="8" height="8" fill="${c}"/>`; };
       for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) { const x = 36 + i * 44, y = 118 + j * 26; px += `<rect x="${x - 6}" y="${y + 10}" width="36" height="12" fill="#6b3f23"/>`; f(x + 8, y + 2, '#3fa34d'); f(x + 8, y - 6, '#3fa34d'); const col = ['#ff4d8d', '#ffd23f', '#8b5cf6', '#ff7a1a'][(i + j) % 4]; f(x + 8, y - 14, col); f(x, y - 14, col); f(x + 16, y - 14, col); f(x + 8, y - 22, col); }
       return `<rect width="320" height="180" fill="#8fd3ff"/>${[[250, 18], [258, 18], [266, 18], [242, 26], [250, 26], [258, 26], [266, 26], [274, 26], [250, 34], [258, 34], [266, 34]].map(([x, y]) => `<rect x="${x}" y="${y}" width="8" height="8" fill="#ffd23f"/>`).join('')}
@@ -197,12 +186,6 @@
       <path d="M0 110L60 78l40 22 30-14M320 110l-60-32-40 22-30-14" stroke="#ff2bd6" stroke-width="2" fill="none"/>
       <rect y="110" width="320" height="70" fill="#14002b"/>${[-160, -110, -70, -35, 0, 35, 70, 110, 160].map((d) => `<path d="M160 110L${160 + d * 3} 180" stroke="#22d3ee" stroke-width="1.5"/>`).join('')}${[114, 120, 130, 144, 162].map((y) => `<path d="M0 ${y}h320" stroke="#22d3ee" stroke-width="1.5"/>`).join('')}
       <g class="art-car"><path d="M118 160l14-20h58l14 20z" fill="#ff2bd6"/><path d="M134 142l10-12h34l10 12z" fill="#2a0845"/><rect x="118" y="156" width="86" height="8" fill="#b0128f"/><rect x="122" y="152" width="16" height="4" fill="#ff3b3b"/><rect x="184" y="152" width="16" height="4" fill="#ff3b3b"/></g>`,
-    guardianes: (u) => `<defs>${lg(u + 'a', '#1e3a8a', '#0f172a', 1)}</defs><rect width="320" height="180" fill="url(#${u}a)"/>${stars(18, 11, 60)}
-      <path d="M40 130V80h70v50zM210 130V80h70v50zM130 130V60h60v70z" fill="#1c2b4f"/><path d="M150 60V40h20v20zM145 40l15-14 15 14z" fill="#243a68"/><circle cx="160" cy="50" r="5" fill="#ffd23f"/>
-      ${Array.from({ length: 12 }, (_, i) => `<rect x="${50 + (i % 6) * 10 + (i > 5 ? 170 : 0)}" y="${92 + Math.floor((i % 6) / 3) * 16}" width="5" height="8" fill="#ffd23f" opacity=".8"/>`).join('')}
-      <path d="M160 18l24 8v16c0 14-12 22-24 26-12-4-24-12-24-26V26z" fill="#ffb321"/><path d="M160 30l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z" fill="#fff"/>
-      <rect y="130" width="320" height="50" fill="#0b1224"/>
-      ${[[90, '#1a6fd8'], [160, '#d92a2a'], [230, '#16a34a']].map(([x, c]) => `<circle cx="${x}" cy="118" r="10" fill="#f0c7a1"/><path d="M${x - 14} 170l6-40h16l6 40z" fill="${c}"/><path d="M${x - 8} 130l-14 40h14M${x + 8} 130l14 40h-14" fill="${c}" opacity=".6"/>`).join('')}`,
     quantum: (u) => `<rect width="320" height="180" fill="#0b0f2a"/>${Array.from({ length: 60 }, (_, i) => `<circle cx="${(i % 12) * 28 + 6}" cy="${Math.floor(i / 12) * 36 + 12}" r="1" fill="#3b4a8a"/>`).join('')}
       <g class="art-spin" style="transform-origin:160px 90px"><ellipse cx="160" cy="90" rx="70" ry="22" fill="none" stroke="#6d7cff" stroke-width="2"/><ellipse cx="160" cy="90" rx="70" ry="22" fill="none" stroke="#b86dff" stroke-width="2" transform="rotate(60 160 90)"/><ellipse cx="160" cy="90" rx="70" ry="22" fill="none" stroke="#22d3ee" stroke-width="2" transform="rotate(120 160 90)"/></g>
       <circle cx="160" cy="90" r="10" fill="#ff4fd8"/><circle cx="160" cy="90" r="18" fill="#ff4fd8" opacity=".2"/>

@@ -5,7 +5,7 @@
 (function (DT) {
   'use strict';
 
-  const KEY = 'divierteTEC_state_v9';
+  const KEY = 'divierteTEC_state_v10';
   let state = null;
   const listeners = new Set();
 
@@ -26,7 +26,7 @@
 
   DT.load = () => {
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
-    if (!state || state.version !== 9) { state = DT.seedState(); DT.save(); }
+    if (!state || state.version !== 10) { state = DT.seedState(); DT.save(); }
     state.games.forEach(DT.normalizeGame); // repara juegos guardados con campos faltantes
     return state;
   };
