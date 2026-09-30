@@ -524,7 +524,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         <div>
           <div class="card">
             <h3>${DT.icon.briefcase} Tu comisión</h3>
-            <p>${DT.isTecnm(dev) ? `Estudio <b>TecNM verificado</b>: Semilla TEC: las ${DT.seedText()} de cada juego, desde que se publica, sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta. <a href="#/verificacion-tecnm">¿Eres del TecNM? Verifícate</a> para activar la Semilla TEC.`}</p>
+            <p>${DT.isTecnm(dev) ? `Estudio <b>TecNM verificado</b>: Semilla TEC: las ${DT.seedText()} de cada juego, desde que se publica, sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Tu cuenta <b>aún no está verificada como TecNM</b>. Solo estudiantes del TecNM verificados publican en DivierteTEC: <a href="#/verificacion-tecnm">verifica tu cuenta</a> para activar la Semilla TEC.`}</p>
             ${DT.isTecnm(dev) ? (g.status !== 'approved' ? `<small class="muted">La Semilla TEC de este juego empieza el día que se publique.</small>`
               : (() => { const total = e.seedDays, left = DT.seedDaysLeft(g); return `<div class="bar"><i style="width:${Math.min(100, (total - left) / total * 100)}%"></i></div><small class="muted">${left ? `Quedan <b>${left} días</b> sin comisión (hasta el ${new Date(DT.seedUntil(g)).toLocaleDateString('es-MX')})` : 'La Semilla TEC de este juego terminó'}</small>`; })()) : ''}
           </div>

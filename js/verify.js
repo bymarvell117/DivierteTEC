@@ -29,10 +29,10 @@
         ['cap', 'Sello TecNM verificado en tu perfil y tus reseñas']
       ],
       dev: [
+        ['code', 'Publicar tus juegos: exclusivo para estudiantes del TecNM verificados'],
         ['gift', `Semilla TEC: 0 % de comisión en las ${DT.seedText()} de cada juego que publiques`],
-        ['chart', `Comisión de ${pct(e.rateStudent)} en lugar de ${pct(e.rateExternal)} después de la Semilla`],
-        ['cap', 'Sello «Hecho en el TecNM» con tu campus y filtro propio en la tienda'],
-        ['eye', 'Prioridad en la cola de revisión de juegos']
+        ['chart', `Después, solo ${pct(e.rateStudent)} de comisión por venta`],
+        ['cap', 'Sello «Hecho en el TecNM» con tu campus en la tienda']
       ]
     };
   };
@@ -118,11 +118,15 @@
       return;
     }
     const B = DT.TECNM_BENEFITS();
+    const tecPending = !DT.isTecnm(me) && S().tecnmRequests.some((r) => r.userId === me.id && r.status === 'pending');
+    const tecOk = DT.isTecnm(me) || tecPending;
     app.innerHTML = `
       <section class="page narrow verify">
-        <div class="page-head"><div><h1>${DT.icon.code} Quiero ser desarrollador</h1><p>Publicar en DivierteTEC es gratis. Para proteger a la comunidad, cada solicitud la revisa la administración.</p></div></div>
-        <div class="card steps"><div><b>1</b>Envías tu solicitud</div><div><b>2</b>La administración revisa trabajo previo, motivo e identidad</div><div><b>3</b>Te aprueba y se abre tu panel de desarrollador</div></div>
-        ${req && req.status === 'pending' ? `<div class="card"><h2>Tu solicitud ${statusPill('pending')}</h2><p>Enviada ${DT.timeAgo(req.date)} como <b>${DT.esc(req.studio)}</b>. Te avisaremos aquí mismo.</p></div>`
+        <div class="page-head"><div><h1>${DT.icon.code} Quiero ser desarrollador</h1><p>Publicar en DivierteTEC es gratis y <b>exclusivo para estudiantes del TecNM</b>. Cada solicitud la revisa la administración.</p></div></div>
+        <div class="card steps"><div><b>1</b>Verificas tu cuenta TecNM</div><div><b>2</b>Envías tu solicitud: trabajo previo, motivo e identidad</div><div><b>3</b>La administración aprueba y se abre tu panel de desarrollador</div></div>
+        ${!tecOk ? `<div class="card verify-need"><h2>${DT.ic('cap')} Primero verifica que eres del TecNM</h2><p>Solo estudiantes del TecNM verificados pueden publicar juegos. Verifica tu cuenta con tu correo institucional, número de control y credencial; después podrás enviar esta solicitud.</p><a class="btn primary" href="#/verificacion-tecnm">${DT.ic('cap')} Verificar mi cuenta TecNM</a></div>` : ''}
+        ${tecPending ? `<p class="notice">${DT.ic('cap')} <span>Tu verificación TecNM está en revisión. Puedes enviar tu solicitud; se aprobará cuando se confirme tu verificación.</span></p>` : ''}
+        ${!tecOk ? '' : req && req.status === 'pending' ? `<div class="card"><h2>Tu solicitud ${statusPill('pending')}</h2><p>Enviada ${DT.timeAgo(req.date)} como <b>${DT.esc(req.studio)}</b>. Te avisaremos aquí mismo.</p></div>`
         : `${req && (req.status === 'rejected' || req.status === 'info') ? `<div class="notice warn">${DT.icon.warn} <span>Tu solicitud anterior: ${statusPill(req.status)} ${req.note ? '— ' + DT.esc(req.note) : ''}</span></div>` : ''}
         <form class="card form-grid" data-devreq>
           <h3 class="wide">1 · Tu estudio</h3>
@@ -144,7 +148,7 @@
           <div class="wide">${proto}</div>
           <div class="wide row"><span class="spacer"></span><button class="btn primary">${DT.icon.upload} Enviar solicitud</button></div>
         </form>`}
-        <div class="card"><h3>${DT.ic('cap')} ¿Eres del TecNM?</h3><p>Verifica tu cuenta y como desarrollador tendrás:</p>${benefitList(B.dev)}<a class="btn ghost sm" href="#/verificacion-tecnm">${DT.isTecnm(me) ? DT.icon.check + ' Ya estás verificado' : 'Verificar mi cuenta TecNM'}</a></div>
+        <div class="card"><h3>${DT.ic('cap')} Como desarrollador TecNM tendrás</h3>${benefitList(B.dev)}${DT.isTecnm(me) ? `<p class="ok">${DT.icon.check} Tu cuenta TecNM ya está verificada.</p>` : ''}</div>
       </section>`;
     const form = DT.$('[data-devreq]', app);
     if (!form) return;
@@ -171,6 +175,7 @@
 
   /* ---------- Criterios de revisión ---------- */
   DT.DEV_REQ_CRITERIA = [
+    { id: 'tecnm', text: 'Cuenta TecNM verificada (requisito para publicar)', auto: (r) => DT.isTecnm(DT.user(r.userId)) },
     { id: 'work', text: 'Trabajo previo demostrable (enlaces o archivos revisados)' },
     { id: 'reason', text: 'Motivo claro y acorde a la plataforma', auto: (r) => (r.reason || '').length >= 80 ? null : false },
     { id: 'identity', text: 'La identidad coincide con el documento' },

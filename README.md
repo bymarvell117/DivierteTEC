@@ -79,7 +79,7 @@ ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 ## Modelo de negocio
 
 **Paga lo que quieras** como pilar para los juegos gratuitos, comisión escalonada (0 % durante las 3 primeras semanas de cada juego de estudios de estudiantes del TecNM verificados, luego 12 %;
-18 % para externos), **Pase DivierteTEC** de $59/mes que reparte el 70 % entre los estudios
+solo estudiantes del TecNM verificados publican), **Pase DivierteTEC** de $59/mes que reparte el 70 % entre los estudios
 por tiempo jugado, destacados patrocinados y propinas. De su comisión, DivierteTEC absorbe
 un **5 % de cada venta y de cada Pase para el Centro de Educación Ambiental del Parque
 Irekua** (Irapuato); el estudio recibe lo mismo. La página del Pase tiene una sección de
@@ -89,10 +89,10 @@ Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
 
 ## Estudios TecNM y preguntas frecuentes
 
-- **Trato preferente a estudiantes del TecNM.**
-  - Los estudios verificados como TecNM tienen la Semilla TEC (cada juego no paga comisión durante sus 3 primeras semanas desde que se publica) y después 12 % en lugar de 18 %.
-  - Llevan el sello **Hecho en el TecNM** con su campus y tienen un filtro propio en la tienda.
-  - Tienen **prioridad en la cola de revisión**.
+- **Solo estudiantes del TecNM publican.** Para ser desarrollador hay que verificar la cuenta TecNM y tener aprobada la solicitud de desarrollador; jugar está abierto a todos.
+  - Semilla TEC: cada juego no paga comisión durante sus 3 primeras semanas desde que se publica; después, 12 %.
+  - Sello **Hecho en el TecNM** con el campus del estudio y filtro por campus en la tienda.
+- **Tres perfiles:** *Usuario* (registro gratuito), *Desarrollador* (estudiante TecNM verificado + solicitud aprobada) y *Administrador* (cuenta interna asignada por el equipo de DivierteTEC).
   - Los **jugadores** verificados tienen el Pase con 30 % de descuento ($41.30 en lugar de $59), la insignia épica **Comunidad TecNM** y el sello TecNM en su perfil y reseñas.
 - **Verificación TecNM** (`#/verificacion-tecnm`, en el menú de usuario y en el perfil):
   - correo institucional (`…tecnm.mx`) confirmado con un código de 6 dígitos (en el prototipo, el código se muestra en pantalla);

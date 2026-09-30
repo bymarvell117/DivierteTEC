@@ -1,7 +1,7 @@
 /* DivierteTEC — economía de la plataforma (modelo "Crece con tu estudio").
    Todo el dinero es SIMULADO: saldo de demostración, sin datos bancarios.
    - Venta de juegos: Semilla TEC (0 % durante las 3 primeras semanas de cada juego de un
-     estudio TecNM verificado), luego 12 % estudios TecNM / 18 % estudios externos.
+     estudio TecNM verificado), luego 12 %. Solo estudiantes del TecNM verificados publican.
    - Pase DivierteTEC mensual: el 70 % va a un fondo que se reparte por tiempo jugado.
    - Causa ambiental: DivierteTEC absorbe de su comisión un 5 % de cada venta (y de cada
      Pase) para el Centro de Educación Ambiental del Parque Irekua (Irapuato). El estudio
@@ -18,11 +18,12 @@
 
   const S = () => DT.state();
   DT.econ = () => S().economy;
-  /* Estudios de estudiantes del TecNM verificados: comisión preferente, sello y prioridad en revisión */
+  /* Solo estudiantes del TecNM verificados pueden ser desarrolladores (sello con su campus) */
   DT.isTecnmDev = (u) => !!(u && ((u.tecnm && u.tecnm.verified) || (u.student && u.verified)));
   DT.isTecnm = DT.isTecnmDev;
   DT.isTecnmGame = (g) => DT.isTecnmDev(DT.user(g.devId));
-  DT.tecnmPill = (g, long) => { if (!DT.isTecnmGame(g)) return ''; const c = (DT.user(g.devId) || {}).campus; return `<span class="pill tecnm" title="Estudio de estudiantes del TecNM verificado">${DT.icon.cap} ${long ? 'Hecho en el TecNM' + (c ? ' · ' + DT.esc(c) : '') : 'TecNM'}</span>`; };
+  DT.campusOf = (u) => (u && ((u.tecnm && u.tecnm.campus) || u.campus)) || '';
+  DT.tecnmPill = (g, long) => { if (!DT.isTecnmGame(g)) return ''; const c = DT.campusOf(DT.user(g.devId)); return `<span class="pill tecnm" title="Estudio de estudiantes del TecNM verificado">${DT.icon.cap} ${long ? 'Hecho en el TecNM' + (c ? ' · ' + DT.esc(c) : '') : 'TecNM'}</span>`; };
   DT.wallet = (uid) => r2(S().wallets[uid || S().currentUserId] || 0);
   const credit = (uid, n) => { S().wallets[uid] = r2((S().wallets[uid] || 0) + n); };
   const record = (e) => { e.id = DT.uid('tx'); e.date = Date.now(); S().ledger.unshift(e); return e; };
@@ -85,12 +86,12 @@
     const e = DT.econ();
     const dev = DT.user(devId) || {};
     const student = DT.isTecnm(dev);
-    const rate = student ? e.rateStudent : e.rateExternal;
+    const rate = e.rateStudent; // todos los estudios son TecNM
     const g = gameId ? DT.game(gameId) : null;
     const freePart = g && DT.inSeed(g) ? gross : 0;
     const commission = r2((gross - freePart) * rate);
     const cause = causeOf(gross - freePart, commission);
-    const note = freePart > 0 ? `Semilla TEC (0 %) · quedan ${DT.seedDaysLeft(g)} días` : (student ? 'Estudio TecNM' : 'Estudio externo') + ` (${Math.round(rate * 100)} %)`;
+    const note = freePart > 0 ? `Semilla TEC (0 %) · quedan ${DT.seedDaysLeft(g)} días` : `Estudio TecNM (${Math.round(rate * 100)} %)`;
     return { rate, student, freePart: r2(freePart), commission, cause, platform: r2(commission - cause), net: r2(gross - commission), note };
   };
 

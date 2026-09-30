@@ -1,7 +1,8 @@
 # Modelo de negocio de DivierteTEC — "Crece con tu estudio"
 
 DivierteTEC necesita dinero para servidores, moderación y eventos, pero su público
-son estudiantes que publican su primer juego. Por eso el modelo tiene dos reglas:
+son estudiantes que publican su primer juego. **Solo estudiantes del TecNM verificados
+pueden publicar** (jugar está abierto a todos). Por eso el modelo tiene dos reglas:
 
 1. **Que publicar no cueste nada.** Los estudios de estudiantes del TecNM no pagan comisión
    durante las primeras semanas de cada juego (Semilla TEC).
@@ -28,7 +29,6 @@ ni guardan datos bancarios. Las tasas se cambian en *Admin → Finanzas*.
 |---|---|---|---|
 | **Semilla TEC** | Ventas de cada juego de un estudio TecNM verificado durante sus **3 primeras semanas** desde que se publica | **0 %** | 100 % |
 | Estudio TecNM | Juegos de estudios TecNM verificados, después de sus 3 semanas de Semilla | **12 %** | 88 % |
-| Externo | Estudios independientes o empresas | **18 %** | 82 % |
 
 Referencia de mercado: Steam cobra 30 % en su tramo estándar, Epic Games Store 12 %
 e itch.io deja que el estudio elija (10 % por defecto). DivierteTEC queda en la parte
@@ -60,7 +60,6 @@ comisión, así que tampoco donativo. Las propinas van completas al estudio.
 |---|---|---|---|
 | Juego TecNM en Semilla TEC | 100 % | 0 % | 0 % |
 | Juego TecNM | 88 % | 5 % | 7 % |
-| Juego de estudio externo | 82 % | 5 % | 13 % |
 | Pase DivierteTEC | 70 % (fondo) | 5 % | 25 % |
 
 Por qué ahí:
@@ -128,7 +127,7 @@ Las licencias institucionales y el patrocinio de torneos quedan como ingreso adi
 |---|---|
 | Jugador | Monedero en la barra superior (saldo, recarga de demostración, movimientos) · botón **Comprar** con desglose de lo que recibe el estudio · **Paga lo que quieras** · **Apoyar al estudio** (propina) · página **PASE** (`#/planes`) con calculadora |
 | Desarrollador | Pestaña **Precio y ventas** de cada juego: modalidad, descuento, Pase, vista previa de lo que recibe por copia, progreso de la Semilla TEC, ventas y **Destacado patrocinado** |
-| Administrador | **Finanzas**: ingresos por fuente, pagado a estudios, suscriptores, reparto del fondo del Pase, aprobación de promociones, tasas editables y libro de transacciones. En *Usuarios* se marca un estudio como estudiantil o externo |
+| Administrador | **Finanzas**: ingresos por fuente, pagado a estudios, suscriptores, reparto del fondo del Pase, aprobación de promociones, tasas editables y libro de transacciones. En *Usuarios* se ve el campus de cada cuenta TecNM y solo una cuenta TecNM verificada puede recibir el rol de desarrollador |
 
 ## 6. Camino a producción
 

@@ -133,10 +133,10 @@
           <article class="l-role in-view" style="--d:0s"><div class="l-role-ico">${DT.icon.gamepad}</div><h3>Jugadores</h3>
             <p>Tienda y biblioteca estilo Steam, reseñas con stickers y un perfil que presume tus logros.</p></article>
           <article class="l-role in-view" style="--d:.12s"><div class="l-role-ico">${DT.icon.wrench}</div><h3>Desarrolladores</h3>
-            <p>Sube tu juego, define logros con un SDK de una línea y diseña tu página con imágenes, GIFs y videos en cualquier forma. Para publicar, solicita tu cuenta de desarrollador: la administración revisa tu trabajo previo y tu identidad.</p>
+            <p>Sube tu juego, define logros con un SDK de una línea y diseña tu página con imágenes, GIFs y videos en cualquier forma. Publicar es exclusivo para estudiantes del TecNM: verifica tu cuenta y solicita tu acceso de desarrollador.</p>
             <a class="btn primary sm" href="#/dev" data-asdev>${DT.icon.code} Publicar mi juego</a></article>
           <article class="l-role in-view" style="--d:.24s"><div class="l-role-ico">${DT.icon.shield}</div><h3>Administradores</h3>
-            <p>Revisión de contenido (violencia, temas bélicos, odio), solicitudes de desarrollador, verificación TecNM, reportes y filtro de palabras.</p></article>
+            <p>Revisión de contenido (violencia, temas bélicos, odio), solicitudes de desarrollador, verificación TecNM, reportes y filtro de palabras. Son cuentas internas que asigna el equipo de DivierteTEC.</p></article>
         </div>
       </section>
 

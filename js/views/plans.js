@@ -21,8 +21,7 @@
           <table class="faq-table">
             <tr><th>Tipo de venta</th><th>Estudio</th><th>${DT.esc(DT.CAUSE.short)}</th><th>DivierteTEC</th></tr>
             <tr><td>Juego TecNM en Semilla TEC</td><td>100 %</td><td>0 %</td><td>0 %</td></tr>
-            <tr><td>Juego TecNM</td><td>${pctT(1 - e.rateStudent)}</td><td>${pctT(Math.min(cr, e.rateStudent))}</td><td>${pctT(e.rateStudent - Math.min(cr, e.rateStudent))}</td></tr>
-            <tr><td>Juego de estudio externo</td><td>${pctT(1 - e.rateExternal)}</td><td>${pctT(Math.min(cr, e.rateExternal))}</td><td>${pctT(e.rateExternal - Math.min(cr, e.rateExternal))}</td></tr>
+            <tr><td>Juego TecNM después de la Semilla</td><td>${pctT(1 - e.rateStudent)}</td><td>${pctT(Math.min(cr, e.rateStudent))}</td><td>${pctT(e.rateStudent - Math.min(cr, e.rateStudent))}</td></tr>
             <tr><td>Pase DivierteTEC</td><td>${pctT(e.passDevShare)} (fondo)</td><td>${pctT(Math.min(cr, 1 - e.passDevShare))}</td><td>${pctT(1 - e.passDevShare - Math.min(cr, 1 - e.passDevShare))}</td></tr>
             <tr><td>Propinas</td><td>100 %</td><td>0 %</td><td>0 %</td></tr>
           </table>
@@ -87,9 +86,9 @@
 
         <h2 class="section-title">${DT.icon.wrench} Para desarrolladores</h2>
         <div class="grid cols-3 tiers">
-          <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Las <b>${DT.seedText()}</b> de cada juego, desde que se publica, no pagan comisión. Para estudios de estudiantes del TecNM verificados.</p></div>
-          <div class="card tier"><div class="tier-rate">${pct(e.rateStudent)}</div><h4>Estudio TecNM</h4><p>Después de la Semilla. Recibes el ${pct(1 - e.rateStudent)} de cada venta.</p></div>
-          <div class="card tier"><div class="tier-rate">${pct(e.rateExternal)}</div><h4>Estudio externo</h4><p>Indies y empresas fuera del TecNM. Recibes el ${pct(1 - e.rateExternal)}.</p></div>
+          <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Las <b>${DT.seedText()}</b> de cada juego, desde que se publica, no pagan comisión.</p></div>
+          <div class="card tier"><div class="tier-rate">${pct(e.rateStudent)}</div><h4>Después de la Semilla</h4><p>Recibes el ${pct(1 - e.rateStudent)} de cada venta.</p></div>
+          <div class="card tier"><div class="tier-rate">${DT.ic('cap')}</div><h4>Solo estudiantes del TecNM</h4><p>Publicar es exclusivo para estudiantes verificados. <a href="#/verificacion-tecnm">Verifica tu cuenta</a> y <a href="#/ser-desarrollador">solicita ser desarrollador</a>.</p></div>
         </div>
         <div class="grid cols-2">
           <div class="card">
@@ -98,7 +97,6 @@
               <label class="field"><span>Precio del juego (MXN)</span><input type="number" min="0" value="49" data-c="price"></label>
               <label class="field"><span>Copias vendidas</span><input type="number" min="0" value="200" data-c="units"></label>
               <label class="field wide"><span>De ellas, vendidas en las ${DT.seedText()} (Semilla TEC)</span><input type="number" min="0" value="50" data-c="early"></label>
-              <label class="field wide"><span>Tipo de estudio</span><select data-c="type"><option value="student">Estudio TecNM verificado (con Semilla TEC)</option><option value="external">Externo</option></select></label>
             </div>
             <div class="calc" data-calc></div>
           </div>
@@ -129,11 +127,10 @@
     const calc = () => {
       const price = Math.max(0, Number(DT.$('[data-c="price"]', app).value) || 0);
       const units = Math.max(0, Number(DT.$('[data-c="units"]', app).value) || 0);
-      const student = DT.$('[data-c="type"]', app).value === 'student';
       const gross = price * units;
       const early = Math.min(units, Math.max(0, Number(DT.$('[data-c="early"]', app).value) || 0));
-      const free = student ? price * early : 0;
-      const rate = student ? e.rateStudent : e.rateExternal;
+      const free = price * early;
+      const rate = e.rateStudent;
       const net = gross - (gross - free) * rate;
       const cr = Math.min(rate, e.causeRate || 0);
       const cause = (gross - free) * cr;

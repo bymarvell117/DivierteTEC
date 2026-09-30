@@ -764,3 +764,5 @@ label.check input { margin-top: 3px; width: auto; }
 .btn.glow { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 30%, transparent); }
 .topbar-right > .btn.sm { white-space: nowrap; }
 @media (max-width: 640px) { .auth-choice .btn { width: 100%; justify-content: center; } .user-row { flex-wrap: wrap; } }
+.verify-need { border: 2px solid #1b3a8a; background: color-mix(in srgb, #1b3a8a 6%, var(--surface)); } .verify-need h2 { display: flex; gap: 8px; align-items: center; margin-top: 0; }
+.tier-rate .ico { width: 44px; height: 44px; }

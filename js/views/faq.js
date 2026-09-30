@@ -10,30 +10,43 @@
     const tec = DT.state().users.filter(DT.isTecnm).length;
     return [
       { q: '¿De qué manera se puede enlazar con los TecNM?', icon: 'cap', a: `
-        <p>DivierteTEC da <b>trato preferente a los estudios formados por estudiantes del TecNM</b>, de cualquier campus. Un estudio verificado como TecNM obtiene:</p>
+        <p><b>Solo estudiantes del TecNM verificados pueden publicar juegos</b> en DivierteTEC, de cualquier campus. Cada estudio obtiene:</p>
         <ul>
-          <li><b>Semilla TEC:</b> cada juego que publica no paga comisión durante sus ${DT.seedText()}; después paga ${pct(e.rateStudent)} en lugar del ${pct(e.rateExternal)} de un estudio externo.</li>
-          <li>Sello <b>Hecho en el TecNM</b> con su campus en la tienda y en la página del juego, y un filtro propio en la tienda para descubrir sus juegos.</li>
-          <li><b>Prioridad en la cola de revisión</b>: sus juegos aparecen primero para la administración.</li>
+          <li><b>Semilla TEC:</b> cada juego que publica no paga comisión durante sus ${DT.seedText()}; después paga solo ${pct(e.rateStudent)}.</li>
+          <li>Sello <b>Hecho en el TecNM</b> con su campus en la tienda y en la página del juego, y un filtro por campus en la tienda.</li>
         </ul>
+        <p>Jugar está abierto a todo el público.</p>
         <p>Los <b>jugadores</b> del TecNM también tienen beneficios: ${pct(e.passTecnmDiscount || 0.3)} de descuento en el Pase, la insignia <b>Comunidad TecNM</b> y el sello TecNM en su perfil y reseñas.</p>
         <p>La verificación se pide en <a href="#/verificacion-tecnm">Verificación TecNM</a> con el <b>correo institucional</b> (@…tecnm.mx), el <b>número de control</b>, el campus y una foto de la <b>credencial vigente</b>; la administración la revisa. Hoy ${tec === 1 ? 'hay 1 cuenta TecNM verificada' : `hay ${tec} cuentas TecNM verificadas`} en la plataforma.</p>
         <p class="muted">Propuesta para la siguiente etapa, aún no implementada: convenios con cada campus para usar la plataforma como vitrina de proyectos de materias, residencias y hackatones, con torneos entre Tecnológicos.</p>` },
+      { q: '¿Qué puede hacer cada perfil y cómo llego a ser cada uno?', icon: 'users', a: `
+        <table class="faq-table">
+          <tr><th>Perfil</th><th>Qué puede hacer</th><th>Cómo serlo</th></tr>
+          <tr><td><b>Usuario</b></td><td>Jugar al instante, biblioteca, logros y recompensas, reseñas, amigos y el Pase.</td><td><a href="#/registro">Registrarse</a> gratis. Si eres del TecNM, verifícate para tener beneficios.</td></tr>
+          <tr><td><b>Desarrollador</b></td><td>Subir juegos, diseñar su página, logros con el SDK, ventas y estadísticas, Semilla TEC.</td><td>Ser estudiante del TecNM verificado <b>y</b> tener aprobada la <a href="#/ser-desarrollador">solicitud</a> (trabajo previo, motivo e identidad).</td></tr>
+          <tr><td><b>Administrador</b></td><td>Revisar juegos con criterios, aprobar solicitudes y verificaciones, moderar reportes y ver finanzas.</td><td>Cuenta interna que asigna el equipo de DivierteTEC; no se solicita.</td></tr>
+        </table>` },
       { q: '¿Cómo me convierto en desarrollador?', icon: 'wrench', a: `
-        <p>Cualquier jugador puede pedirlo en <a href="#/ser-desarrollador">Quiero ser desarrollador</a>. La administración revisa la solicitud con estos criterios:</p>
+        <p><b>Ser desarrollador es exclusivo para estudiantes del TecNM.</b> Son dos pasos:</p>
+        <ol>
+          <li><b>Verifica tu cuenta TecNM</b> en <a href="#/verificacion-tecnm">Verificación TecNM</a>.</li>
+          <li><b>Envía tu solicitud</b> en <a href="#/ser-desarrollador">Quiero ser desarrollador</a>.</li>
+        </ol>
+        <p>La administración revisa la solicitud con estos criterios:</p>
         <ul>
+          <li><b>Cuenta TecNM verificada</b> (se comprueba sola).</li>
           <li><b>Trabajo previo:</b> descripción de proyectos anteriores, enlaces y, si quieres, un archivo o captura.</li>
           <li><b>Motivo:</b> por qué quieres publicar en DivierteTEC (al menos 80 caracteres).</li>
           <li><b>Verificación de identidad:</b> nombre completo, fecha de nacimiento y una identificación (INE, pasaporte o credencial escolar). Si eres menor de edad, se pide el nombre de tu madre, padre o tutor.</li>
           <li>Aceptar los criterios de contenido y no tener sanciones en la comunidad.</li>
         </ul>
-        <p>La administración puede <b>aprobar</b>, <b>rechazar</b> o <b>pedir más información</b>. Al aprobarse, tu cuenta pasa a ser de desarrollador y ya puedes subir juegos. Si además verificas que eres del TecNM, tu estudio obtiene la Semilla TEC y la comisión preferente.</p>
+        <p>La administración puede <b>aprobar</b>, <b>rechazar</b> o <b>pedir más información</b>. Al aprobarse, tu cuenta pasa a ser de desarrollador y ya puedes subir juegos, con la Semilla TEC y la comisión de ${pct(e.rateStudent)}.</p>
         <p class="muted">En el prototipo los documentos se guardan solo en tu navegador. En el sitio web se enviarían cifrados y se eliminarían al terminar la revisión.</p>` },
       { q: '¿Cómo verifico que soy del TecNM y qué beneficios obtengo?', icon: 'cap', a: `
         <p>En <a href="#/verificacion-tecnm">Verificación TecNM</a>: confirma tu correo institucional con un código, escribe tu número de control, elige tu campus y sube tu credencial vigente. La administración revisa que los datos coincidan.</p>
         <ul>
           <li><b>Como jugador:</b> Pase DivierteTEC con ${pct(e.passTecnmDiscount || 0.3)} de descuento (${DT.money(Math.round(e.passPrice * (1 - (e.passTecnmDiscount || 0.3)) * 100) / 100)} en lugar de ${DT.money(e.passPrice)}), insignia épica <b>Comunidad TecNM</b> y sello TecNM en tu perfil y reseñas.</li>
-          <li><b>Como desarrollador:</b> Semilla TEC (las ${DT.seedText()} de cada juego sin comisión), comisión de ${pct(e.rateStudent)} en lugar de ${pct(e.rateExternal)}, sello <b>Hecho en el TecNM</b> y prioridad en la revisión.</li>
+          <li><b>Como desarrollador:</b> es el requisito para publicar. Incluye la Semilla TEC (las ${DT.seedText()} de cada juego sin comisión), después ${pct(e.rateStudent)} por venta, y el sello <b>Hecho en el TecNM</b> con tu campus.</li>
         </ul>
         <p class="muted">En el prototipo el código del correo se muestra en pantalla como simulación; en el sitio web llegaría a tu bandeja institucional.</p>` },
       { q: '¿Existe alguna limitante sobre qué juegos puedo jugar y/o crear?', icon: 'shield', a: `
@@ -73,7 +86,6 @@
           <tr><th>Fuente</th><th>DivierteTEC</th><th>Estudio</th></tr>
           <tr><td>Ventas de un juego TecNM en sus ${DT.seedText()} (Semilla TEC)</td><td>0 %</td><td>100 %</td></tr>
           <tr><td>Ventas de juegos TecNM después de la Semilla</td><td>${pct(e.rateStudent)}</td><td>${pct(1 - e.rateStudent)}</td></tr>
-          <tr><td>Ventas de estudios externos</td><td>${pct(e.rateExternal)}</td><td>${pct(1 - e.rateExternal)}</td></tr>
           <tr><td>Pase DivierteTEC (${DT.money(e.passPrice)} al mes)</td><td>${pct(1 - e.passDevShare)}</td><td>${pct(e.passDevShare)}, repartido por tiempo jugado</td></tr>
           <tr><td>Propinas</td><td>0 %</td><td>100 %</td></tr>
           <tr><td>Destacado patrocinado</td><td colspan="2">${DT.money(e.promoPrice)} por ${e.promoDays} días</td></tr>

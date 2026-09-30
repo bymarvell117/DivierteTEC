@@ -32,6 +32,7 @@
     state.social = state.social || { follows: {}, friends: {}, blocks: {}, requests: [] };
     state.devRequests = state.devRequests || []; state.tecnmRequests = state.tecnmRequests || [];
     if (state.economy.passTecnmDiscount == null) state.economy.passTecnmDiscount = 0.3;
+    delete state.economy.rateExternal; // ya no hay estudios externos
     if (state.economy.causeRate == null) state.economy.causeRate = 0.05;
     if (state.economy.seedDays == null) { state.economy.seedDays = 21; delete state.economy.seedAllowance; }
     return state;

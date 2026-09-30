@@ -127,7 +127,31 @@ async function icon(name, color = '#FFFFFF', size = 256) {
     footer(s, 4); notes(s);
   }
 
-  /* 5–7 · Lista con iconos + capturas en cascada */
+  /* 5 · Tres perfiles */
+  {
+    const s = slide();
+    head(s, 'Tres perfiles', 'Cada quien vive ', 'su DivierteTEC');
+    const roles = [
+      ['LuGamepad2', C.blue, 'EEF4FF', 'Usuario', ['Juega al instante en el navegador', 'Biblioteca, logros y recompensas', 'Reseñas, amigos y el Pase'], [['Cómo serlo: ', true], ['registrarse gratis. Si es del TecNM, verifica su cuenta y obtiene beneficios.', false]]],
+      ['LuCode', C.purple, 'F1EBFF', 'Desarrollador', ['Sube sus juegos y diseña su página', 'Logros con el SDK', 'Ventas, estadísticas y Semilla TEC'], [['Cómo serlo: ', true], ['ser ', false], ['estudiante del TecNM verificado', true], [' y tener aprobada su solicitud (trabajo previo, motivo e identidad).', false]]],
+      ['LuShieldCheck', C.teal, 'E3F5F2', 'Administrador', ['Revisa juegos con criterios', 'Aprueba solicitudes y verificaciones', 'Modera reportes y ve finanzas'], [['Cómo serlo: ', true], ['cuenta interna que asigna el equipo de DivierteTEC; no se solicita.', false]]]
+    ];
+    const cw = (W - 2 * M - 2 * 0.3) / 3;
+    for (let i = 0; i < 3; i++) {
+      const [ic, col, pale, t, items, how] = roles[i], x = M + i * (cw + 0.3), y = 1.9;
+      s.addShape(pres.shapes.RECTANGLE, { x, y, w: cw, h: 4.55, fill: { color: C.white }, line: { color: C.line }, shadow: shadow() });
+      await iconCircle(s, ic, x + 0.3, y + 0.3, 0.75, col);
+      txt(s, t, { x: x + 1.2, y: y + 0.3, w: cw - 1.4, h: 0.75, fontSize: 24, bold: true, color: C.navy, valign: 'middle' });
+      txt(s, 'QUÉ VIVE', { x: x + 0.3, y: y + 1.25, w: cw - 0.6, h: 0.3, fontSize: 11, bold: true, color: C.muted, charSpacing: 2 });
+      txt(s, items.map((it, j) => ({ text: it, options: { bullet: true, breakLine: j < items.length - 1 } })), { x: x + 0.3, y: y + 1.6, w: cw - 0.55, h: 1.5, fontSize: 15, color: C.ink, paraSpaceAfter: 6 });
+      s.addShape(pres.shapes.RECTANGLE, { x: x + 0.3, y: y + 3.15, w: cw - 0.6, h: 1.15, fill: { color: pale }, line: { color: pale } });
+      txt(s, how.map(([tt, b]) => ({ text: tt, options: { bold: b, color: b ? C.navy : C.ink } })), { x: x + 0.45, y: y + 3.15, w: cw - 0.9, h: 1.15, fontSize: 13.5, valign: 'middle' });
+    }
+    txt(s, 'Jugar es para todos · publicar es exclusivo para estudiantes del TecNM', { x: M, y: 6.6, w: 9, h: 0.3, fontSize: 12, color: C.muted });
+    footer(s, 5); notes(s);
+  }
+
+  /* 6–8 · Lista con iconos + capturas en cascada */
   const listSlide = async (num, kicker, plain, em, items, imgs, cap) => {
     const s = slide();
     head(s, kicker, plain, em);
@@ -140,11 +164,11 @@ async function icon(name, color = '#FFFFFF', size = 256) {
     if (cap) txt(s, cap, { x: M, y: 6.1, w: 5.4, h: 0.6, fontSize: 13, color: C.muted });
     footer(s, num); notes(s);
   };
-  await listSlide(5, 'Para jugadores', 'Como Steam, ', 'pero nuestro', [['LuShoppingBag', 'Tienda y biblioteca'], ['LuTrophy', 'Logros con recompensas'], ['LuStar', 'Reseñas tras 2 h de juego'], ['LuHeart', 'Paga lo que quieras']], ['tienda', 'biblioteca', 'perfil']);
-  await listSlide(6, 'Para estudios', 'Publicar es ', 'gratis y rápido', [['LuUpload', 'Sube HTML5, C++ o EXE'], ['LuLayoutTemplate', 'Diseña su página'], ['LuShieldCheck', 'Revisión de contenido'], ['LuChartLine', 'Ventas y estadísticas']], ['editor', 'revision', 'ventas'], 'Logros con una línea de código · prueba antes de publicar');
-  await listSlide(7, 'Confianza', 'Cuentas ', 'verificadas', [['LuCode', 'Solicitud para ser dev'], ['LuIdCard', 'Trabajo, motivo e identidad'], ['LuGraduationCap', 'Verificación TecNM'], ['LuGift', 'Beneficios exclusivos']], ['solicitud', 'verificacion', 'solicitudes'], 'Correo institucional + número de control + credencial · la administración aprueba con criterios');
+  await listSlide(6, 'Para jugadores', 'Como Steam, ', 'pero nuestro', [['LuShoppingBag', 'Tienda y biblioteca'], ['LuTrophy', 'Logros con recompensas'], ['LuStar', 'Reseñas tras 2 h de juego'], ['LuHeart', 'Paga lo que quieras']], ['tienda', 'biblioteca', 'perfil']);
+  await listSlide(7, 'Para estudios del TecNM', 'Publicar es ', 'gratis y rápido', [['LuUpload', 'Sube HTML5, C++ o EXE'], ['LuLayoutTemplate', 'Diseña su página'], ['LuShieldCheck', 'Revisión de contenido'], ['LuChartLine', 'Ventas y estadísticas']], ['editor', 'revision', 'ventas'], 'Logros con una línea de código · prueba antes de publicar');
+  await listSlide(8, 'Confianza', 'Cuentas ', 'verificadas', [['LuCode', 'Solicitud para ser dev'], ['LuIdCard', 'Trabajo, motivo e identidad'], ['LuGraduationCap', 'Verificación TecNM'], ['LuGift', 'Beneficios exclusivos']], ['solicitud', 'verificacion', 'solicitudes'], 'Correo institucional + número de control + credencial · la administración aprueba con criterios');
 
-  /* 8 · Diagrama de flujo (formas y conectores nativos) */
+  /* 9 · Diagrama de flujo (formas y conectores nativos) */
   {
     const s = slide();
     head(s, 'Diagrama de flujo', 'Cómo ', 'fluye DivierteTEC');
@@ -182,10 +206,10 @@ async function icon(name, color = '#FFFFFF', size = 256) {
     arrow(xr, yJ + 0.31, xr, yS + 0.31, C.pink, true, false);
     arrow(xr, yS + 0.31, X[3] + NW, yS + 0.31, C.pink, true);
     txt(s, 'Ingresos y opiniones regresan al estudio', { x: 7.2, y: 6.38, w: xr - 7.2, h: 0.3, fontSize: 12, bold: true, color: C.pink, align: 'right' });
-    footer(s, 8); notes(s);
+    footer(s, 9); notes(s);
   }
 
-  /* 9 · Prueba y error */
+  /* 10 · Prueba y error */
   {
     const s = slide();
     head(s, 'Proceso de desarrollo', 'Así lo construimos: ', 'prueba y error');
@@ -221,10 +245,10 @@ async function icon(name, color = '#FFFFFF', size = 256) {
     txt(s, '✓', { x: gx - 0.25, y: gy - 0.25, w: 0.5, h: 0.5, fontSize: 20, bold: true, color: C.white, align: 'center', valign: 'middle' });
     txt(s, 'DivierteTEC', { x: gx - 1.6, y: gy - 0.72, w: 2.1, h: 0.35, fontSize: 18, bold: true, color: C.navy, align: 'right' });
     txt(s, 'Muchos intentos, varios tropiezos y un resultado que ya funciona.', { x: 4.6, y: 6.3, w: W - M - 4.6, h: 0.4, fontSize: 16, bold: true, color: C.muted, align: 'right' });
-    footer(s, 9); notes(s);
+    footer(s, 10); notes(s);
   }
 
-  /* 10 · Modelo de negocio */
+  /* 11 · Modelo de negocio */
   {
     const s = slide();
     head(s, 'Modelo de negocio', 'Ganamos ', 'cuando el estudio gana');
@@ -242,10 +266,10 @@ async function icon(name, color = '#FFFFFF', size = 256) {
     const ant = [['itch.io', '«Paga lo que quieras» desde $0; el creador decide la comisión (10 % por defecto).'], ['Humble Bundle', 'Desde 2010 vende juegos indie a «paga lo que quieras».'], ['Epic Games Store', 'Cobra 12 % y atrajo estudios con esa comisión baja.'], ['Steam', 'La referencia: 30 % en su tramo estándar. Nosotros: 0 % a 12 %.']];
     const aw = (W - 2 * M - 0.6) / 4;
     ant.forEach(([t, d], i) => txt(s, [{ text: t, options: { bold: true, fontSize: 17, color: C.white, breakLine: true } }, { text: d, options: { fontSize: 12, color: 'DCE7FF' } }], { x: M + 0.3 + i * aw, y: 5.38, w: aw - 0.25, h: 1.15 }));
-    footer(s, 10); notes(s);
+    footer(s, 11); notes(s);
   }
 
-  /* 11 · SCAMPER */
+  /* 12 · SCAMPER */
   {
     const s = slide();
     head(s, 'Validación · SCAMPER', 'Así ', 'mejoramos el prototipo');
@@ -260,10 +284,10 @@ async function icon(name, color = '#FFFFFF', size = 256) {
       txt(s, t, { x: x + 1.1, y: y + 0.3, w: cw - 1.3, h: 0.6, fontSize: 19, bold: true, color: C.navy, valign: 'middle' });
       txt(s, d, { x: x + 0.25, y: y + 1.1, w: cw - 0.5, h: 0.7, fontSize: 15, color: C.ink });
     });
-    footer(s, 11); notes(s);
+    footer(s, 12); notes(s);
   }
 
-  /* 12 · Ejes transversales */
+  /* 13 · Ejes transversales */
   {
     const s = slide();
     head(s, 'Ejes transversales', 'Impacto ', 'más allá del juego');
@@ -276,10 +300,10 @@ async function icon(name, color = '#FFFFFF', size = 256) {
       txt(s, t, { x: x + 0.3, y: y + 1.25, w: cw - 0.6, h: 0.8, fontSize: 18, bold: true, color: C.navy, valign: 'middle' });
       txt(s, items.map((it, j) => ({ text: it, options: { bullet: true, breakLine: j < items.length - 1 } })), { x: x + 0.3, y: y + 2.15, w: cw - 0.5, h: 2.25, fontSize: 14, color: C.ink, paraSpaceAfter: 6 });
     }
-    footer(s, 12); notes(s);
+    footer(s, 13); notes(s);
   }
 
-  /* 13 · Cierre */
+  /* 14 · Cierre */
   {
     const s = slide(C.navy);
     mosaic(s, ['juego', 'aerodron', 'furia', 'faq', 'pase', 'tienda', 'revision', 'ventas', 'landing']);

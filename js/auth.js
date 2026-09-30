@@ -133,7 +133,7 @@
           <p>${isTec ? `Tu correo <b>${DT.esc(u.email)}</b> es del TecNM. ` : ''}Verifica tu cuenta con tu correo institucional, número de control y credencial para obtener beneficios exclusivos:</p>
           <div class="grid cols-2">
             <div class="card"><h4>Como jugador</h4>${li(B.user)}</div>
-            <div class="card"><h4>Si publicas juegos</h4>${li(B.dev)}</div>
+            <div class="card"><h4>Para publicar juegos (requisito)</h4>${li(B.dev)}</div>
           </div>
           <div class="auth-choice">
             <button class="btn ghost big" data-later>Hacerlo más tarde</button>

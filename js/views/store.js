@@ -2,7 +2,7 @@
 (function (DT) {
   'use strict';
 
-  const filters = { q: '', format: 'all', genre: 'all', sort: 'featured', tecnm: false };
+  const filters = { q: '', format: 'all', genre: 'all', sort: 'featured', campus: 'all' };
 
   /* Botonera principal según precio, acceso (compra/Pase/gratis) y formato.
      Los juegos HTML se juegan al instante: nunca se descargan. */
@@ -118,6 +118,7 @@
     const all = DT.gamesPublic();
     const featured = all.filter((g) => g.featured).sort((a, b) => (DT.isSponsored(b) ? 1 : 0) - (DT.isSponsored(a) ? 1 : 0));
     const genres = [...new Set(all.map((g) => g.genre))].sort();
+    const campuses = [...new Set(all.map((g) => DT.campusOf(DT.user(g.devId))).filter(Boolean))].sort();
     app.innerHTML = `
       <section class="page">
         <div class="store-hero" data-hero>
@@ -142,7 +143,7 @@
           <div class="chips" role="group" aria-label="Formato">
             ${[['all', 'Todos'], ['html', 'HTML · Navegador'], ['cpp', 'C++'], ['exe', 'Ejecutables']].map(([k, v]) => `<button class="chip ${filters.format === k ? 'on' : ''}" data-format="${k}">${v}</button>`).join('')}
           </div>
-          <button class="chip tecnm-chip ${filters.tecnm ? 'on' : ''}" data-tecnm title="Juegos de estudios de estudiantes del TecNM">${DT.icon.cap} Hecho en el TecNM</button>
+          <select data-campus aria-label="Campus" title="Todos los juegos están hechos por estudiantes del TecNM"><option value="all">Todos los campus TecNM</option>${campuses.map((c) => `<option ${filters.campus === c ? 'selected' : ''}>${DT.esc(c)}</option>`).join('')}</select>
           <select data-genre aria-label="Género"><option value="all">Todos los géneros</option>${genres.map((g) => `<option ${filters.genre === g ? 'selected' : ''}>${DT.esc(g)}</option>`).join('')}</select>
           <select data-sort aria-label="Ordenar">
             ${[['featured', 'Destacados'], ['new', 'Más recientes'], ['popular', 'Más jugados'], ['az', 'A–Z']].map(([k, v]) => `<option value="${k}" ${filters.sort === k ? 'selected' : ''}>${v}</option>`).join('')}
@@ -156,7 +157,7 @@
       const q = filters.q.trim().toLowerCase();
       let list = all.filter((g) => (filters.format === 'all' || g.format === filters.format)
         && (filters.genre === 'all' || g.genre === filters.genre)
-        && (!filters.tecnm || DT.isTecnmGame(g))
+        && (filters.campus === 'all' || DT.campusOf(DT.user(g.devId)) === filters.campus)
         && (!q || [g.title, g.genre, g.short, ...(g.tags || [])].join(' ').toLowerCase().includes(q)));
       const sorts = { featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.plays - a.plays, new: (a, b) => b.createdAt - a.createdAt, popular: (a, b) => b.plays - a.plays, az: (a, b) => a.title.localeCompare(b.title) };
       list = list.sort(sorts[filters.sort]);
@@ -166,7 +167,7 @@
     draw();
 
     DT.$('[data-q]', app).addEventListener('input', (e) => { filters.q = e.target.value; draw(); });
-    DT.$('[data-tecnm]', app).addEventListener('click', (e) => { filters.tecnm = !filters.tecnm; e.currentTarget.classList.toggle('on', filters.tecnm); draw(); });
+    DT.$('[data-campus]', app).addEventListener('change', (e) => { filters.campus = e.target.value; draw(); });
     DT.$('[data-genre]', app).addEventListener('change', (e) => { filters.genre = e.target.value; draw(); });
     DT.$('[data-sort]', app).addEventListener('change', (e) => { filters.sort = e.target.value; draw(); });
     DT.$$('[data-format]', app).forEach((b) => b.addEventListener('click', () => {
