@@ -3,7 +3,7 @@
 DivierteTEC necesita dinero para servidores, moderación y eventos, pero su público
 son estudiantes que publican su primer juego. Por eso el modelo tiene dos reglas:
 
-1. **Que publicar no cueste nada.** Los estudios estudiantiles no pagan comisión
+1. **Que publicar no cueste nada.** Los estudios de estudiantes del TecNM no pagan comisión
    hasta que su juego empieza a vender en serio.
 2. **Que el dinero de los jugadores llegue a los creadores.** La plataforma cobra
    menos que las tiendas grandes y reparte la mayor parte del Pase entre los estudios.
@@ -26,8 +26,8 @@ ni guardan datos bancarios. Las tasas se cambian en *Admin → Finanzas*.
 
 | Tramo | Aplica a | Comisión | El estudio recibe |
 |---|---|---|---|
-| **Semilla TEC** | Primeros $2,000 MXN de ventas de un estudio estudiantil verificado | **0 %** | 100 % |
-| Estudiantil | Estudios estudiantiles verificados, después de la Semilla | **12 %** | 88 % |
+| **Semilla TEC** | Primeros $2,000 MXN de ventas de un estudio TecNM verificado | **0 %** | 100 % |
+| Estudio TecNM | Estudios de estudiantes del TecNM verificados, después de la Semilla | **12 %** | 88 % |
 | Externo | Estudios independientes o empresas | **18 %** | 82 % |
 
 Referencia de mercado: Steam cobra 30 % en su tramo estándar, Epic Games Store 12 %
@@ -46,7 +46,7 @@ baja del mercado y con un tramo gratis para quien empieza.
 
 Por qué: convierte a cada jugador satisfecho en un posible mecenas del talento
 mexicano sin poner barreras para probar los juegos, que es lo que más necesita un
-estudio estudiantil que empieza.
+estudio TecNM que empieza.
 
 ## 2. Pase DivierteTEC
 
@@ -60,7 +60,7 @@ estudio estudiantil que empieza.
 ## 3. Flujo del dinero (ejemplo con $100 MXN)
 
 ```
-Venta a un estudio estudiantil (después de la Semilla):
+Venta de un estudio TecNM (después de la Semilla):
   Jugador paga $100 ──► Estudio $88 ──► DivierteTEC $12
 
 Suscripción al Pase:
@@ -97,6 +97,6 @@ Las licencias institucionales y el patrocinio de torneos quedan como ingreso adi
 1. Backend con base de datos y cuentas reales (el estado hoy vive en el navegador).
 2. Procesador de pagos mexicano o internacional (Mercado Pago, Stripe, Conekta) con
    pagos con tarjeta, OXXO y SPEI; la plataforma nunca guarda datos de tarjeta.
-3. Verificación de estudios estudiantiles con correo institucional.
+3. Verificación de estudios TecNM con el correo institucional de cada campus.
 4. Pagos a estudios por transferencia con mínimo de retiro y facturación.
 5. Reportes fiscales y términos de servicio.

@@ -128,7 +128,7 @@
 
       <footer class="l-footer">
         <div class="brand"><span class="brand-mark">D</span><span class="brand-name">Divierte<b>TEC</b></span></div>
-        <p>Impulsamos la industria mexicana del entretenimiento desde las aulas. Proyecto para InnovaTec · Hackatec regional 2026. Demostración offline: todos los datos viven en tu navegador.</p>
+        <p>Impulsamos la industria mexicana del entretenimiento desde las aulas. Proyecto para InnovaTec · Hackatec regional 2026. Demostración offline: todos los datos viven en tu navegador. <a href="#/faq">Preguntas frecuentes</a></p>
         ${star ? `<button class="btn l-play" data-act="play" data-gid="${star.id}"><span class="l-play-ico">${DT.icon.play}</span><span><b>JUGAR AHORA</b><small>${DT.esc(star.title)}</small></span></button>` : ''}
       </footer>
     </div>`;

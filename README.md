@@ -57,10 +57,19 @@ ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 
 ## Modelo de negocio
 
-**Paga lo que quieras** como pilar para los juegos gratuitos, comisión escalonada (0 % en los primeros $2,000 de estudios estudiantiles, luego 12 %;
+**Paga lo que quieras** como pilar para los juegos gratuitos, comisión escalonada (0 % en los primeros $2,000 de estudios de estudiantes del TecNM verificados, luego 12 %;
 18 % para externos), **Pase DivierteTEC** de $59/mes que reparte el 70 % entre los estudios
 por tiempo jugado, destacados patrocinados y propinas. Todo con dinero simulado.
 Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
+
+## Estudios TecNM y preguntas frecuentes
+
+- **Trato preferente a estudiantes del TecNM.**
+  - Los estudios verificados como TecNM tienen la Semilla TEC (0 % de comisión en sus primeros $2,000) y después 12 % en lugar de 18 %.
+  - Llevan el sello **Hecho en el TecNM** con su campus y tienen un filtro propio en la tienda.
+  - Tienen **prioridad en la cola de revisión**.
+  - La verificación la marca la administración en *Desarrolladores y usuarios*.
+- **FAQ** (`#/faq`, en la barra superior). Responde cómo se enlaza con los TecNM, límites de contenido, rendimiento, aprendizaje, fin del proyecto, complejidad de los juegos, comisiones, cooperativo y beneficios para estudiantes. Las comisiones se leen de la configuración actual.
 
 ## Cómo abrirla
 

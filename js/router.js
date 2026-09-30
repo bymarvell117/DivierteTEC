@@ -10,6 +10,7 @@
     [/^#\/biblioteca(?:\/([\w-]+))?$/, 'library'],
     [/^#\/comunidad$/, 'community'],
     [/^#\/planes$/, 'plans'],
+    [/^#\/faq$/, 'faq'],
     [/^#\/perfil(?:\/([\w-]+))?$/, 'profile'],
     [/^#\/dev$/, 'dev', 'dev'],
     [/^#\/dev\/juego\/([\w-]+)$/, 'devGame', 'dev'],
@@ -110,6 +111,7 @@
           <a href="#/biblioteca" class="${isActive(['library'])}">BIBLIOTECA</a>
           <a href="#/comunidad" class="${isActive(['community'])}">COMUNIDAD</a>
           <a href="#/planes" class="${isActive(['plans'])}">PASE</a>
+          <a href="#/faq" class="${isActive(['faq'])}">FAQ</a>
           ${me.role === 'dev' || me.role === 'admin' ? `<a href="#/dev" class="${isActive(['dev', 'devGame', 'editor'])}">DESARROLLADOR</a>` : ''}
           ${me.role === 'admin' ? `<a href="#/admin" class="${isActive(['admin'])}">ADMIN${unread ? `<span class="badge-count">${unread}</span>` : ''}</a>` : ''}
           <a href="#/perfil" class="nav-user ${isActive(['profile'])}">${DT.esc(me.name.toUpperCase())}</a>

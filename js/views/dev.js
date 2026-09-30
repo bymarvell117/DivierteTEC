@@ -524,7 +524,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         <div>
           <div class="card">
             <h3>${DT.icon.briefcase} Tu comisión</h3>
-            <p>${dev.student && dev.verified ? `Estudio <b>estudiantil verificado</b>: Semilla TEC de ${DT.money(e.seedAllowance)} sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta.${dev.student ? ' Pide la verificación a la administración para activar la Semilla TEC.' : ''}`}</p>
+            <p>${dev.student && dev.verified ? `Estudio <b>TecNM verificado</b>: Semilla TEC de ${DT.money(e.seedAllowance)} sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta.${dev.student ? ' Pide la verificación a la administración para activar la Semilla TEC.' : ''}`}</p>
             ${dev.student && dev.verified ? `<div class="bar"><i style="width:${Math.min(100, DT.devSalesTotal(dev.id) / e.seedAllowance * 100)}%"></i></div><small class="muted">${DT.money(Math.min(e.seedAllowance, DT.devSalesTotal(dev.id)))} de ${DT.money(e.seedAllowance)} usados de la Semilla TEC</small>` : ''}
           </div>
           <div class="card">

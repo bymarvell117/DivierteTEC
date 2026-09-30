@@ -2,7 +2,7 @@
 (function (DT) {
   'use strict';
 
-  const filters = { q: '', format: 'all', genre: 'all', sort: 'featured' };
+  const filters = { q: '', format: 'all', genre: 'all', sort: 'featured', tecnm: false };
 
   /* Botonera principal según precio, acceso (compra/Pase/gratis) y formato.
      Los juegos HTML se juegan al instante: nunca se descargan. */
@@ -107,7 +107,7 @@
       ${DT.coverHTML(g)}
       <div class="game-card-body">
         <div class="row"><b class="game-card-title">${DT.esc(g.title)}</b><span class="spacer"></span><span class="fmt fmt-${g.format}">${DT.formatShort[g.format]}</span></div>
-        <small class="muted">${DT.esc(g.genre)} · ${DT.esc((DT.user(g.devId) || {}).name || '')}</small>
+        <small class="muted row nowrap">${DT.esc(g.genre)} · ${DT.esc((DT.user(g.devId) || {}).name || '')} ${DT.tecnmPill(g)}</small>
         <div class="tags">${(g.tags || []).slice(0, 3).map((t) => `<span class="tag">${DT.esc(t)}</span>`).join('')}</div>
         <div class="card-foot">${DT.owns(g.id) ? `<span class="owned">${DT.icon.check} En tu biblioteca</span>` : DT.priceTag(g)}${DT.isInstant(g) ? '<span class="instant" title="Se juega en el navegador, sin descargar">' + DT.icon.bolt + ' Al instante</span>' : ''}</div>
       </div>
@@ -141,6 +141,7 @@
           <div class="chips" role="group" aria-label="Formato">
             ${[['all', 'Todos'], ['html', 'HTML · Navegador'], ['cpp', 'C++'], ['exe', 'Ejecutables']].map(([k, v]) => `<button class="chip ${filters.format === k ? 'on' : ''}" data-format="${k}">${v}</button>`).join('')}
           </div>
+          <button class="chip tecnm-chip ${filters.tecnm ? 'on' : ''}" data-tecnm title="Juegos de estudios de estudiantes del TecNM">${DT.icon.cap} Hecho en el TecNM</button>
           <select data-genre aria-label="Género"><option value="all">Todos los géneros</option>${genres.map((g) => `<option ${filters.genre === g ? 'selected' : ''}>${DT.esc(g)}</option>`).join('')}</select>
           <select data-sort aria-label="Ordenar">
             ${[['featured', 'Destacados'], ['new', 'Más recientes'], ['popular', 'Más jugados'], ['az', 'A–Z']].map(([k, v]) => `<option value="${k}" ${filters.sort === k ? 'selected' : ''}>${v}</option>`).join('')}
@@ -154,6 +155,7 @@
       const q = filters.q.trim().toLowerCase();
       let list = all.filter((g) => (filters.format === 'all' || g.format === filters.format)
         && (filters.genre === 'all' || g.genre === filters.genre)
+        && (!filters.tecnm || DT.isTecnmGame(g))
         && (!q || [g.title, g.genre, g.short, ...(g.tags || [])].join(' ').toLowerCase().includes(q)));
       const sorts = { featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.plays - a.plays, new: (a, b) => b.createdAt - a.createdAt, popular: (a, b) => b.plays - a.plays, az: (a, b) => a.title.localeCompare(b.title) };
       list = list.sort(sorts[filters.sort]);
@@ -163,6 +165,7 @@
     draw();
 
     DT.$('[data-q]', app).addEventListener('input', (e) => { filters.q = e.target.value; draw(); });
+    DT.$('[data-tecnm]', app).addEventListener('click', (e) => { filters.tecnm = !filters.tecnm; e.currentTarget.classList.toggle('on', filters.tecnm); draw(); });
     DT.$('[data-genre]', app).addEventListener('change', (e) => { filters.genre = e.target.value; draw(); });
     DT.$('[data-sort]', app).addEventListener('change', (e) => { filters.sort = e.target.value; draw(); });
     DT.$$('[data-format]', app).forEach((b) => b.addEventListener('click', () => {
@@ -233,6 +236,7 @@
             <h1>${DT.esc(g.title)}</h1>
             <div class="row muted">
               <a href="#/perfil/${dev.id}" class="dev-link">${DT.esc(dev.name)}${dev.verified ? ` <span class="verified" title="Estudio verificado">${DT.icon.check}</span>` : ''}</a>
+              ${DT.tecnmPill(g, true)}
               · <span class="fmt fmt-${g.format}">${DT.formatLabel[g.format]}</span>
               · ${g.plays || 0} partidas
               ${reviews.length ? `· <span class="${pct >= 70 ? 'pos' : pct >= 40 ? 'mix' : 'neg'}">${sc.n ? sc.avg.toFixed(1) + ' ' + DT.icon.star + ' · ' : ''}${pct}% reseñas positivas</span>` : ''}

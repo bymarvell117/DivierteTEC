@@ -651,3 +651,24 @@ s.muted { font-size: 13px; }
 .pwyw-toast { display: flex; gap: 10px; align-items: center; }
 .pwyw-toast > .ico { width: 26px; height: 26px; color: #e11d48; flex: none; }
 .pwyw-toast b, .pwyw-toast small { display: block; }
+
+/* ---------- Estudios TecNM y preguntas frecuentes ---------- */
+.pill.tecnm { background: #1b3a8a; color: #fff; letter-spacing: .3px; }
+.pill.tecnm svg { width: 13px; height: 13px; }
+.tecnm-chip svg { width: 14px; height: 14px; vertical-align: -2px; }
+.faq-list { display: grid; gap: 10px; max-width: 900px; }
+.faq-item { padding: 0; overflow: hidden; }
+.faq-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px 18px; font-weight: 800; font-size: 16px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary > svg:first-child { width: 22px; height: 22px; color: var(--primary); flex: none; }
+.faq-item summary span { flex: 1; }
+.faq-item summary > svg:last-child { width: 18px; height: 18px; transition: transform .2s; flex: none; }
+.faq-item[open] summary > svg:last-child { transform: rotate(180deg); }
+.faq-item[open] summary { border-bottom: 1px solid var(--border); }
+.faq-a { padding: 6px 20px 16px 52px; line-height: 1.55; }
+.faq-a ul { padding-left: 18px; margin: 6px 0; }
+.faq-a li { margin: 4px 0; }
+.faq-table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+.faq-table th, .faq-table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+.faq-table th { color: var(--primary); }
+@media (max-width: 640px) { .faq-a { padding-left: 18px; } }

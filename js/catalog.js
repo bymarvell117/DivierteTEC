@@ -292,7 +292,7 @@
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now },
-        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, createdAt: now },
+        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, campus: 'ITESI · Irapuato', createdAt: now },
         { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Cuenta de administración para la demostración.', status: 'active', createdAt: now }
       ],
       games,

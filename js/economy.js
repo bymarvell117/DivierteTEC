@@ -1,7 +1,7 @@
 /* DivierteTEC — economía de la plataforma (modelo "Crece con tu estudio").
    Todo el dinero es SIMULADO: saldo de demostración, sin datos bancarios.
-   - Venta de juegos: Semilla TEC (0 % en los primeros $2,000 de estudios estudiantiles
-     verificados), luego 12 % estudiantes / 18 % estudios externos.
+   - Venta de juegos: Semilla TEC (0 % en los primeros $2,000 de estudios TecNM
+     verificados), luego 12 % estudios TecNM / 18 % estudios externos.
    - Pase DivierteTEC mensual: el 70 % va a un fondo que se reparte por tiempo jugado.
    - Promoción patrocinada en Destacados y propinas a desarrolladores.
    Cada movimiento queda en state.ledger (libro de transacciones). */
@@ -15,6 +15,10 @@
 
   const S = () => DT.state();
   DT.econ = () => S().economy;
+  /* Estudios de estudiantes del TecNM verificados: comisión preferente, sello y prioridad en revisión */
+  DT.isTecnmDev = (u) => !!(u && u.student && u.verified);
+  DT.isTecnmGame = (g) => DT.isTecnmDev(DT.user(g.devId));
+  DT.tecnmPill = (g, long) => { if (!DT.isTecnmGame(g)) return ''; const c = (DT.user(g.devId) || {}).campus; return `<span class="pill tecnm" title="Estudio de estudiantes del TecNM verificado">${DT.icon.cap} ${long ? 'Hecho en el TecNM' + (c ? ' · ' + DT.esc(c) : '') : 'TecNM'}</span>`; };
   DT.wallet = (uid) => r2(S().wallets[uid || S().currentUserId] || 0);
   const credit = (uid, n) => { S().wallets[uid] = r2((S().wallets[uid] || 0) + n); };
   const record = (e) => { e.id = DT.uid('tx'); e.date = Date.now(); S().ledger.unshift(e); return e; };
@@ -69,7 +73,7 @@
     let freePart = 0;
     if (student) freePart = Math.min(gross, Math.max(0, e.seedAllowance - DT.devSalesTotal(devId)));
     const commission = r2((gross - freePart) * rate);
-    const note = freePart >= gross ? 'Semilla TEC (0 %)' : freePart > 0 ? `Semilla TEC parcial + ${Math.round(rate * 100)} %` : (student ? 'Estudio estudiantil' : 'Estudio externo') + ` (${Math.round(rate * 100)} %)`;
+    const note = freePart >= gross ? 'Semilla TEC (0 %)' : freePart > 0 ? `Semilla TEC parcial + ${Math.round(rate * 100)} %` : (student ? 'Estudio TecNM' : 'Estudio externo') + ` (${Math.round(rate * 100)} %)`;
     return { rate, student, freePart: r2(freePart), commission, net: r2(gross - commission), note };
   };
 

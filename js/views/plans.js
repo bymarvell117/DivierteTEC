@@ -49,8 +49,8 @@
 
         <h2 class="section-title">${DT.icon.wrench} Para desarrolladores</h2>
         <div class="grid cols-3 tiers">
-          <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Tus primeros <b>${DT.money(e.seedAllowance)}</b> en ventas no pagan comisión. Para estudios estudiantiles verificados.</p></div>
-          <div class="card tier"><div class="tier-rate">${pct(e.rateStudent)}</div><h4>Estudio estudiantil</h4><p>Después de la Semilla. Recibes el ${pct(1 - e.rateStudent)} de cada venta.</p></div>
+          <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Tus primeros <b>${DT.money(e.seedAllowance)}</b> en ventas no pagan comisión. Para estudios de estudiantes del TecNM verificados.</p></div>
+          <div class="card tier"><div class="tier-rate">${pct(e.rateStudent)}</div><h4>Estudio TecNM</h4><p>Después de la Semilla. Recibes el ${pct(1 - e.rateStudent)} de cada venta.</p></div>
           <div class="card tier"><div class="tier-rate">${pct(e.rateExternal)}</div><h4>Estudio externo</h4><p>Indies y empresas fuera del TecNM. Recibes el ${pct(1 - e.rateExternal)}.</p></div>
         </div>
         <div class="grid cols-2">
@@ -59,7 +59,7 @@
             <div class="form-grid">
               <label class="field"><span>Precio del juego (MXN)</span><input type="number" min="0" value="49" data-c="price"></label>
               <label class="field"><span>Copias vendidas</span><input type="number" min="0" value="200" data-c="units"></label>
-              <label class="field wide"><span>Tipo de estudio</span><select data-c="type"><option value="student">Estudiantil verificado (con Semilla TEC)</option><option value="external">Externo</option></select></label>
+              <label class="field wide"><span>Tipo de estudio</span><select data-c="type"><option value="student">Estudio TecNM verificado (con Semilla TEC)</option><option value="external">Externo</option></select></label>
             </div>
             <div class="calc" data-calc></div>
           </div>

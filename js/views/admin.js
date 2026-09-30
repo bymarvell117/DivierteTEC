@@ -55,16 +55,16 @@
   const logRow = (l) => `<div class="log-row"><small class="muted">${DT.timeAgo(l.date)}</small><b>${DT.esc((DT.user(l.actor) || { name: 'Sistema' }).name)}</b> <span>${DT.esc(l.text)}</span></div>`;
 
   function revision(body, s) {
-    const list = s.games.filter((g) => g.status === 'pending');
+    const list = s.games.filter((g) => g.status === 'pending').sort((a, b) => (DT.isTecnmGame(b) ? 1 : 0) - (DT.isTecnmGame(a) ? 1 : 0) || (a.submittedAt || 0) - (b.submittedAt || 0));
     body.innerHTML = `
-      <div class="page-head"><div><h1>Revisión de juegos</h1><p>Los juegos no son públicos hasta que se aprueban.</p></div></div>
+      <div class="page-head"><div><h1>Revisión de juegos</h1><p>Los juegos no son públicos hasta que se aprueban. Los estudios TecNM verificados tienen prioridad en la cola.</p></div></div>
       ${list.map((g) => {
         const dev = DT.user(g.devId) || {};
         const flagged = DT.hasBanned([g.title, g.short, g.description, (g.tags || []).join(' ')].join(' '));
         return `<div class="card review-card">
           ${DT.coverHTML(g)}
           <div class="review-card-body">
-            <div class="row"><h3 style="margin:0">${DT.esc(g.title)}</h3>${flagged ? '<span class="pill bad">' + DT.icon.warn + ' Palabras filtradas</span>' : ''}<span class="pill">${DT.formatLabel[g.format]}</span></div>
+            <div class="row"><h3 style="margin:0">${DT.esc(g.title)}</h3>${flagged ? '<span class="pill bad">' + DT.icon.warn + ' Palabras filtradas</span>' : ''}${DT.isTecnmGame(g) ? '<span class="pill tecnm">' + DT.icon.cap + ' Prioridad TecNM</span>' : ''}<span class="pill">${DT.formatLabel[g.format]}</span></div>
             <small class="muted">${DT.esc(dev.name)} ${dev.verified ? '✔' : '(sin verificar)'} · enviado ${DT.timeAgo(g.submittedAt || g.createdAt)}</small>
             <p>${DT.esc(g.short)}</p>
             <div class="row small muted">${g.format === 'html' ? `Archivos: ${g.files ? g.files.count + ' · ' + DT.fmtBytes(g.files.size) : 'integrado'}` : 'Descargable'} · ${(g.achievements || []).length} logros · Edad: <b>${DT.esc((g.compliance || {}).age || 'sin declarar')}</b> · Violencia: <b>${DT.esc(((DT.VIOLENCE.find((v) => v[0] === (g.compliance || {}).violence) || [])[1]) || 'sin declarar')}</b></div>
@@ -191,7 +191,7 @@
         <form class="card" data-rates>
           <h3>${DT.icon.gear} Tasas y precios</h3>
           <div class="form-grid">
-            <label class="field"><span>Comisión estudiantil (%)</span><input type="number" name="rateStudent" min="0" max="50" value="${Math.round(e.rateStudent * 100)}"></label>
+            <label class="field"><span>Comisión estudios TecNM (%)</span><input type="number" name="rateStudent" min="0" max="50" value="${Math.round(e.rateStudent * 100)}"></label>
             <label class="field"><span>Comisión externa (%)</span><input type="number" name="rateExternal" min="0" max="50" value="${Math.round(e.rateExternal * 100)}"></label>
             <label class="field"><span>Semilla TEC (MXN sin comisión)</span><input type="number" name="seedAllowance" min="0" value="${e.seedAllowance}"></label>
             <label class="field"><span>Precio del Pase (MXN/mes)</span><input type="number" name="passPrice" min="0" value="${e.passPrice}"></label>
@@ -242,14 +242,14 @@
             <span>${reps ? `<span class="pill warn">${reps}</span>` : '0'}</span>
             <span class="row nowrap">
               ${u.role === 'dev' ? `<button class="btn ghost sm" data-verify="${u.id}">${u.verified ? 'Quitar verificación' : '✔ Verificar'}</button>
-                <button class="btn ghost sm" data-student="${u.id}" title="Define la comisión que paga">${u.student ? DT.icon.cap + ' Estudiantil' : DT.icon.building + ' Externo'}</button>` : ''}
+                <button class="btn ghost sm" data-student="${u.id}" title="Define la comisión que paga">${u.student ? DT.icon.cap + ' TecNM' : DT.icon.building + ' Externo'}</button>` : ''}
               ${u.id !== DT.me().id ? `<button class="btn ${u.status === 'suspended' ? 'ghost' : 'danger'} sm" data-suspend="${u.id}">${u.status === 'suspended' ? 'Reactivar' : 'Suspender'}</button>` : ''}
             </span></div>`;
         }).join('')}
       </div>
       <p class="muted">Suspender a un desarrollador oculta todos sus juegos de la tienda.</p>`;
     DT.$$('[data-verify]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.verify); u.verified = !u.verified; act(`${u.verified ? 'Verificó' : 'Quitó la verificación a'} ${u.name}.`); });
-    DT.$$('[data-student]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.student); u.student = !u.student; act(`Marcó a ${u.name} como estudio ${u.student ? 'estudiantil' : 'externo'}.`); });
+    DT.$$('[data-student]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.student); u.student = !u.student; act(`Marcó a ${u.name} como estudio ${u.student ? 'TecNM' : 'externo'}.`); });
     DT.$$('[data-suspend]', body).forEach((b) => b.onclick = () => { const u = DT.user(b.dataset.suspend); u.status = u.status === 'suspended' ? 'active' : 'suspended'; act(`${u.status === 'suspended' ? 'Suspendió' : 'Reactivó'} a ${u.name}.`); });
     DT.$$('[data-role]', body).forEach((sel) => sel.onchange = () => { const u = DT.user(sel.dataset.role); u.role = sel.value; act(`Cambió el rol de ${u.name} a ${sel.value}.`); });
   }
