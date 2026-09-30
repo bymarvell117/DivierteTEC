@@ -17,6 +17,7 @@
     if (!g) return g;
     g.pricing = Object.assign({ mode: 'pwyw', price: 20, min: 0, inPass: false }, g.pricing || {});
     // Pilar de la plataforma: los juegos gratuitos funcionan con «Paga lo que quieras» desde $0
+    if (g.private) return g;
     if (g.pricing.mode === 'free') Object.assign(g.pricing, { mode: 'pwyw', min: 0, price: g.pricing.price || 20 });
     ['tags', 'reviews', 'news', 'achievements'].forEach((k) => { if (!Array.isArray(g[k])) g[k] = []; });
     g.cover = g.cover || { c1: '#1a6fd8', c2: '#0b2a55' };
@@ -55,7 +56,10 @@
   DT.me = () => state.users.find((u) => u.id === state.currentUserId) || state.users[0];
   DT.user = (id) => state.users.find((u) => u.id === id);
   DT.game = (id) => state.games.find((g) => g.id === id);
-  DT.gamesPublic = () => state.games.filter((g) => g.status === 'approved' && (DT.user(g.devId) || {}).status !== 'suspended');
+  /* Juegos personales (private) solo existen en la biblioteca de su dueño: fuera de tienda, estadísticas, Pase y admin */
+  DT.catalogGames = () => state.games.filter((g) => !g.private);
+  DT.canSee = (g) => !!g && (!g.private || g.ownerId === state.currentUserId);
+  DT.gamesPublic = () => state.games.filter((g) => !g.private && g.status === 'approved' && (DT.user(g.devId) || {}).status !== 'suspended');
   DT.lib = (uid) => (state.library[uid || state.currentUserId] = state.library[uid || state.currentUserId] || {});
   DT.owns = (gid, uid) => !!DT.lib(uid)[gid];
   DT.counters = (uid) => {

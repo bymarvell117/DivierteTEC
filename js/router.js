@@ -99,7 +99,7 @@
     const isActive = (names) => names.includes(r) ? 'active' : '';
     const eq = DT.equipped();
     const dark = eq.theme && eq.theme !== 'light';
-    const unread = me.role === 'admin' ? DT.state().reports.filter((x) => x.status === 'open').length + DT.state().games.filter((g) => g.status === 'pending').length : 0;
+    const unread = me.role === 'admin' ? DT.state().reports.filter((x) => x.status === 'open').length + DT.catalogGames().filter((g) => g.status === 'pending').length : 0;
     DT.$('#topbar').innerHTML = `
       <div class="topbar-inner">
         <a class="brand" href="#/" aria-label="DivierteTEC inicio">

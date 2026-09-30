@@ -264,6 +264,20 @@
           { id: 'kombat_mando', name: 'Control total', desc: 'Juega con un mando.', icon: 'gamepad', goal: 0, reward: 'em_trophy' },
           { id: 'kombat_perfecto', name: 'Impecable', desc: 'Supera una oleada sin recibir daño.', icon: 'sparkle', goal: 0, hidden: true, reward: 'av_dragon' }
         ], },
+      { id: 'g_leyendas', title: 'Choque de Leyendas', devId: 'u_player', ownerId: 'u_player', private: true, format: 'html', genre: 'Pelea', tags: ['3D', 'Pelea de plataformas', 'Hasta 4 jugadores', 'Compatible con mando', 'Personal'],
+        short: 'Pelea de plataformas 3D para hasta 4 leyendas. Proyecto personal de homenaje, sin fines comerciales.', description: 'Juego personal de MARVELL117, sin fines comerciales y fuera de la tienda: solo aparece en su biblioteca. Pelea de plataformas en 3D (WebGL puro) con porcentaje de daño, empuje que crece con el daño y el peso, vidas, orillas, escudo, esquivas y la Esfera Legendaria que activa el Ataque Definitivo. Incluye 9 personajes con modelos de bloques originales, animaciones y 4 especiales propios cada uno: Master Chief, Doomguy, Steve, Bob Esponja, Ben 10, Jonesy, Sonic, Kratos y Pac-Man. Tiene 6 escenarios, CPU en 3 niveles y hasta 4 jugadores con teclado o mandos con vibración. Los personajes pertenecen a sus respectivos dueños; no se usan arte, logotipos ni audio de las franquicias.',
+        cover: { c1: '#3b6bff', c2: '#0b1030', motif: 'burst', angle: 150 }, createdAt: now,
+        pricing: { mode: 'personal', price: 0, min: 0 },
+        achievements: [
+          { id: 'ley_victoria', name: 'Primera leyenda', desc: 'Gana una partida.', icon: 'trophy', goal: 0, reward: 'em_crown' },
+          { id: 'ley_impecable', name: 'Sin rasguños', desc: 'Gana en modo Vidas sin perder ninguna.', icon: 'shield', goal: 0, reward: 'frame_gold' },
+          { id: 'ley_definitivo', name: 'Definitivo', desc: 'Saca a un rival con tu Ataque Definitivo.', icon: 'burst', goal: 0, reward: 'fx_fire' },
+          { id: 'ley_150', name: 'Aguantador', desc: 'Saca a un rival que tenía 150 % o más.', icon: 'fist', goal: 0, reward: 'em_punch' },
+          { id: 'ley_roster', name: 'Todos los estilos', desc: 'Juega con los 9 personajes.', icon: 'star', goal: 9, reward: 'av_ninja' },
+          { id: 'ley_escenarios', name: 'Trotamundos', desc: 'Gana en los 6 escenarios.', icon: 'map', goal: 6, reward: 'theme_space' },
+          { id: 'ley_cuatro', name: 'Caos total', desc: 'Juega una partida de 4 peleadores.', icon: 'gamepad', goal: 0, reward: 'em_fire' },
+          { id: 'ley_mando', name: 'Control en mano', desc: 'Juega con un mando.', icon: 'gamepad', goal: 0, reward: 'em_trophy' }
+        ] },
     ];
     // Logros de ejemplo para los juegos de catálogo
     const genericAch = (prefix) => [
@@ -285,6 +299,7 @@
       g.compliance = g.compliance || { age: 'Todo público', violence: 'ninguna', credits: 'Arte, sonido y código originales del Equipo Maravilla.' };
     });
     byId0(games, 'g_furia').compliance = { age: '+10', violence: 'caricatura', credits: 'Mascotas de los Tecnológicos de Guanajuato representadas como homenaje, sin logotipos. Motor WebGL, modelos y arte originales del Equipo Maravilla.' };
+    byId0(games, 'g_leyendas').compliance = { age: '+13', violence: 'combate', credits: 'Proyecto personal de homenaje, sin fines comerciales ni publicación en la tienda. Los personajes pertenecen a sus respectivos dueños. Modelos de bloques, animaciones y sonidos originales.' };
     byId0(games, 'g_mecaquack').compliance = { age: 'Todo público', violence: 'caricatura', credits: 'Arte y código originales del Equipo Maravilla (ITESI).' };
 
     return {
@@ -296,7 +311,7 @@
         { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Cuenta de administración para la demostración.', status: 'active', createdAt: now }
       ],
       games,
-      library: {},
+      library: { u_player: { g_leyendas: { added: now, playtime: 0, lastPlayed: 0, source: 'personal' } } },
       achievements: {},   // userId -> gameId -> achId -> {unlockedAt, progress}
       platformAch: {},    // userId -> achId -> unlockedAt
       stats: {},          // userId -> gameId -> {key: value}

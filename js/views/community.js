@@ -5,7 +5,7 @@
   DT.views.community = (app) => {
     const s = DT.state();
     const feed = [];
-    s.games.filter((g) => g.status === 'approved').forEach((g) => {
+    DT.catalogGames().filter((g) => g.status === 'approved').forEach((g) => {
       g.reviews.filter((r) => !r.hidden).forEach((r) => feed.push({ date: r.date, html: `${DT.avatarHTML(DT.user(r.userId) || { id: '' }, 36)}<div><b>${DT.esc((DT.user(r.userId) || {}).name)}</b> reseñó <a href="#/juego/${g.id}">${DT.esc(g.title)}</a> ${r.up ? DT.icon.thumbUp : DT.icon.thumbDown}${r.stars ? DT.starsHTML(r.stars) : ''}<p>${DT.stickerize(DT.esc(DT.censor(r.text)))}</p></div>` }));
       (g.news || []).forEach((n) => feed.push({ date: n.date, html: `${DT.coverHTML(g, 'mini')}<div><b>${DT.esc(g.title)}</b> publicó una novedad<p><b>${DT.esc(n.title)}</b> — ${DT.esc(n.body)}</p></div>` }));
     });

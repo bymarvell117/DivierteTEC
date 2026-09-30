@@ -6,7 +6,7 @@
   DT.rewardSources = (rid) => {
     const out = [];
     DT.PLATFORM_ACH.forEach((a) => { if ([].concat(a.reward).includes(rid)) out.push(`Logro de DivierteTEC «${a.name}»: ${a.desc}`); });
-    DT.state().games.filter((g) => g.status === 'approved' || g.devId === DT.me().id).forEach((g) => (g.achievements || []).forEach((a) => {
+    DT.state().games.filter((g) => DT.canSee(g) && (g.status === 'approved' || g.devId === DT.me().id)).forEach((g) => (g.achievements || []).forEach((a) => {
       if (a.reward === rid) out.push(`Logro «${a.hidden ? '???' : a.name}» en ${g.title}`);
     }));
     return out;
@@ -50,7 +50,7 @@
     const pdone = s.platformAch[u.id] || {};
     const all = DT.allRewards();
     const badges = inv.filter((id) => (all[id] || {}).type === 'badge');
-    const devGames = s.games.filter((g) => g.devId === u.id && g.status === 'approved');
+    const devGames = DT.catalogGames().filter((g) => g.devId === u.id && g.status === 'approved');
 
     const section = (type, title) => {
       const ids = Object.keys(all).filter((id) => all[id].type === type);

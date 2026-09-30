@@ -83,9 +83,9 @@
       reports: c.reports,
       owned: Object.keys(lib).length,
       playtime: Object.values(lib).reduce((t, e) => t + (e.playtime || 0), 0),
-      reviews: s.games.reduce((t, g) => t + g.reviews.filter((r) => r.userId === uid).length, 0),
+      reviews: DT.catalogGames().reduce((t, g) => t + g.reviews.filter((r) => r.userId === uid).length, 0),
       gameAch,
-      published: s.games.filter((g) => g.devId === uid && g.status === 'approved').length
+      published: DT.catalogGames().filter((g) => g.devId === uid && g.status === 'approved').length
     };
   };
 

@@ -41,7 +41,7 @@
     uid = uid || S().currentUserId;
     const g = DT.game(gid);
     const u = DT.user(uid);
-    if (!g) return null;
+    if (!g || (g.private && g.ownerId !== uid)) return null;
     if (g.devId === uid || (u && u.role === 'admin')) return 'dev';
     if ((S().purchases[uid] || {})[gid]) return 'purchase';
     const pr = g.pricing || {};
@@ -53,6 +53,7 @@
 
   /* Etiqueta de precio para tarjetas */
   DT.priceTag = (g) => {
+    if (g.private) return '<span class="price">Personal · no comercial</span>';
     const src = DT.accessSource(g.id);
     const p = DT.priceOf(g);
     const pass = (g.pricing || {}).inPass ? '<span class="pass-tag" title="Incluido en el Pase DivierteTEC">' + DT.icon.ticket + ' Pase</span>' : '';
@@ -199,7 +200,7 @@
   DT.distributePassFund = () => {
     const pool = DT.passFund();
     if (pool <= 0) return [];
-    const passGames = S().games.filter((g) => (g.pricing || {}).inPass && g.status === 'approved');
+    const passGames = DT.catalogGames().filter((g) => (g.pricing || {}).inPass && g.status === 'approved');
     const weight = {};
     passGames.forEach((g) => {
       const t = Object.values(S().library).reduce((a, lib) => a + ((lib[g.id] && lib[g.id].playtime) || 0), 0);

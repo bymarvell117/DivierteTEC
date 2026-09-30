@@ -32,12 +32,29 @@ barrido, gancho lanzador, patada giratoria, martillo y 3 aéreos, animados con f
 se salta solo apuntando hacia arriba y se bloquea manteniendo atrás. Los golpes que conectan se
 encadenan y hay combos con nombre (TRIPLE, ¡FURIA TEC!, COMBO BRUTAL, BARRIDA LETAL, AL AIRE,
 MARTILLAZO…) con malabares en el aire. El golpe final invierte la imagen en blanco y negro con
-acercamiento de cámara. 5 escenarios: Templo Nocturno, Azotea del ITESI, Laboratorio de Robótica,
-Callejón de Guanajuato y Siete Luminarias. Soporta mandos (Gamepad API) con vibración. Nombres, campus, colores y estadísticas se editan en el
+acercamiento de cámara. 5 escenarios: Templo Nocturno, Azotea al atardecer, Laboratorio de Robótica,
+Callejón de Guanajuato (inspirado en Guanajuato capital) y Cráter Ardiente. Soporta mandos (Gamepad API) con vibración. Nombres, campus, colores y estadísticas se editan en el
 arreglo `FIGHTERS` al inicio de `games/furia-tec/index.html`.
 Los demás juegos tienen 5 logros cada uno (uno oculto). El código fuente está en
 `games/<juego>/index.html` (se puede abrir por separado). Después de editar un juego,
 ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
+
+## Juego personal: Choque de Leyendas (no comercial)
+
+**Qué es.** Un juego de pelea de plataformas estilo *Smash* hecho como **homenaje personal y sin fines comerciales**.
+- Solo existe en la **biblioteca de MARVELL117**: no aparece en la tienda, la bienvenida, la comunidad, el Pase, las estadísticas ni el admin, y con otra cuenta su ficha da «no encontrado».
+- Los personajes pertenecen a sus dueños. Los modelos de bloques, las animaciones y los sonidos son originales; no se usan arte, logotipos ni audio de las franquicias.
+
+**Motor.** Evoluciona el de Furia TEC:
+- % de daño con empuje que crece con el daño y el peso; vidas o tiempo y zonas de explosión.
+- Plataformas atravesables y móviles, orillas, escudo que se rompe, rodar y esquivar.
+- Ataques cargables, 5 aéreos, **4 especiales por personaje** y la **Esfera Legendaria**, que da el Ataque Definitivo con cinemática.
+- CPU con 3 niveles que se recupera al escenario; hasta 4 peleadores con teclado (J1 y J2) y mandos con vibración.
+
+**Contenido.**
+- **9 personajes con animaciones propias:** Master Chief, Doomguy, Steve (animación «a pasos»), Bob Esponja (estirar y aplastar), Ben 10 (se transforma en Fuego y Cuatro Brazos), Jonesy (construye rampas y muros), Sonic, Kratos y Pac-Man.
+- **6 escenarios:** Campo de Batalla, Anillo Orbital, Base en Marte (géiseres de lava), Mundo de Bloques, Arrecife (gravedad baja) e Isla de la Tormenta (la tormenta se cierra).
+- El código fuente está en `games/choque-leyendas/index.html`.
 
 ## Novedades de la fase 7
 

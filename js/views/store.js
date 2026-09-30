@@ -7,6 +7,7 @@
   /* Botonera principal según precio, acceso (compra/Pase/gratis) y formato.
      Los juegos HTML se juegan al instante: nunca se descargan. */
   DT.playButtonsHTML = (g) => {
+    if (g.private) return DT.owns(g.id) ? `<button class="btn success big" data-act="play" data-gid="${g.id}">${DT.icon.play} Jugar</button>` : '';
     const src = DT.accessSource(g.id);
     const owns = DT.owns(g.id);
     if (!src) {
@@ -190,8 +191,8 @@
   DT.views.gamePage = (app, gid) => {
     const g = DT.game(gid);
     const me = DT.me();
-    const privileged = g && (me.id === g.devId || me.role === 'admin');
-    if (!g || (g.status !== 'approved' && !privileged)) return DT.views.notFound(app);
+    const privileged = g && !g.private && (me.id === g.devId || me.role === 'admin');
+    if (!g || !DT.canSee(g) || (g.status !== 'approved' && !privileged)) return DT.views.notFound(app);
     const dev = DT.user(g.devId) || {};
     const c = DT.counters();
     if (!c.visited.includes(gid)) { c.visited.push(gid); DT.rewards.checkPlatform(); DT.save(); }
@@ -246,10 +247,11 @@
             ${privileged ? `<a class="btn ghost" href="#/dev/editor/${g.id}/tienda">${DT.icon.edit} Editar página</a>` : ''}
             ${privileged && g.status === 'approved' ? `<button class="btn danger sm" data-withdraw>${DT.icon.eyeOff} Retirar de la tienda</button>` : ''}
             ${privileged && g.status === 'withdrawn' && (me.role === 'admin' || !(g.withdrawn && g.withdrawn.admin)) ? `<button class="btn success sm" data-republish>${DT.icon.upload} Volver a publicar</button>` : ''}
-            <button class="btn ghost sm" data-tip>${DT.icon.heart} Apoyar al estudio</button>
-            <button class="btn ghost sm" data-report="game">${DT.icon.flag} Reportar</button>
+            ${g.private ? '' : `<button class="btn ghost sm" data-tip>${DT.icon.heart} Apoyar al estudio</button>
+            <button class="btn ghost sm" data-report="game">${DT.icon.flag} Reportar</button>`}
           </div>
         </div>
+        ${g.private ? `<div class="notice">${DT.icon.lock || DT.icon.eye} Juego personal de tu biblioteca, sin fines comerciales: no aparece en la tienda ni para otras cuentas. Los personajes pertenecen a sus respectivos dueños.</div>` : ''}
         <div class="buy-strip">
           <div class="row">${DT.priceTag(g)}${DT.isInstant(g) ? '<span class="instant">' + DT.icon.bolt + ' Jugable al instante en el navegador · sin descargas</span>' : ''}</div>
           <div class="row">${DT.playButtonsHTML(g)}</div>
@@ -271,10 +273,10 @@
               <dt>Tus logros</dt><dd>${summary.got} / ${summary.total}</dd>
             </dl>
             <div class="tags">${(g.tags || []).map((t) => `<span class="tag">${DT.esc(t)}</span>`).join('')}</div>
-            <hr><button class="btn ghost sm" data-report="dev">${DT.icon.flag} Reportar desarrollador</button>
+            ${g.private ? '' : `<hr><button class="btn ghost sm" data-report="dev">${DT.icon.flag} Reportar desarrollador</button>`}
           </div>
 
-          <div class="card reviews">
+          <div class="card reviews" ${g.private ? 'hidden' : ''}>
             <h3>Reseñas ${reviews.length ? `<small class="muted">(${visible.length})</small>` : ''}</h3>
             ${visible.length ? `<div class="rv-summary">
               <div class="rv-score"><b>${sc.n ? sc.avg.toFixed(1) : '—'}</b>${DT.starsHTML(Math.round(sc.avg))}<small>${sc.n} calificaciones · ${sc.pct}% lo recomienda</small></div>
@@ -299,7 +301,7 @@
 
     DT.renderLayout(DT.$('[data-layout]', app), g.storeLayout, g, { uid: me.id, playHTML: DT.playButtonsHTML });
 
-    DT.$('[data-tip]', app).onclick = () => DT.tipModal(g);
+    const tip = DT.$('[data-tip]', app); if (tip) tip.onclick = () => DT.tipModal(g);
     const wd = DT.$('[data-withdraw]', app); if (wd) wd.onclick = () => DT.withdrawModal(g);
     const rp = DT.$('[data-republish]', app); if (rp) rp.onclick = () => DT.republish(g);
     DT.$$('[data-report]', app).forEach((b) => b.onclick = () => DT.reportModal(b.dataset.report, b.dataset.report === 'dev' ? g.devId : g.id, g.id));

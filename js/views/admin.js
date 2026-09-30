@@ -8,7 +8,9 @@
 
   DT.views.admin = (app, tab) => {
     tab = TABS.some(([k]) => k === tab) ? tab : 'resumen';
-    const s = DT.state();
+    // La administración trabaja solo con el catálogo: los juegos personales (private) no se listan
+    const st = DT.state();
+    const s = Object.create(st, { games: { get: () => DT.catalogGames(), set: (v) => { st.games = v.concat(st.games.filter((g) => g.private)); } } });
     const openReports = s.reports.filter((r) => r.status === 'open');
     const pending = s.games.filter((g) => g.status === 'pending');
     app.innerHTML = `

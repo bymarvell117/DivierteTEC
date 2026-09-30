@@ -69,7 +69,7 @@
         ${rest.map((g) => `<a class="recent-tall" href="#/biblioteca/${g.id}"><small class="muted">${DT.timeAgo(lib[g.id].lastPlayed || lib[g.id].added)}</small>${DT.coverHTML(g, 'fill')}</a>`).join('')}`, 'shelf-recent') : ''}
       <section class="shelf">
         <header class="shelf-head"><h3>Todos tus juegos <small class="muted">(${owned.length})</small></h3></header>
-        <div class="grid lib-grid">${owned.map((g) => `<a class="lib-tile" href="#/biblioteca/${g.id}">${DT.coverHTML(g, 'fill')}<span>${DT.esc(g.title)}</span></a>`).join('')}</div>
+        <div class="grid lib-grid">${owned.map((g) => `<a class="lib-tile" href="#/biblioteca/${g.id}">${DT.coverHTML(g, 'fill')}<span>${DT.esc(g.title)}${g.private ? ' <small class="muted">· Personal</small>' : ''}</span></a>`).join('')}</div>
       </section>`;
   };
 
@@ -95,10 +95,10 @@
         <div class="lib-stat"><small>TIEMPO JUGADO</small><b>${DT.fmtTime(e.playtime)}</b></div>
         ${g.format !== 'html' && e.installed ? `<button class="btn ${e.sessionStart ? 'danger' : 'success'} sm" data-act="session" data-gid="${g.id}">${DT.icon.clock} ${e.sessionStart ? 'Terminar sesión de juego' : 'Iniciar sesión de juego'}</button>` : ''}
         <div class="lib-stat"><small>LOGROS</small><b>${s.got} / ${s.total}</b><div class="bar"><i style="width:${s.pct}%"></i></div></div>
-        <div class="lib-stat" title="Se necesitan 2 horas de juego para reseñar"><small>RESEÑA</small><b>${DT.canReview(g.id) ? 'Disponible' : DT.fmtTime(Math.max(0, DT.REVIEW_MIN - (e.playtime || 0))) + ' restantes'}</b><div class="bar"><i style="width:${Math.min(100, (e.playtime || 0) / DT.REVIEW_MIN * 100)}%"></i></div></div>
+        ${g.private ? '' : `<div class="lib-stat" title="Se necesitan 2 horas de juego para reseñar"><small>RESEÑA</small><b>${DT.canReview(g.id) ? 'Disponible' : DT.fmtTime(Math.max(0, DT.REVIEW_MIN - (e.playtime || 0))) + ' restantes'}</b><div class="bar"><i style="width:${Math.min(100, (e.playtime || 0) / DT.REVIEW_MIN * 100)}%"></i></div></div>`}
         <span class="spacer"></span>
-        <a class="btn ghost sm" href="#/juego/${g.id}">Página de la tienda</a>
-        ${me.id === g.devId ? `<a class="btn ghost sm" href="#/dev/editor/${g.id}/biblioteca">${DT.icon.edit} Editar</a>` : ''}
+        ${g.private ? '<span class="pill tecnm">Personal · homenaje no comercial</span>' : ''}<a class="btn ghost sm" href="#/juego/${g.id}">${g.private ? 'Ficha del juego' : 'Página de la tienda'}</a>
+        ${me.id === g.devId && !g.private ? `<a class="btn ghost sm" href="#/dev/editor/${g.id}/biblioteca">${DT.icon.edit} Editar</a>` : ''}
       </div>
       <div class="lib-cols">
         <section class="card">
@@ -127,7 +127,7 @@
 
   DT.views.library = (app, gid) => {
     const lib = DT.lib();
-    const owned = Object.keys(lib).map(DT.game).filter(Boolean);
+    const owned = Object.keys(lib).map(DT.game).filter((x) => x && DT.canSee(x));
     const g = gid && DT.game(gid);
     app.innerHTML = `<div class="library">${sidebar(owned, gid)}
       <div class="lib-main">${owned.length ? (g && lib[gid] ? detail(g) : home(owned)) : `
