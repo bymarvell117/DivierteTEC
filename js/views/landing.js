@@ -124,13 +124,13 @@
         <h2 class="l-h2 in-view">Ejes transversales</h2>
         <div class="l-role-cards l-axes-cards">
           <article class="l-role in-view" style="--d:0s"><div class="l-role-ico">${AX.inclusion}</div><h3>Inclusión y equidad</h3>
-            <p>Cualquier alumno de la comunidad tecnológica puede dar a conocer sus videojuegos: publicar es gratis y se juega desde $0, incluso sin internet.</p></article>
+            <p>Cualquier alumno de la comunidad tecnológica puede dar a conocer sus videojuegos: publicar es gratis y se juega desde $0 en cualquier navegador; los estudiantes del TecNM verificados tienen beneficios exclusivos.</p></article>
           <article class="l-role in-view" style="--d:.1s"><div class="l-role-ico">${AX.social}</div><h3>Impacto social</h3>
             <p>Impulsa las habilidades tecnológicas y el entretenimiento hecho en México, con apoyo económico para los estudios: Semilla TEC, Pase y propinas.</p></article>
           <article class="l-role in-view" style="--d:.2s"><div class="l-role-ico">${AX.sust}</div><h3>Sustentabilidad y sostenibilidad</h3>
             <p>Distribución 100 % digital, sin discos, empaques ni envíos. Juegos ligeros para las computadoras escolares y un modelo que se sostiene con comisiones bajas.</p></article>
           <article class="l-role in-view" style="--d:.3s"><div class="l-role-ico">${AX.tech}</div><h3>Tecnologías emergentes</h3>
-            <p>Gráficos 3D con WebGL en el navegador, mandos con vibración, funcionamiento sin conexión y juegos aislados con un SDK de logros.</p></article>
+            <p>Gráficos 3D con WebGL en el navegador, mandos con vibración, prototipo que funciona sin conexión y juegos aislados con un SDK de logros.</p></article>
         </div>
       </section>
 
@@ -140,29 +140,22 @@
           <article class="l-role in-view" style="--d:0s"><div class="l-role-ico">${DT.icon.gamepad}</div><h3>Jugadores</h3>
             <p>Tienda y biblioteca estilo Steam, reseñas con stickers y un perfil que presume tus logros.</p></article>
           <article class="l-role in-view" style="--d:.12s"><div class="l-role-ico">${DT.icon.wrench}</div><h3>Desarrolladores</h3>
-            <p>Sube tu juego, define logros con un SDK de una línea y diseña tu página con imágenes, GIFs y videos en cualquier forma.</p>
+            <p>Sube tu juego, define logros con un SDK de una línea y diseña tu página con imágenes, GIFs y videos en cualquier forma. Para publicar, solicita tu cuenta de desarrollador: la administración revisa tu trabajo previo y tu identidad.</p>
             <a class="btn primary sm" href="#/dev" data-asdev>${DT.icon.code} Publicar mi juego</a></article>
           <article class="l-role in-view" style="--d:.24s"><div class="l-role-ico">${DT.icon.shield}</div><h3>Administradores</h3>
-            <p>Revisión de contenido (violencia, temas bélicos, odio), verificación de estudios, reportes y filtro de palabras.</p></article>
+            <p>Revisión de contenido (violencia, temas bélicos, odio), solicitudes de desarrollador, verificación TecNM, reportes y filtro de palabras.</p></article>
         </div>
       </section>
 
       <footer class="l-footer">
         <div class="brand"><span class="brand-mark">D</span><span class="brand-name">Divierte<b>TEC</b></span></div>
-        <p>Impulsamos la industria mexicana del entretenimiento desde las aulas. Proyecto para InnovaTec · Hackatec regional 2026. Demostración offline: todos los datos viven en tu navegador. <a href="#/faq">Preguntas frecuentes</a></p>
+        <p>Impulsamos la industria mexicana del entretenimiento desde las aulas. Proyecto para InnovaTec · Hackatec regional 2026. DivierteTEC es un sitio web; este prototipo funciona sin conexión y guarda los datos en tu navegador. <a href="#/faq">Preguntas frecuentes</a></p>
         ${star ? `<button class="btn l-play" data-act="play" data-gid="${star.id}"><span class="l-play-ico">${DT.icon.play}</span><span><b>JUGAR AHORA</b><small>${DT.esc(star.title)}</small></span></button>` : ''}
       </footer>
     </div>`;
 
     DT.$$('[data-asdev]', app).forEach((a) => a.addEventListener('click', (e) => {
-      if (DT.me().role === 'user') {
-        e.preventDefault();
-        DT.state().currentUserId = 'u_maravilla';
-        DT.applyTheme();
-        DT.emit('user');
-        DT.toast('Cambiaste al rol <b>Desarrollador</b> (Equipo Maravilla) para la demo.');
-        DT.go('#/dev');
-      }
+      if (DT.me().role === 'user') { e.preventDefault(); DT.go('#/ser-desarrollador'); }
     }));
 
     /* --- Parallax del héroe con el mouse --- */

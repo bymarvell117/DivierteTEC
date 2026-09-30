@@ -4,6 +4,7 @@
 
   DT.views.plans = (app) => {
     const e = DT.econ();
+    const tp = DT.passPriceFor ? DT.passPriceFor() : e.passPrice;
     const me = DT.me();
     const pass = DT.state().passes[me.id];
     const active = DT.hasPass();
@@ -33,7 +34,8 @@
           <div class="card plan featured-plan">
             <span class="ribbon">Recomendado</span>
             <h3>${DT.icon.ticket} Pase DivierteTEC</h3>
-            <div class="plan-price">${DT.money(e.passPrice)} <small>al mes</small></div>
+            <div class="plan-price">${tp < e.passPrice ? `<s class="muted">${DT.money(e.passPrice)}</s> ` : ''}${DT.money(tp)} <small>al mes</small></div>
+            ${tp < e.passPrice ? `<span class="pill tecnm">${DT.ic('cap')} Precio TecNM verificado</span>` : `<a class="muted small" href="#/verificacion-tecnm">${DT.ic('cap')} ¿Eres del TecNM? Verifícate y paga ${DT.money(Math.round(e.passPrice * (1 - (e.passTecnmDiscount || 0.3)) * 100) / 100)}</a>`}
             <ul class="checks">
               <li><b>${passGames.length} juegos del Pase</b> incluidos sin comprarlos</li>
               <li><b>${pct(e.passDiscount)} de descuento</b> en juegos de pago</li>
@@ -41,7 +43,7 @@
               <li><b>${pct(e.passDevShare)}</b> de tu pago va a los estudios, según el tiempo que juegas sus juegos</li>
             </ul>
             ${active ? `<p class="ok">Activo hasta el ${new Date(pass.until).toLocaleDateString('es-MX')}</p><button class="btn ghost" data-sub>Extender 1 mes</button>`
-              : `<button class="btn primary big" data-sub>Suscribirme por ${DT.money(e.passPrice)}</button>`}
+              : `<button class="btn primary big" data-sub>Suscribirme por ${DT.money(tp)}</button>`}
             <small class="muted">Pago simulado con el saldo de demostración (tu saldo: ${DT.money(DT.wallet())}).</small>
           </div>
         </div>

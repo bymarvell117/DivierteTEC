@@ -7,7 +7,7 @@
   const pct = (n) => Math.round(n * 100) + ' %';
   const FAQ = () => {
     const e = DT.econ();
-    const tec = DT.state().users.filter(DT.isTecnmDev).length;
+    const tec = DT.state().users.filter(DT.isTecnm).length;
     return [
       { q: '¿De qué manera se puede enlazar con los TecNM?', icon: 'cap', a: `
         <p>DivierteTEC da <b>trato preferente a los estudios formados por estudiantes del TecNM</b>, de cualquier campus. Un estudio verificado como TecNM obtiene:</p>
@@ -16,8 +16,26 @@
           <li>Sello <b>Hecho en el TecNM</b> con su campus en la tienda y en la página del juego, y un filtro propio en la tienda para descubrir sus juegos.</li>
           <li><b>Prioridad en la cola de revisión</b>: sus juegos aparecen primero para la administración.</li>
         </ul>
-        <p>En esta demostración la verificación la hace la administración (<i>Admin → Desarrolladores y usuarios</i>). En la versión en línea se haría con el <b>correo institucional</b> del campus. Hoy ${tec === 1 ? 'hay 1 estudio TecNM verificado' : `hay ${tec} estudios TecNM verificados`} en la plataforma.</p>
+        <p>Los <b>jugadores</b> del TecNM también tienen beneficios: ${pct(e.passTecnmDiscount || 0.3)} de descuento en el Pase, la insignia <b>Comunidad TecNM</b> y el sello TecNM en su perfil y reseñas.</p>
+        <p>La verificación se pide en <a href="#/verificacion-tecnm">Verificación TecNM</a> con el <b>correo institucional</b> (@…tecnm.mx), el <b>número de control</b>, el campus y una foto de la <b>credencial vigente</b>; la administración la revisa. Hoy ${tec === 1 ? 'hay 1 cuenta TecNM verificada' : `hay ${tec} cuentas TecNM verificadas`} en la plataforma.</p>
         <p class="muted">Propuesta para la siguiente etapa, aún no implementada: convenios con cada campus para usar la plataforma como vitrina de proyectos de materias, residencias y hackatones, con torneos entre Tecnológicos.</p>` },
+      { q: '¿Cómo me convierto en desarrollador?', icon: 'wrench', a: `
+        <p>Cualquier jugador puede pedirlo en <a href="#/ser-desarrollador">Quiero ser desarrollador</a>. La administración revisa la solicitud con estos criterios:</p>
+        <ul>
+          <li><b>Trabajo previo:</b> descripción de proyectos anteriores, enlaces y, si quieres, un archivo o captura.</li>
+          <li><b>Motivo:</b> por qué quieres publicar en DivierteTEC (al menos 80 caracteres).</li>
+          <li><b>Verificación de identidad:</b> nombre completo, fecha de nacimiento y una identificación (INE, pasaporte o credencial escolar). Si eres menor de edad, se pide el nombre de tu madre, padre o tutor.</li>
+          <li>Aceptar los criterios de contenido y no tener sanciones en la comunidad.</li>
+        </ul>
+        <p>La administración puede <b>aprobar</b>, <b>rechazar</b> o <b>pedir más información</b>. Al aprobarse, tu cuenta pasa a ser de desarrollador y ya puedes subir juegos. Si además verificas que eres del TecNM, tu estudio obtiene la Semilla TEC y la comisión preferente.</p>
+        <p class="muted">En el prototipo los documentos se guardan solo en tu navegador. En el sitio web se enviarían cifrados y se eliminarían al terminar la revisión.</p>` },
+      { q: '¿Cómo verifico que soy del TecNM y qué beneficios obtengo?', icon: 'cap', a: `
+        <p>En <a href="#/verificacion-tecnm">Verificación TecNM</a>: confirma tu correo institucional con un código, escribe tu número de control, elige tu campus y sube tu credencial vigente. La administración revisa que los datos coincidan.</p>
+        <ul>
+          <li><b>Como jugador:</b> Pase DivierteTEC con ${pct(e.passTecnmDiscount || 0.3)} de descuento (${DT.money(Math.round(e.passPrice * (1 - (e.passTecnmDiscount || 0.3)) * 100) / 100)} en lugar de ${DT.money(e.passPrice)}), insignia épica <b>Comunidad TecNM</b> y sello TecNM en tu perfil y reseñas.</li>
+          <li><b>Como desarrollador:</b> Semilla TEC (primeros ${DT.money(e.seedAllowance)} sin comisión), comisión de ${pct(e.rateStudent)} en lugar de ${pct(e.rateExternal)}, sello <b>Hecho en el TecNM</b> y prioridad en la revisión.</li>
+        </ul>
+        <p class="muted">En el prototipo el código del correo se muestra en pantalla como simulación; en el sitio web llegaría a tu bandeja institucional.</p>` },
       { q: '¿Existe alguna limitante sobre qué juegos puedo jugar y/o crear?', icon: 'shield', a: `
         <p><b>Para jugar:</b> ves los juegos aprobados por la administración. Los gratuitos usan <b>Paga lo que quieras</b>: puedes pagar desde $0. Algunos tienen precio o vienen incluidos en el Pase. Cada juego declara su <b>edad recomendada</b>.</p>
         <p><b>Para crear:</b> puedes publicar juegos <b>HTML5</b> (se juegan al instante en el navegador), proyectos <b>C++</b> y <b>ejecutables</b> descargables. Antes de publicarse, cada juego pasa por los <b>criterios de aprobación</b>:</p>
@@ -28,7 +46,7 @@
           <li>Créditos de los recursos usados y sin código malicioso.</li>
         </ul>` },
       { q: '¿La página web es demandante en cuestión del rendimiento?', icon: 'bolt', a: `
-        <p><b>La plataforma no lo es.</b> Está hecha con HTML, CSS y JavaScript sin librerías ni servidor: se abre con doble clic y funciona <b>sin internet</b>. Los datos se guardan en el propio navegador. Las animaciones se desactivan solas si el sistema tiene activado <i>reducir movimiento</i>.</p>
+        <p><b>La plataforma no lo es.</b> DivierteTEC es un <b>sitio web</b> hecho con HTML, CSS y JavaScript sin librerías pesadas, así que abre rápido en cualquier navegador. El <b>prototipo</b> que presentamos funciona incluso sin conexión y guarda los datos en el propio navegador. Las animaciones se desactivan solas si el sistema tiene activado <i>reducir movimiento</i>.</p>
         <p><b>Cada juego tiene su propia exigencia.</b> Los 2D (Astro Runner, Pixel Garden, Neón Drift, Quantum Puzzle, Mecaquack) son ligeros. Aerodron 3D y Furia TEC dibujan en 3D con WebGL, así que conviene una computadora con gráficos integrados recientes. Los juegos corren en un marco aislado, así que uno pesado no afecta al resto de la página.</p>` },
       { q: '¿Está enfocado únicamente en los juegos o también puede funcionar como medio de aprendizaje?', icon: 'book', a: `
         <p><b>También sirve para aprender, de dos formas:</b></p>
@@ -63,13 +81,13 @@
         <p class="muted">Los pagos de <i>Paga lo que quieras</i> siguen la misma tabla que las ventas. La administración puede ajustar las tasas en <i>Admin → Finanzas</i> y esta tabla se actualiza sola. En la demostración todo el dinero es simulado.</p>` },
       { q: '¿Pueden ser cooperativos (co-op) los juegos?', icon: 'gamepad', a: `
         <p><b>Sí, en cooperativo local.</b> <b>Furia TEC</b> se juega entre 2 personas en la misma computadora, con teclado o mandos de Xbox, e incluye ataques combinados y revivir al compañero. Cualquier estudio puede hacer juegos para varias personas en el mismo equipo.</p>
-        <p class="muted">El multijugador en línea no forma parte de esta versión, que funciona sin internet. Un juego que lo necesite tendría que usar sus propios servidores.</p>` },
+        <p class="muted">El multijugador en línea no forma parte del prototipo, que funciona sin conexión. Al estar en el sitio web, es una ampliación posible para una siguiente etapa; mientras tanto, un juego que lo necesite puede usar sus propios servidores.</p>` },
       { q: '¿Cómo cumple DivierteTEC los ejes transversales?', icon: 'sparkle', a: `
         <ul>
-          <li><b>Inclusión y equidad.</b> El proyecto busca incluir a toda la comunidad tecnológica sin excepción: cualquier alumno puede dar a conocer sus proyectos independientes de entretenimiento (videojuegos). Publicar es gratis y los juegos gratuitos se juegan desde $0, incluso sin internet.</li>
+          <li><b>Inclusión y equidad.</b> El proyecto busca incluir a toda la comunidad tecnológica sin excepción: cualquier alumno puede dar a conocer sus proyectos independientes de entretenimiento (videojuegos). Publicar es gratis, los juegos gratuitos se juegan desde $0 en cualquier navegador y la verificación TecNM da beneficios exclusivos a estudiantes.</li>
           <li><b>Impacto social.</b> Impulsa el desarrollo de habilidades tecnológicas y del entretenimiento, con un apoyo económico para los desarrolladores: Semilla TEC, reparto del Pase y propinas.</li>
-          <li><b>Sustentabilidad y sostenibilidad.</b> La distribución es 100 % digital, sin discos, empaques ni envíos. En esta versión no necesita servidores, porque todo corre en el navegador. Los juegos son ligeros y corren en las computadoras de la escuela sin exigir equipo nuevo. Económicamente, se sostiene con comisiones bajas y el Pase, y la mayor parte del dinero va a los estudios. El SDK y el motor 3D se reutilizan entre juegos.</li>
-          <li><b>Tecnologías emergentes.</b> Gráficos 3D en tiempo real con WebGL directo en el navegador, sin instalar nada. Mandos con vibración (Gamepad API). Funcionamiento sin conexión con almacenamiento local (IndexedDB). Juegos aislados por seguridad, un SDK de logros y pruebas automatizadas en el navegador.</li>
+          <li><b>Sustentabilidad y sostenibilidad.</b> La distribución es 100 % digital, sin discos, empaques ni envíos. Los juegos se ejecutan en el navegador del jugador, así que el sitio web solo necesita servir archivos, sin servidores de cómputo pesados. Los juegos son ligeros y corren en las computadoras de la escuela sin exigir equipo nuevo. Económicamente, se sostiene con comisiones bajas y el Pase, y la mayor parte del dinero va a los estudios. El SDK y el motor 3D se reutilizan entre juegos.</li>
+          <li><b>Tecnologías emergentes.</b> Gráficos 3D en tiempo real con WebGL directo en el navegador, sin instalar nada. Mandos con vibración (Gamepad API). Un prototipo que funciona sin conexión con almacenamiento local (IndexedDB). Juegos aislados por seguridad, un SDK de logros y pruebas automatizadas en el navegador.</li>
         </ul>` },
       { q: '¿Beneficia a los estudiantes, y en qué sentido?', icon: 'medal', a: `
         <p><b>Como creadores:</b></p>

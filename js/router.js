@@ -11,6 +11,8 @@
     [/^#\/comunidad$/, 'community'],
     [/^#\/planes$/, 'plans'],
     [/^#\/faq$/, 'faq'],
+    [/^#\/verificacion-tecnm$/, 'tecnm'],
+    [/^#\/ser-desarrollador$/, 'devRequest'],
     [/^#\/perfil(?:\/([\w-]+))?$/, 'profile'],
     [/^#\/dev$/, 'dev', 'dev'],
     [/^#\/dev\/juego\/([\w-]+)$/, 'devGame', 'dev'],
@@ -99,7 +101,7 @@
     const isActive = (names) => names.includes(r) ? 'active' : '';
     const eq = DT.equipped();
     const dark = eq.theme && eq.theme !== 'light';
-    const unread = me.role === 'admin' ? DT.state().reports.filter((x) => x.status === 'open').length + DT.catalogGames().filter((g) => g.status === 'pending').length : 0;
+    const unread = me.role === 'admin' ? DT.state().reports.filter((x) => x.status === 'open').length + DT.catalogGames().filter((g) => g.status === 'pending').length + DT.pendingRequests() : 0;
     DT.$('#topbar').innerHTML = `
       <div class="topbar-inner">
         <a class="brand" href="#/" aria-label="DivierteTEC inicio">
@@ -128,6 +130,8 @@
                   ${DT.avatarHTML(u, 26)}<span><b>${DT.esc(u.name)}</b><small>${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}</small></span></button>`).join('')}
               <hr>
               <a class="dropdown-item" href="#/perfil">${DT.icon.gift}<span>Perfil y recompensas</span></a>
+              <a class="dropdown-item" href="#/verificacion-tecnm">${DT.ic('cap')}<span>Verificación TecNM<small>${DT.isTecnm(me) ? 'Cuenta verificada' : 'Beneficios exclusivos'}</small></span></a>
+              ${me.role === 'user' ? `<a class="dropdown-item" href="#/ser-desarrollador">${DT.ic('code')}<span>Quiero ser desarrollador<small>Solicitud revisada por la administración</small></span></a>` : ''}
               <button class="dropdown-item" data-simulate>${DT.icon.clock}<span>Simular +1 h de juego<small>Simulación para la presentación · ${['gamePage', 'library'].includes(r) && current.params[0] ? 'en este juego' : 'en toda tu biblioteca'}</small></span></button>
               <button class="dropdown-item" data-reset>${DT.icon.reset}<span>Restablecer demo</span></button>
             </div>

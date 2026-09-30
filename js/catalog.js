@@ -61,7 +61,8 @@
     badge_creator: { type: 'badge', name: 'Creador', rarity: 'epico', glyph: 'wrench', desc: 'Publicó un juego en DivierteTEC.', data: 'wrench' },
     badge_torre: { type: 'badge', name: 'Campeón de la Torre', rarity: 'legendario', glyph: 'castle', desc: 'Conquistó la Torre Kombate de Furia TEC.', data: 'castle' },
     badge_pase: { type: 'badge', name: 'Miembro del Pase', rarity: 'epico', glyph: 'ticket', desc: 'Apoya a los creadores con el Pase DivierteTEC.', data: 'ticket' },
-    badge_hackatec: { type: 'badge', name: 'Hackatec 2026', rarity: 'legendario', glyph: 'medal', desc: 'Edición regional InnovaTec 2026.', data: 'medal' }
+    badge_hackatec: { type: 'badge', name: 'Hackatec 2026', rarity: 'legendario', glyph: 'medal', desc: 'Edición regional InnovaTec 2026.', data: 'medal' },
+    badge_tecnm: { type: 'badge', name: 'Comunidad TecNM', rarity: 'epico', glyph: 'cap', desc: 'Cuenta verificada del Tecnológico Nacional de México.', data: 'cap' }
   };
 
   /* Avatares y stickers gratuitos para todos (ilustraciones en js/art.js) */
@@ -307,7 +308,7 @@
       currentUserId: 'u_player',
       users: [
         { id: 'u_player', name: 'MARVELL117', role: 'user', bio: 'Jugador de InnovaTec 2026.', status: 'active', createdAt: now },
-        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, campus: 'ITESI · Irapuato', createdAt: now },
+        { id: 'u_maravilla', name: 'Equipo Maravilla', role: 'dev', bio: 'Instituto Tecnológico Superior de Irapuato · creadores de Mecaquack · InnovaTec Hackatec 2026.', status: 'active', verified: true, student: true, campus: 'ITESI · Irapuato', tecnm: { verified: true, campus: 'ITESI · Irapuato', since: now }, createdAt: now },
         { id: 'u_admin', name: 'Admin TEC', role: 'admin', bio: 'Cuenta de administración para la demostración.', status: 'active', createdAt: now }
       ],
       games,
@@ -322,13 +323,14 @@
       reports: [],
       bannedWords: ['idiota', 'basura', 'estúpido'],
       /* ---- Economía (ver js/economy.js y docs/MODELO-DE-NEGOCIO.md) ---- */
-      economy: { rateStudent: 0.12, rateExternal: 0.18, seedAllowance: 2000, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7 },
+      economy: { rateStudent: 0.12, rateExternal: 0.18, seedAllowance: 2000, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7, passTecnmDiscount: 0.3 },
       wallets: { u_maravilla: 0, u_player: 0, u_admin: 0 }, // saldo simulado: se recarga con el botón de demostración
       purchases: {},
       passes: {},
       promos: [],
       ledger: [],
-      devRequests: [],
+      devRequests: [],    // solicitudes para ser desarrollador (js/verify.js)
+      tecnmRequests: [],  // solicitudes de verificación TecNM
       log: []
     };
   };

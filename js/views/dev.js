@@ -82,7 +82,7 @@ document.getElementById('pts').onclick = function () {
   DT.views.dev = (app) => {
     const me = DT.me();
     const s = DT.state();
-    const mine = s.games.filter((g) => g.devId === me.id);
+    const mine = s.games.filter((g) => g.devId === me.id && !g.private);
     const players = new Set();
     let unlocks = 0;
     Object.entries(s.library).forEach(([uid, lib]) => mine.forEach((g) => { if (lib[g.id]) players.add(uid); }));
@@ -524,8 +524,8 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         <div>
           <div class="card">
             <h3>${DT.icon.briefcase} Tu comisión</h3>
-            <p>${dev.student && dev.verified ? `Estudio <b>TecNM verificado</b>: Semilla TEC de ${DT.money(e.seedAllowance)} sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta.${dev.student ? ' Pide la verificación a la administración para activar la Semilla TEC.' : ''}`}</p>
-            ${dev.student && dev.verified ? `<div class="bar"><i style="width:${Math.min(100, DT.devSalesTotal(dev.id) / e.seedAllowance * 100)}%"></i></div><small class="muted">${DT.money(Math.min(e.seedAllowance, DT.devSalesTotal(dev.id)))} de ${DT.money(e.seedAllowance)} usados de la Semilla TEC</small>` : ''}
+            <p>${DT.isTecnm(dev) ? `Estudio <b>TecNM verificado</b>: Semilla TEC de ${DT.money(e.seedAllowance)} sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta.  <a href="#/verificacion-tecnm">¿Eres del TecNM? Verifícate</a> para activar la Semilla TEC.`}</p>
+            ${DT.isTecnm(dev) ? `<div class="bar"><i style="width:${Math.min(100, DT.devSalesTotal(dev.id) / e.seedAllowance * 100)}%"></i></div><small class="muted">${DT.money(Math.min(e.seedAllowance, DT.devSalesTotal(dev.id)))} de ${DT.money(e.seedAllowance)} usados de la Semilla TEC</small>` : ''}
           </div>
           <div class="card">
             <h3>${DT.icon.megaphone} Destacado patrocinado</h3>

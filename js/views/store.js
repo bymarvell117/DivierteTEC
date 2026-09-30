@@ -289,7 +289,7 @@
                 const u = DT.user(r.userId) || { name: '¿?', id: '' };
                 const useful = (r.helpful || []).length, voted = (r.helpful || []).includes(me.id);
                 return `<article class="review ${r.up ? 'up' : 'down'}">
-                  <header>${DT.avatarHTML(u, 34)}<div><b>${DT.esc(u.name)}</b>${r.stars ? DT.starsHTML(r.stars) : ''}<small>${r.up ? DT.icon.thumbUp + ' Recomendado' : DT.icon.thumbDown + ' No recomendado'} · ${r.hours ? `${r.hours.toFixed(1)} h jugadas al reseñar${r.simulated ? ' (incluye tiempo simulado para la demo)' : ''} · ` : ''}${DT.timeAgo(r.date)}${r.edited ? ' · editada' : ''}</small></div>
+                  <header>${DT.avatarHTML(u, 34)}<div><b>${DT.esc(u.name)}</b> ${DT.tecnmUserPill ? DT.tecnmUserPill(u) : ''}${r.stars ? DT.starsHTML(r.stars) : ''}<small>${r.up ? DT.icon.thumbUp + ' Recomendado' : DT.icon.thumbDown + ' No recomendado'} · ${r.hours ? `${r.hours.toFixed(1)} h jugadas al reseñar${r.simulated ? ' (incluye tiempo simulado para la demo)' : ''} · ` : ''}${DT.timeAgo(r.date)}${r.edited ? ' · editada' : ''}</small></div>
                   <button class="icon-btn sm" title="Reportar reseña" data-report-review="${r.id}">${DT.icon.flag}</button></header>
                   <p>${DT.stickerize(DT.esc(DT.censor(r.text)))}</p>
                   <footer><button class="rv-help ${voted ? 'on' : ''}" data-helpful="${r.id}" ${r.userId === me.id ? 'disabled' : ''}>${DT.icon.thumbUp} ¿Te fue útil? · ${useful}</button></footer></article>`;

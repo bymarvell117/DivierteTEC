@@ -16,7 +16,8 @@
   const S = () => DT.state();
   DT.econ = () => S().economy;
   /* Estudios de estudiantes del TecNM verificados: comisión preferente, sello y prioridad en revisión */
-  DT.isTecnmDev = (u) => !!(u && u.student && u.verified);
+  DT.isTecnmDev = (u) => !!(u && ((u.tecnm && u.tecnm.verified) || (u.student && u.verified)));
+  DT.isTecnm = DT.isTecnmDev;
   DT.isTecnmGame = (g) => DT.isTecnmDev(DT.user(g.devId));
   DT.tecnmPill = (g, long) => { if (!DT.isTecnmGame(g)) return ''; const c = (DT.user(g.devId) || {}).campus; return `<span class="pill tecnm" title="Estudio de estudiantes del TecNM verificado">${DT.icon.cap} ${long ? 'Hecho en el TecNM' + (c ? ' · ' + DT.esc(c) : '') : 'TecNM'}</span>`; };
   DT.wallet = (uid) => r2(S().wallets[uid || S().currentUserId] || 0);
@@ -69,7 +70,7 @@
   DT.commissionFor = (devId, gross) => {
     const e = DT.econ();
     const dev = DT.user(devId) || {};
-    const student = !!(dev.student && dev.verified);
+    const student = DT.isTecnm(dev);
     const rate = student ? e.rateStudent : e.rateExternal;
     let freePart = 0;
     if (student) freePart = Math.min(gross, Math.max(0, e.seedAllowance - DT.devSalesTotal(devId)));
@@ -175,13 +176,14 @@
   DT.subscribePass = () => {
     const me = DT.me();
     const e = DT.econ();
-    if (DT.wallet(me.id) < e.passPrice) { DT.toast('Saldo insuficiente para el Pase. Recarga saldo de demostración.', { kind: 'error' }); return false; }
-    credit(me.id, -e.passPrice);
+    const price = DT.passPriceFor ? DT.passPriceFor(me.id) : e.passPrice;
+    if (DT.wallet(me.id) < price) { DT.toast('Saldo insuficiente para el Pase. Recarga saldo de demostración.', { kind: 'error' }); return false; }
+    credit(me.id, -price);
     const cur = S().passes[me.id];
     const from = cur && cur.until > Date.now() ? cur.until : Date.now();
     S().passes[me.id] = { since: (cur && cur.since) || Date.now(), until: from + 30 * DAY };
-    const fund = r2(e.passPrice * e.passDevShare);
-    record({ type: 'pass', from: me.id, to: 'platform', gross: e.passPrice, commission: r2(e.passPrice - fund), net: fund, note: 'Pase DivierteTEC · 1 mes' });
+    const fund = r2(price * e.passDevShare);
+    record({ type: 'pass', from: me.id, to: 'platform', gross: price, commission: r2(price - fund), net: fund, note: 'Pase DivierteTEC · 1 mes' + (price < e.passPrice ? ' · precio TecNM' : '') });
     DT.rewards.grant(me.id, 'badge_pase');
     DT.log('Se suscribió al Pase DivierteTEC.');
     DT.toast(DT.icon.ticket + ' ¡Bienvenido al Pase DivierteTEC! Los juegos del Pase ya están disponibles.', { kind: 'ok' });

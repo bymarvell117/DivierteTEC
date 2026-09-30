@@ -4,6 +4,10 @@ Plataforma de publicación de videojuegos para **InnovaTec · Hackatec regional 
 Una tienda y biblioteca estilo Steam donde los estudiantes publican juegos HTML5,
 C++ o ejecutables; los juegos HTML se juegan directamente en el navegador.
 
+> **DivierteTEC está pensado como sitio web.** Este repositorio es el **prototipo** para la
+> demostración: funciona sin conexión y guarda los datos en el navegador. En el sitio web,
+> las cuentas, los pagos y los documentos de verificación vivirían en un servidor.
+
 ## Juegos incluidos (se juegan al instante, sin descargar)
 
 | Juego | Género | Precio en la demo | Controles |
@@ -85,14 +89,26 @@ Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
   - Los estudios verificados como TecNM tienen la Semilla TEC (0 % de comisión en sus primeros $2,000) y después 12 % en lugar de 18 %.
   - Llevan el sello **Hecho en el TecNM** con su campus y tienen un filtro propio en la tienda.
   - Tienen **prioridad en la cola de revisión**.
-  - La verificación la marca la administración en *Desarrolladores y usuarios*.
-- **FAQ** (`#/faq`, en la barra superior). Responde cómo se enlaza con los TecNM, límites de contenido, rendimiento, aprendizaje, fin del proyecto, complejidad de los juegos, comisiones, cooperativo y beneficios para estudiantes. Las comisiones se leen de la configuración actual.
+  - Los **jugadores** verificados tienen el Pase con 30 % de descuento ($41.30 en lugar de $59), la insignia épica **Comunidad TecNM** y el sello TecNM en su perfil y reseñas.
+- **Verificación TecNM** (`#/verificacion-tecnm`, en el menú de usuario y en el perfil):
+  - correo institucional (`…tecnm.mx`) confirmado con un código de 6 dígitos (en el prototipo, el código se muestra en pantalla);
+  - número de control, campus, carrera y foto de la credencial vigente;
+  - la administración la revisa en *Admin → Solicitudes de cuentas*. El correo y el número de control se validan solos; la credencial y su vigencia se marcan a mano.
+- **Solicitud para ser desarrollador** (`#/ser-desarrollador`): un jugador pide su cuenta de desarrollador con:
+  - trabajo previo (descripción, enlaces o archivo);
+  - por qué quiere ser desarrollador (mínimo 80 caracteres);
+  - verificación de identidad (nombre, fecha de nacimiento, INE, pasaporte o credencial con foto; si es menor de edad, quién lo autoriza);
+  - aceptación de términos y criterios de contenido.
+
+  La administración marca los criterios y puede **aprobar** (la cuenta pasa a desarrollador), **rechazar** o **pedir más información**. En el prototipo los documentos se guardan en IndexedDB del navegador; en el sitio web se enviarían cifrados y se borrarían al terminar la revisión.
+- **FAQ** (`#/faq`, en la barra superior). Responde cómo se enlaza con los TecNM, límites de contenido, rendimiento, aprendizaje, fin del proyecto, complejidad de los juegos, comisiones, cooperativo, beneficios para estudiantes, ejes transversales, cómo ser desarrollador y cómo verificarse como TecNM. Las comisiones se leen de la configuración actual.
 
 ## Cómo abrirla
 
-Haz **doble clic en `index.html`**. No necesita servidor, instalación ni internet:
-todo (usuarios, juegos subidos, logros, recompensas) se guarda en el navegador
-(localStorage + IndexedDB). Probado en Chrome/Edge.
+Haz **doble clic en `index.html`**. El prototipo no necesita servidor, instalación ni
+internet: todo (usuarios, juegos subidos, logros, recompensas, solicitudes) se guarda en el
+navegador (localStorage + IndexedDB). Probado en Chrome/Edge. Como sitio web se publica
+igual: son archivos estáticos (HTML, CSS y JavaScript).
 
 Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar de rol:
 
@@ -100,7 +116,7 @@ Para la demostración, el menú de usuario (arriba a la derecha) permite cambiar
 |-------------------|----------------|-----------------------------------------------------------|
 | MARVELL117        | Usuario        | Tienda, biblioteca, jugar, reseñas, perfil y recompensas  |
 | Equipo Maravilla  | Desarrollador  | Subir juegos, logros, editor de páginas, estadísticas     |
-| Admin TEC         | Administrador  | Revisión de juegos, reportes, moderación, usuarios         |
+| Admin TEC         | Administrador  | Revisión de juegos, solicitudes de cuentas, reportes, moderación |
 
 **Restablecer demo** (mismo menú) borra todo y vuelve al estado inicial.
 
@@ -112,8 +128,8 @@ reseñas que lo usan lo indican.
 
 ## Presentación ante el jurado
 
-Abre **`presentacion/index.html`** con doble clic; funciona sin internet.
-- **Contenido:** 12 diapositivas visuales para los **7 minutos de exposición** de una sola persona, con capturas reales de la plataforma en `presentacion/img/`. Recorren el problema, la plataforma, los juegos, jugadores, estudios, el **diagrama de flujo** de la plataforma, el **progreso del desarrollo y sus correcciones** (tomado del historial de versiones), el modelo de negocio con sus antecedentes (itch.io, Humble Bundle, Epic, Steam), SCAMPER y los ejes transversales (Inclusión y equidad, Impacto social, Sustentabilidad y sostenibilidad, Tecnologías emergentes), que también aparecen en la bienvenida y en la FAQ.
+Abre **`presentacion/index.html`** con doble clic; el archivo funciona sin internet.
+- **Contenido:** 13 diapositivas visuales para los **7 minutos de exposición** de una sola persona, con capturas reales de la plataforma en `presentacion/img/`. Recorren el problema, la plataforma, los juegos, jugadores, estudios, las **cuentas verificadas** (solicitud de desarrollador y verificación TecNM), el **diagrama de flujo** de la plataforma, el **progreso del desarrollo y sus correcciones** (tomado del historial de versiones), el modelo de negocio con sus antecedentes (itch.io, Humble Bundle, Epic, Steam), SCAMPER y los ejes transversales (Inclusión y equidad, Impacto social, Sustentabilidad y sostenibilidad, Tecnologías emergentes), que también aparecen en la bienvenida y en la FAQ.
 - **Controles:**
   - ← → / espacio / clic: navegar;
   - **N**: notas del orador;
@@ -141,6 +157,10 @@ Abre **`presentacion/index.html`** con doble clic; funciona sin internet.
    y modérala en **Admin TEC → Reportes**.
 10. **Admin TEC → Finanzas**: ingresos por fuente, reparto del fondo del Pase y promociones
    generados por lo que hiciste en la demo.
+11. **Cuentas verificadas**: como **MARVELL117**, en el menú de usuario abre *Quiero ser
+   desarrollador* y *Verificación TecNM*, y envía ambas. Cambia a **Admin TEC → Solicitudes
+   de cuentas**, marca los criterios y aprueba: MARVELL117 pasa a desarrollador, recibe la
+   insignia **Comunidad TecNM** y el Pase le cuesta $41.30.
 
 ## Estructura
 
@@ -158,6 +178,7 @@ js/store.js              Estado (localStorage) y archivos (IndexedDB)
 js/theme.js              Temas y efectos de partículas
 js/rewards.js            Motor de logros → recompensas
 js/economy.js            Monedero, compras, comisiones, Pase, promociones y libro de transacciones
+js/verify.js             Solicitud para ser desarrollador, verificación TecNM y su revisión en admin
 js/games/*.js            Juegos integrados empaquetados (generados)
 games/*/index.html       Código fuente de los juegos integrados
 tools/build-games.js     Empaqueta games/ en js/games/

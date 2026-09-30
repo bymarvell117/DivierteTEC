@@ -3,7 +3,7 @@
 (function (DT) {
   'use strict';
 
-  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['criterios', 'Criterios de aprobación', 'shield'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
+  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['criterios', 'Criterios de aprobación', 'shield'], ['solicitudes', 'Solicitudes de cuentas', 'users'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
     ['reportes', 'Reportes', 'flag'], ['moderacion', 'Moderación', 'shield'], ['registro', 'Registro', 'clock']];
 
   DT.views.admin = (app, tab) => {
@@ -20,12 +20,13 @@
           ${TABS.map(([k, v, ic]) => `<a href="#/admin/${k}" class="${tab === k ? 'on' : ''}">${DT.icon[ic]}<span>${v}</span>
             ${k === 'revision' && pending.length ? `<b class="badge-count static">${pending.length}</b>` : ''}
             ${k === 'finanzas' && s.promos.some((p) => p.status === 'pending') ? `<b class="badge-count static">${s.promos.filter((p) => p.status === 'pending').length}</b>` : ''}
+            ${k === 'solicitudes' && DT.pendingRequests() ? `<b class="badge-count static">${DT.pendingRequests()}</b>` : ''}
             ${k === 'reportes' && openReports.length ? `<b class="badge-count static">${openReports.length}</b>` : ''}</a>`).join('')}
         </aside>
         <section class="admin-main" data-body></section>
       </div>`;
     const body = DT.$('[data-body]', app);
-    ({ resumen, revision, criterios, juegos, finanzas, usuarios, reportes, moderacion, registro })[tab](body, s);
+    ({ resumen, revision, criterios, solicitudes: (b) => DT.adminSolicitudes(b, act), juegos, finanzas, usuarios, reportes, moderacion, registro })[tab](body, s);
     DT.media.hydrate(body);
   };
 

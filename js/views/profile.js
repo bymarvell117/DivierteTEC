@@ -81,13 +81,26 @@
       }).join('')}</div>`;
     };
 
+    /* Tarjetas de cuenta: verificación TecNM y solicitud para ser desarrollador */
+    const accountCards = (u) => {
+      const tr = (DT.state().tecnmRequests || []).filter((r) => r.userId === u.id).pop();
+      const dr = (DT.state().devRequests || []).filter((r) => r.userId === u.id).pop();
+      const st = (r) => r ? ({ pending: 'En revisión', info: 'Falta información', approved: 'Aprobada', rejected: 'Rechazada' })[r.status] : '';
+      const cards = [];
+      cards.push(DT.isTecnm(u)
+        ? `<a class="card acct-card ok" href="#/verificacion-tecnm">${DT.ic('cap')}<div><b>Cuenta TecNM verificada</b><small>${DT.esc((u.tecnm && u.tecnm.campus) || u.campus || '')} · ver beneficios</small></div></a>`
+        : `<a class="card acct-card" href="#/verificacion-tecnm">${DT.ic('cap')}<div><b>¿Eres del TecNM? Verifícate</b><small>${tr ? 'Solicitud: ' + st(tr) : 'Descuento en el Pase, insignia exclusiva y beneficios para estudios'}</small></div></a>`);
+      if (u.role === 'user') cards.push(`<a class="card acct-card" href="#/ser-desarrollador">${DT.icon.code}<div><b>Quiero ser desarrollador</b><small>${dr ? 'Solicitud: ' + st(dr) : 'Envía tu trabajo previo y verifica tu identidad'}</small></div></a>`);
+      return `<div class="acct-cards">${cards.join('')}</div>`;
+    };
+
     app.innerHTML = `
       <section class="page">
         <div class="profile-head card">
           ${DT.avatarHTML(u, 110)}
           <div class="profile-info">
-            <h1>${DT.esc(u.name)} ${badges.map((b) => `<span class="badge-ico" title="${DT.esc(all[b].name)}">${DT.art.badge(all[b])}</span>`).join('')}</h1>
-            <p class="muted">${{ user: 'Jugador', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}${u.verified ? ' · Estudio verificado ✔' : ''} · Miembro ${DT.timeAgo(u.createdAt)}</p>
+            <h1>${DT.esc(u.name)} ${DT.tecnmUserPill(u)} ${badges.map((b) => `<span class="badge-ico" title="${DT.esc(all[b].name)}">${DT.art.badge(all[b])}</span>`).join('')}</h1>
+            <p class="muted">${{ user: 'Jugador', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}${u.verified ? ' · Estudio verificado ✔' : ''}${u.tecnm && u.tecnm.campus ? ' · ' + DT.esc(u.tecnm.campus) : ''} · Miembro ${DT.timeAgo(u.createdAt)}</p>
             <p data-bio>${DT.esc(u.bio || '')}</p>
             ${mine ? `<button class="btn ghost sm" data-editbio>${DT.icon.edit} Editar biografía</button>` : `<button class="btn ghost sm" data-reportuser>${DT.icon.flag} Reportar</button>`}
           </div>
@@ -98,6 +111,8 @@
             <div><b>${inv.length}</b><small>Recompensas</small></div>
           </div>
         </div>
+
+        ${mine ? accountCards(u) : ''}
 
         ${collection(inv, all)}
 
