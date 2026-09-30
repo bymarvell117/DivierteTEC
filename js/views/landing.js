@@ -2,6 +2,13 @@
 (function (DT) {
   'use strict';
 
+  const axIco = (d) => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const AX = {
+    inclusion: axIco('<circle cx="9" cy="7" r="3"/><circle cx="17" cy="8" r="2.4"/><path d="M3 20v-1.5a6 6 0 0 1 12 0V20M15 20v-1a4.5 4.5 0 0 1 6-4.2"/>'),
+    social: axIco('<path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>'),
+    sust: axIco('<path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15M5 19l7-7"/>'),
+    tech: axIco('<path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 22V12M20.5 7 12 12 3.5 7"/>')
+  };
   DT.views.landing = (app) => {
     const s = DT.state();
     const games = DT.gamesPublic();
@@ -110,6 +117,20 @@
           ${games.slice().sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 4).map((g, i) => `
             <div class="l-feat in-view" style="--d:${i * .1}s"><a href="#/juego/${g.id}">${DT.coverHTML(g)}</a><div><b>${DT.esc(g.title)}</b><small>${g.plays ? g.plays.toLocaleString('es-MX') + ' partidas · ' : ''}${DT.formatLabel[g.format]}</small></div>
             ${DT.isInstant(g) ? `<button class="btn success sm" data-act="play" data-gid="${g.id}">${DT.icon.play} Jugar</button>` : `<a class="btn ghost sm" href="#/juego/${g.id}">Ver juego</a>`}</div>`).join('')}
+        </div>
+      </section>
+
+      <section class="l-roles l-axes">
+        <h2 class="l-h2 in-view">Ejes transversales</h2>
+        <div class="l-role-cards l-axes-cards">
+          <article class="l-role in-view" style="--d:0s"><div class="l-role-ico">${AX.inclusion}</div><h3>Inclusión y equidad</h3>
+            <p>Cualquier alumno de la comunidad tecnológica puede dar a conocer sus videojuegos: publicar es gratis y se juega desde $0, incluso sin internet.</p></article>
+          <article class="l-role in-view" style="--d:.1s"><div class="l-role-ico">${AX.social}</div><h3>Impacto social</h3>
+            <p>Impulsa las habilidades tecnológicas y el entretenimiento hecho en México, con apoyo económico para los estudios: Semilla TEC, Pase y propinas.</p></article>
+          <article class="l-role in-view" style="--d:.2s"><div class="l-role-ico">${AX.sust}</div><h3>Sustentabilidad y sostenibilidad</h3>
+            <p>Distribución 100 % digital, sin discos, empaques ni envíos. Juegos ligeros para las computadoras escolares y un modelo que se sostiene con comisiones bajas.</p></article>
+          <article class="l-role in-view" style="--d:.3s"><div class="l-role-ico">${AX.tech}</div><h3>Tecnologías emergentes</h3>
+            <p>Gráficos 3D con WebGL en el navegador, mandos con vibración, funcionamiento sin conexión y juegos aislados con un SDK de logros.</p></article>
         </div>
       </section>
 

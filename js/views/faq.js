@@ -64,6 +64,13 @@
       { q: '¿Pueden ser cooperativos (co-op) los juegos?', icon: 'gamepad', a: `
         <p><b>Sí, en cooperativo local.</b> <b>Furia TEC</b> se juega entre 2 personas en la misma computadora, con teclado o mandos de Xbox, e incluye ataques combinados y revivir al compañero. Cualquier estudio puede hacer juegos para varias personas en el mismo equipo.</p>
         <p class="muted">El multijugador en línea no forma parte de esta versión, que funciona sin internet. Un juego que lo necesite tendría que usar sus propios servidores.</p>` },
+      { q: '¿Cómo cumple DivierteTEC los ejes transversales?', icon: 'sparkle', a: `
+        <ul>
+          <li><b>Inclusión y equidad.</b> El proyecto busca incluir a toda la comunidad tecnológica sin excepción: cualquier alumno puede dar a conocer sus proyectos independientes de entretenimiento (videojuegos). Publicar es gratis y los juegos gratuitos se juegan desde $0, incluso sin internet.</li>
+          <li><b>Impacto social.</b> Impulsa el desarrollo de habilidades tecnológicas y del entretenimiento, con un apoyo económico para los desarrolladores: Semilla TEC, reparto del Pase y propinas.</li>
+          <li><b>Sustentabilidad y sostenibilidad.</b> La distribución es 100 % digital, sin discos, empaques ni envíos. En esta versión no necesita servidores, porque todo corre en el navegador. Los juegos son ligeros y corren en las computadoras de la escuela sin exigir equipo nuevo. Económicamente, se sostiene con comisiones bajas y el Pase, y la mayor parte del dinero va a los estudios. El SDK y el motor 3D se reutilizan entre juegos.</li>
+          <li><b>Tecnologías emergentes.</b> Gráficos 3D en tiempo real con WebGL directo en el navegador, sin instalar nada. Mandos con vibración (Gamepad API). Funcionamiento sin conexión con almacenamiento local (IndexedDB). Juegos aislados por seguridad, un SDK de logros y pruebas automatizadas en el navegador.</li>
+        </ul>` },
       { q: '¿Beneficia a los estudiantes, y en qué sentido?', icon: 'medal', a: `
         <p><b>Como creadores:</b></p>
         <ul>

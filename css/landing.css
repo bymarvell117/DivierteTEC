@@ -187,3 +187,9 @@
 .l-role-ico .ico { width: 44px; height: 44px; color: #3d8fff; }
 .l-role .btn { margin-top: 14px; }
 @media (max-width: 900px) { .l-campus { grid-template-columns: 1fr; } .l-campus .l-h2, .l-campus-copy { text-align: center; } .l-arrow { transform: rotate(90deg); animation: none; width: 100%; height: 30px; } }
+
+/* Ejes transversales */
+.l-axes-cards { grid-template-columns: repeat(4, 1fr); }
+.l-axes .l-role h3 { font-size: 20px; }
+@media (max-width: 1000px) { .l-axes-cards { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .l-axes-cards { grid-template-columns: 1fr; } }
