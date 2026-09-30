@@ -4,389 +4,322 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DivierteTEC · Presentación</title>
-<!-- Presentación para el Jurado Calificador · HackaTec Etapa Regional 2026.
-     Controles: ← → / espacio / clic = navegar · N = notas del orador · T = cronómetro 7:00 · F = pantalla completa · Inicio/Fin.
-     Funciona sin internet. Para respaldo en PDF: Imprimir → Guardar como PDF (una diapositiva por hoja). -->
+<!-- Presentación para el Jurado · HackaTec Etapa Regional 2026 (7 min, una persona).
+     ← → / espacio / clic = navegar · N = notas del orador · T = cronómetro 7:00 · F = pantalla completa.
+     Funciona sin internet. Las capturas de img/ son de la plataforma real. -->
 <style>
-  :root {
-    --blue: #1a6fd8; --blue2: #3d8fff; --navy: #0b1a3a; --ink: #13203a; --muted: #5a6a86; --line: #d9e2f1;
-    --bg: #f3f6fb; --white: #fff; --yellow: #ffd23f; --green: #1f9d55; --pink: #ff3ea5; --mark: #fff3b0;
-  }
+  :root { --blue: #1a6fd8; --blue2: #3d8fff; --navy: #0b1a3a; --ink: #13203a; --muted: #5a6a86; --line: #d9e2f1; --bg: #f3f6fb; --yellow: #ffd23f; --mark: #fff3b0; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: #070d1c; color: var(--ink); font-family: "Noto Sans", system-ui, "Segoe UI", sans-serif; overflow: hidden; }
+  html, body { margin: 0; height: 100%; background: #050a16; color: var(--ink); font-family: "Noto Sans", system-ui, "Segoe UI", sans-serif; overflow: hidden; }
   .deck { position: fixed; inset: 0; display: grid; place-items: center; }
-  .stage { width: 1280px; height: 720px; position: relative; transform-origin: center center; }
-  .slide { position: absolute; inset: 0; background: var(--bg); overflow: hidden; opacity: 0; pointer-events: none; transform: translateX(40px); transition: opacity .45s ease, transform .45s ease; padding: 58px 72px 64px; display: flex; flex-direction: column; }
-  .slide.on { opacity: 1; pointer-events: auto; transform: none; }
-  .slide.back { transform: translateX(-40px); }
-  /* franja diagonal y pie */
-  .slide::before { content: ""; position: absolute; right: -120px; top: -80px; width: 520px; height: 200px; background: linear-gradient(90deg, var(--blue), var(--blue2)); transform: skewX(-24deg); opacity: .09; }
-  .foot { position: absolute; left: 72px; right: 72px; bottom: 22px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); letter-spacing: .3px; }
-  .foot b { color: var(--blue); font-weight: 800; }
-  .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 900; color: var(--navy); }
-  .brand i { font-style: normal; width: 24px; height: 24px; background: var(--blue); color: #fff; display: grid; place-items: center; font-size: 14px; clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%); }
-  .brand span b { color: var(--blue); }
-  .kicker { font-size: 15px; font-weight: 800; line-height: 1; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin: 0 0 12px; display: flex; align-items: center; gap: 10px; }
-  .kicker::before { content: ""; width: 34px; height: 6px; background: var(--blue); transform: skewX(-24deg); }
-  h1 { margin: 0; font-size: 50px; line-height: 1.05; font-weight: 900; color: var(--navy); letter-spacing: -.5px; }
-  h2 { margin: 0 0 6px; font-size: 40px; line-height: 1.08; font-weight: 900; color: var(--navy); letter-spacing: -.3px; }
-  .lead { font-size: 21px; line-height: 1.45; color: var(--ink); margin: 14px 0 0; max-width: 1040px; }
-  .muted { color: var(--muted); }
-  .src { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
-  .grow { flex: 1; min-height: 0; }
-  .card { background: var(--white); border: 1px solid var(--line); padding: 20px 22px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%); box-shadow: 0 10px 30px #0b1a3a12; }
-  .row { display: flex; gap: 18px; }
-  .tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; background: var(--blue); color: #fff; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
-  .mark { background: var(--mark); border: 2px dashed #d4a600; }
+  .stage { width: 1280px; height: 720px; position: relative; transform-origin: center; }
+  .slide { position: absolute; inset: 0; background: var(--bg); overflow: hidden; padding: 56px 72px 60px; display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none; transform: scale(1.06); filter: blur(10px); transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1), filter .6s ease; }
+  .slide.on { opacity: 1; pointer-events: auto; transform: none; filter: none; }
+  .slide.back { transform: scale(.94); }
+  .dark { background: radial-gradient(ellipse at 70% 30%, #1d4aa8 0%, var(--navy) 55%, #050a16 100%); color: #fff; }
 
-  /* 1 · Portada */
-  .s-cover { background: radial-gradient(ellipse at 78% 30%, #1f4fae, var(--navy) 62%); color: #fff; justify-content: center; }
-  .s-cover::before { opacity: .25; }
-  .s-cover .logo { display: flex; align-items: center; gap: 22px; }
-  .s-cover .logo i { font-style: normal; width: 96px; height: 96px; background: linear-gradient(135deg, var(--blue2), var(--blue)); display: grid; place-items: center; font-size: 60px; font-weight: 900; line-height: 1; clip-path: polygon(0 0, 100% 0, 100% 74%, 74% 100%, 0 100%); box-shadow: 0 0 40px #3d8fff88; }
-  .s-cover h1 { color: #fff; font-size: 92px; letter-spacing: -1px; }
-  .s-cover h1 b { color: var(--blue2); }
-  .s-cover .tagline { font-size: 26px; margin: 14px 0 34px; color: #cfe0ff; max-width: 700px; line-height: 1.35; }
-  .s-cover .meta { display: grid; grid-template-columns: 170px 1fr; gap: 10px 18px; font-size: 18px; max-width: 760px; }
-  .s-cover .meta dt { color: var(--blue2); font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 13px; padding-top: 5px; }
-  .s-cover .meta dd { margin: 0; }
-  .s-cover .foot { color: #9fb6e0; }
-  .s-cover .foot b { color: #fff; }
-  .covers-strip { position: absolute; right: -70px; top: 60px; display: grid; grid-template-columns: repeat(2, 210px); gap: 12px; transform: rotate(-8deg); opacity: .9; }
-  .covers-strip .cv:nth-child(even) { transform: translateY(40px); }
+  /* Entradas escalonadas */
+  [data-a] { opacity: 0; }
+  .on [data-a] { animation: rise .8s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--d, 0) * 1s + .15s); }
+  .on [data-a="zoom"] { animation-name: zoomIn; }
+  .on [data-a="left"] { animation-name: fromLeft; }
+  @keyframes rise { from { opacity: 0; translate: 0 28px; } to { opacity: 1; translate: 0 0; } }
+  @keyframes zoomIn { from { opacity: 0; scale: .86; } to { opacity: 1; scale: 1; } }
+  @keyframes fromLeft { from { opacity: 0; translate: -60px 0; } to { opacity: 1; translate: 0 0; } }
 
-  /* portadas */
-  .cv { position: relative; aspect-ratio: 16 / 9; overflow: hidden; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); box-shadow: 0 8px 24px #0006; background: #123; }
-  .cv svg { width: 100%; height: 100%; display: block; }
-  .cv span { position: absolute; left: 10px; bottom: 8px; color: #fff; font-weight: 900; font-size: 14px; text-shadow: 0 2px 6px #000a; }
+  .kicker { font-size: 15px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: var(--blue); margin: 0 0 10px; display: flex; align-items: center; gap: 10px; }
+  .kicker::before { content: ""; width: 34px; height: 6px; background: currentColor; transform: skewX(-24deg); }
+  .dark .kicker { color: #8fbfff; }
+  h1 { margin: 0; font-size: 50px; line-height: 1.04; font-weight: 900; color: var(--navy); letter-spacing: -.6px; position: relative; z-index: 2; }
+  h1 em { font-style: normal; color: var(--blue); }
+  .dark h1 { color: #fff; } .dark h1 em { color: var(--blue2); }
+  .src { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 20px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); z-index: 6; }
+  .dark .foot { color: #9fb6e0; }
+  .brand { font-weight: 900; color: var(--navy); } .brand b { color: var(--blue); }
+
+  /* Ventana de navegador para las capturas */
+  .win { position: absolute; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 30px 80px #0b1a3a55, 0 0 0 1px #0b1a3a14; }
+  .win::before { content: ""; display: block; height: 24px; background-color: #e9eef6; background-image: radial-gradient(circle at 14px 12px, #ff5f57 4.5px, transparent 5px), radial-gradient(circle at 30px 12px, #febc2e 4.5px, transparent 5px), radial-gradient(circle at 46px 12px, #28c840 4.5px, transparent 5px); }
+  .win img { display: block; width: 100%; }
+  .float { animation: bob 6s ease-in-out infinite; }
+  .on .float[data-a] { animation: zoomIn .8s cubic-bezier(.2,.8,.2,1) both, bob 6s ease-in-out 1.2s infinite; animation-delay: calc(var(--d, 0) * 1s + .15s), 1.4s; }
+  @keyframes bob { 50% { transform: translateY(-10px); } }
+  .kb img { animation: kenburns 16s ease-in-out infinite alternate; transform-origin: 60% 35%; }
+  @keyframes kenburns { to { transform: scale(1.09); } }
+  .cap { position: absolute; z-index: 5; font-size: 16px; font-weight: 800; color: #fff; background: var(--navy); padding: 8px 16px; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); box-shadow: 0 8px 24px #0005; white-space: nowrap; }
+  .cap.blue { background: var(--blue); } .cap.green { background: #16a34a; }
+
+  /* Muro 3D de capturas (portada y cierre) */
+  .wallbox { position: absolute; inset: 0; perspective: 1200px; overflow: hidden; }
+  .wall { position: absolute; left: -300px; top: -160px; width: 2000px; transform: rotateX(30deg) rotateZ(-12deg); opacity: .75; display: grid; gap: 18px; }
+  .wall .lane { display: flex; gap: 18px; width: max-content; animation: lane 70s linear infinite; }
+  .wall .lane:nth-child(2) { animation-direction: reverse; animation-duration: 80s; }
+  .wall .lane:nth-child(3) { animation-duration: 90s; }
+  .wall img { width: 400px; border-radius: 10px; box-shadow: 0 10px 40px #0008; }
+  @keyframes lane { to { transform: translateX(-50%); } }
+  .veil { position: absolute; inset: 0; background: radial-gradient(ellipse at 32% 55%, #0b1a3af2 0%, #0b1a3ad0 45%, #0b1a3a55 100%); }
+  .hero { position: relative; z-index: 2; margin: auto 0; }
+  .logo { display: flex; align-items: center; gap: 26px; }
+  .logo i { font-style: normal; width: 116px; height: 116px; background: linear-gradient(135deg, var(--blue2), var(--blue)); display: grid; place-items: center; font-size: 74px; font-weight: 900; color: #fff; clip-path: polygon(0 0, 100% 0, 100% 74%, 74% 100%, 0 100%); box-shadow: 0 0 60px #3d8fffaa; }
+  .logo h1 { font-size: 116px; letter-spacing: -2px; }
+  .hero .tag { font-size: 30px; color: #d6e6ff; margin: 18px 0 34px; font-weight: 600; }
+  .pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pills span { font-size: 16px; padding: 9px 15px; border: 1px solid #ffffff40; background: #0b1a3a99; color: #fff; }
+  .pills b { color: var(--blue2); margin-right: 8px; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px; }
 
   /* 2 · Problema */
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
-  .stat .num { font-size: 58px; font-weight: 900; line-height: 1; color: var(--blue); letter-spacing: -1px; }
-  .stat .num small { display: block; font-size: 22px; letter-spacing: 0; margin-top: 6px; }
-  .stat p { font-size: 18px; margin: 10px 0 12px; line-height: 1.35; }
-  .gap { margin-top: 26px; display: flex; align-items: center; gap: 22px; background: var(--navy); color: #fff; padding: 20px 28px; clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 0 100%); }
-  .gap b { color: var(--yellow); }
-  .gap p { margin: 0; font-size: 21px; line-height: 1.4; }
+  .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin: 40px 0 0; }
+  .num { border-top: 6px solid var(--blue); padding-top: 16px; }
+  .num b { display: block; font-size: 96px; line-height: .95; font-weight: 900; color: var(--navy); letter-spacing: -3px; }
+  .num span { display: block; font-size: 22px; font-weight: 800; color: var(--blue); margin: 8px 0 10px; }
+  .punch { margin-top: auto; font-size: 36px; font-weight: 900; color: var(--navy); line-height: 1.2; }
+  .punch em { font-style: normal; background: linear-gradient(transparent 58%, #ffd23fb0 58%); }
 
-  /* 3 · Propuesta */
-  .prop { display: grid; grid-template-columns: 1.08fr 1fr; gap: 34px; margin-top: 20px; align-items: start; }
-  .pillars { display: grid; gap: 12px; }
-  .pillar { display: grid; grid-template-columns: 50px 1fr; gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); padding: 12px 16px; }
-  .pillar svg { width: 38px; height: 38px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .pillar b { display: block; font-size: 18px; color: var(--navy); }
-  .pillar span { font-size: 15.5px; color: var(--muted); line-height: 1.35; }
-  .mosaic { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  
-  .impact { margin-top: 14px; font-size: 15.5px; line-height: 1.45; }
+  /* 3 · Esto es DivierteTEC */
+  .s3 .win { left: 400px; top: 84px; width: 830px; }
+  .side { position: relative; z-index: 2; width: 320px; margin-top: 70px; }
+  .side p { font-size: 22px; line-height: 1.4; margin: 18px 0 0; color: var(--ink); }
 
-  /* 4 y 5 · diagramas */
-  .diagram { flex: 1; min-height: 0; margin-top: 16px; }
-  .diagram svg { width: 100%; height: 100%; }
-  .d-box { fill: #fff; stroke: var(--line); stroke-width: 1.5; }
-  .d-hot { fill: var(--blue); }
-  .d-t { font: 800 17px "Noto Sans", system-ui, sans-serif; fill: var(--navy); }
-  .d-s { font: 500 13.5px "Noto Sans", system-ui, sans-serif; fill: var(--muted); }
-  .d-w { fill: #fff; }
-  .d-arrow { stroke: var(--blue); stroke-width: 3; fill: none; marker-end: url(#ar); }
-  .d-dash { stroke: #9fb0cc; stroke-width: 2; stroke-dasharray: 6 6; fill: none; }
-  .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .tools span { font-size: 14px; font-weight: 700; padding: 6px 12px; background: #fff; border: 1px solid var(--line); color: var(--navy); }
+  /* 4 · Juegos en abanico */
+  .fan { position: absolute; left: 0; right: 0; top: 170px; height: 470px; }
+  .fan .win { width: 540px; top: 40px; }
+  .fan .g1 { left: 70px; transform: perspective(1400px) rotateY(24deg) rotateZ(-3deg); z-index: 1; }
+  .fan .g3 { left: 670px; transform: perspective(1400px) rotateY(-24deg) rotateZ(3deg); z-index: 2; }
+  .fan .g2 { left: 350px; top: 0; width: 580px; z-index: 3; }
 
-  /* 6 · Ejes */
-  .axes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 22px; }
-  .axis { padding: 18px 20px; }
-  .axis h4 { margin: 0 0 8px; font-size: 18px; color: var(--navy); }
-  .axis p { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--ink); }
-  .axis .ph { display: inline-block; font-size: 12.5px; font-weight: 800; color: #8a6a00; margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase; }
+  /* 5 y 6 · Cascada de capturas */
+  .cascade { position: absolute; left: 540px; top: 130px; right: 30px; bottom: 40px; }
+  .cascade .win { width: 540px; }
+  .cascade .c1 { left: 0; top: 0; z-index: 1; } .cascade .c2 { left: 60px; top: 120px; z-index: 2; } .cascade .c3 { left: 120px; top: 240px; z-index: 3; }
+  .list { position: relative; z-index: 4; display: grid; gap: 16px; margin-top: 34px; width: 440px; }
+  .list div { display: flex; align-items: center; gap: 16px; font-size: 23px; font-weight: 800; color: var(--navy); }
+  .list svg { width: 46px; height: 46px; flex: none; padding: 10px; background: var(--blue); stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; clip-path: polygon(0 0, 100% 0, 100% 74%, 74% 100%, 0 100%); }
 
-  /* 7 · Canvas */
-  .bmc { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: 1fr 1fr 1fr; gap: 8px; margin-top: 16px; flex: 1; min-height: 0; }
-  .bmc > div { background: #fff; border: 1px solid var(--line); padding: 10px 12px; font-size: 13.5px; line-height: 1.38; overflow: hidden; }
-  .bmc h5 { margin: 0 0 5px; font-size: 11.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--blue); }
-  .bmc ul { margin: 0; padding-left: 15px; } .bmc li { margin: 2px 0; }
-  .bmc .vp { grid-column: 3; grid-row: 1 / span 2; background: var(--navy); color: #fff; border: 0; }
-  .bmc .vp h5 { color: var(--yellow); }
-  .bmc .kp { grid-column: 1; grid-row: 1 / span 2; } .bmc .ka { grid-column: 2; grid-row: 1; } .bmc .kr { grid-column: 2; grid-row: 2; }
-  .bmc .cr { grid-column: 4; grid-row: 1; } .bmc .ch { grid-column: 4; grid-row: 2; } .bmc .cs { grid-column: 5; grid-row: 1 / span 2; }
-  .bmc .co { grid-column: 1 / span 2; grid-row: 3; } .bmc .rs { grid-column: 3 / span 3; grid-row: 3; }
-  .rates { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-  .rates b { font-size: 13px; background: #eaf2ff; color: var(--blue); padding: 3px 8px; }
+  /* 7 · Modelo */
+  .model { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; }
+  .tile { background: #fff; border: 1px solid var(--line); padding: 20px 18px 18px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); }
+  .tile b { display: block; font-size: 52px; line-height: 1; font-weight: 900; color: var(--blue); letter-spacing: -1px; }
+  .tile span { display: block; font-size: 19px; font-weight: 800; color: var(--navy); margin-top: 10px; }
+  .tile small { display: block; font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+  .proof { margin-top: 20px; background: var(--navy); color: #fff; padding: 18px 24px 18px; clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%); }
+  .proof h3 { margin: 0 0 12px; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--yellow); }
+  .proof .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .proof .row div { font-size: 14.5px; line-height: 1.4; color: #d6e6ff; }
+  .proof .row b { display: block; color: #fff; font-size: 18px; margin-bottom: 4px; }
 
   /* 8 · SCAMPER */
-  .scamper { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 22px; }
-  .sc { min-height: 300px; }
-  .sc { background: #fff; border: 1px solid var(--line); padding: 14px 13px; display: flex; flex-direction: column; position: relative; }
-  .sc .L { font-size: 46px; font-weight: 900; color: var(--blue); line-height: 1; }
-  .sc h4 { margin: 4px 0 8px; font-size: 14px; letter-spacing: .8px; text-transform: uppercase; color: var(--navy); }
-  .sc p { margin: 0; font-size: 14px; line-height: 1.4; }
-  .sc .why { margin-top: auto; padding-top: 10px; font-size: 12.5px; color: var(--green); font-weight: 700; line-height: 1.35; }
-  .sc:nth-child(odd) { border-top: 5px solid var(--blue); } .sc:nth-child(even) { border-top: 5px solid var(--blue2); }
+  .scamper { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 34px; }
+  .sc { background: #fff; border: 1px solid var(--line); border-top: 6px solid var(--blue); padding: 16px 13px 20px; min-height: 270px; }
+  .sc:nth-child(even) { border-top-color: var(--blue2); }
+  .sc .L { font-size: 72px; font-weight: 900; color: var(--blue); line-height: 1; }
+  .sc h4 { margin: 6px 0 12px; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .sc p { margin: 0; font-size: 18px; font-weight: 800; color: var(--navy); line-height: 1.3; }
 
-  /* 9 · Costos */
-  .costs { display: grid; grid-template-columns: 1.15fr 1fr; gap: 26px; margin-top: 18px; }
-  table { border-collapse: collapse; width: 100%; font-size: 15px; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--blue); }
-  td.tbd { color: #8a6a00; font-weight: 700; white-space: nowrap; }
-  .scenario .big { font-size: 44px; font-weight: 900; color: var(--blue); line-height: 1; }
+  /* 9 · Ejes */
+  .axes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
+  .axis { background: var(--mark); border: 2px dashed #d4a600; padding: 18px 16px; min-height: 260px; display: flex; flex-direction: column; }
+  .axis .ph { font-size: 12px; font-weight: 800; color: #8a6a00; letter-spacing: .5px; text-transform: uppercase; }
+  .axis svg { width: 52px; height: 52px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin: 16px 0 12px; }
+  .axis b { font-size: 21px; color: var(--navy); }
+  .axis p { font-size: 16px; line-height: 1.4; margin: 6px 0 0; }
+  .todo { margin-top: 18px; font-size: 14px; color: #6b5300; background: var(--mark); align-self: flex-start; padding: 6px 12px; }
 
   /* 10 · Cierre */
-  .s-end { background: radial-gradient(ellipse at 20% 80%, #1f4fae, var(--navy) 60%); color: #fff; justify-content: center; align-items: flex-start; }
-  .s-end h2 { color: #fff; font-size: 58px; max-width: 980px; }
-  .s-end h2 b { color: var(--blue2); }
-  .s-end .lead { color: #cfe0ff; }
-  .go { margin-top: 34px; display: inline-flex; align-items: center; gap: 16px; background: linear-gradient(90deg, #22c55e, #16a34a); color: #fff; text-decoration: none; font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: 2px; padding: 22px 38px 22px 28px; clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 0 100%); box-shadow: 0 10px 40px #22c55e55; }
-  .go svg { width: 34px; height: 34px; fill: #fff; }
-  .go:hover { filter: brightness(1.1); }
-  .order { margin-top: 30px; display: flex; gap: 10px; font-size: 16px; color: #cfe0ff; }
-  .order span { padding: 8px 14px; border: 1px solid #ffffff33; }
-  .order span.now { background: #ffffff18; border-color: var(--blue2); color: #fff; font-weight: 800; }
-  .s-end .foot { color: #9fb6e0; } .s-end .foot b { color: #fff; }
+  .s10 .hero h1 { font-size: 80px; max-width: 1020px; }
+  .s10 .hero p { font-size: 30px; color: #d6e6ff; margin-top: 26px; font-weight: 600; }
 
   /* Controles */
   .hud { position: fixed; left: 0; right: 0; bottom: 0; height: 5px; background: #ffffff14; z-index: 5; }
-  .hud i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue2)); transition: width .4s; }
+  .hud i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--blue2)); transition: width .5s; }
   .timer { position: fixed; top: 12px; right: 14px; z-index: 6; font: 800 20px/1 ui-monospace, monospace; padding: 8px 12px; background: #0b1a3add; color: #fff; display: none; }
   .timer.on { display: block; } .timer.warn { background: #b7791f; } .timer.over { background: #c53030; }
-  .notes { position: fixed; left: 0; right: 0; bottom: 5px; z-index: 6; background: #0b1a3af2; color: #e6eeff; padding: 14px 22px 16px; font-size: 17px; line-height: 1.5; display: none; max-height: 34vh; overflow: auto; }
-  .notes.on { display: block; }
-  .notes b { color: var(--yellow); }
+  .notes { position: fixed; left: 0; right: 0; bottom: 5px; z-index: 6; background: #0b1a3af2; color: #e6eeff; padding: 14px 22px; font-size: 17px; line-height: 1.5; display: none; }
+  .notes.on { display: block; } .notes b { color: var(--yellow); }
   .help { position: fixed; left: 14px; top: 12px; z-index: 6; color: #fff; background: #0b1a3acc; padding: 6px 10px; font-size: 12px; transition: opacity .6s; }
-  .navbtn { position: fixed; top: 50%; z-index: 6; width: 44px; height: 64px; border: 0; background: #ffffff10; color: #fff; font-size: 26px; cursor: pointer; transform: translateY(-50%); opacity: 0; transition: opacity .2s; }
-  .navbtn:hover { opacity: 1; } .navbtn.prev { left: 0; } .navbtn.next { right: 0; }
   aside { display: none; }
-
-  /* Impresión: una diapositiva por hoja */
   @media print {
     @page { size: 1280px 720px; margin: 0; }
     html, body { overflow: visible; height: auto; background: #fff; }
     .deck { position: static; display: block; }
-    .stage { transform: none !important; width: 1280px; height: auto; }
-    .slide { position: relative; opacity: 1 !important; transform: none !important; width: 1280px; height: 720px; page-break-after: always; break-after: page; transition: none; }
-    .hud, .timer, .notes, .help, .navbtn { display: none !important; }
+    .stage { transform: none !important; }
+    .slide { position: relative; opacity: 1 !important; transform: none !important; filter: none !important; width: 1280px; height: 720px; break-after: page; transition: none; }
+    [data-a] { opacity: 1 !important; animation: none !important; }
+    .hud, .timer, .notes, .help { display: none !important; }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
+  @media (prefers-reduced-motion: reduce) { .wall .lane, .float, .kb img { animation: none !important; } }
 </style>
 </head>
 <body>
 <div class="deck"><div class="stage" id="stage">
 
   <!-- 1 · PORTADA -->
-  <section class="slide s-cover">
-    <div class="covers-strip" data-covers="g_furia,g_mecaquack,g_aerodron,g_neon"></div>
-    <div class="logo"><i>D</i><h1>Divierte<b>TEC</b></h1></div>
-    <p class="tagline">La plataforma donde los estudiantes del TecNM publican, prueban y monetizan sus videojuegos.</p>
-    <dl class="meta">
-      <dt>Reto</dt><dd>Tecnologías para el Entretenimiento</dd>
-      <dt>Temática</dt><dd>Tecnologías para el impulso de la industria del Entretenimiento en México</dd>
-      <dt>Equipo</dt><dd>Equipo Maravilla · Instituto Tecnológico Superior de Irapuato</dd>
-    </dl>
-    <div class="foot"><span>InnovaTecNM 2026 · <b>HackaTec Etapa Regional</b></span><span>1 / 10</span></div>
-    <aside>(≈30 s) Buenas tardes. Somos el Equipo Maravilla del Tecnológico Superior de Irapuato. Atendemos el reto <b>Tecnologías para el Entretenimiento</b>, con la temática <b>impulso de la industria del entretenimiento en México</b>. Les presentamos <b>DivierteTEC</b>: la plataforma donde los estudiantes del TecNM publican, prueban y cobran por sus videojuegos.</aside>
+  <section class="slide dark">
+    <div class="wallbox"><div class="wall" data-wall></div></div>
+    <div class="veil"></div>
+    <div class="hero">
+      <div class="logo" data-a="zoom"><i>D</i><h1>Divierte<em>TEC</em></h1></div>
+      <p class="tag" data-a style="--d:.25">Hecho en el TecNM. Jugado en todo México.</p>
+      <div class="pills" data-a style="--d:.45">
+        <span><b>Reto</b>Tecnologías para el Entretenimiento</span>
+        <span><b>Temática</b>Impulso de la industria del Entretenimiento en México</span>
+      </div>
+    </div>
+    <div class="foot"><span>Equipo Maravilla · Instituto Tecnológico Superior de Irapuato</span><span>HackaTec Regional 2026</span></div>
+    <aside>(≈20 s) Somos el Equipo Maravilla del Tecnológico Superior de Irapuato. Reto: <b>Tecnologías para el Entretenimiento</b>. Esto es <b>DivierteTEC</b>.</aside>
   </section>
 
   <!-- 2 · PROBLEMA -->
   <section class="slide">
-    <p class="kicker">El problema</p>
-    <h2>México juega mucho, pero produce poco</h2>
-    <div class="stats">
-      <div class="card stat"><div class="num">+39 mil <small>millones de pesos</small></div><p>ingresó el mercado de videojuegos en México en 2023, con un crecimiento anual de 3.9 %.</p><div class="src">Fuente: Statista, citado por El Universal y El Imparcial (2024).</div></div>
-      <div class="card stat"><div class="num">67 <small>empresas</small></div><p>de videojuegos identificadas en el país, con poco más de 2,400 empleos. El 51 % se fundó en los últimos 5 años.</p><div class="src">Fuente: Endeavor, citado por DPL News.</div></div>
-      <div class="card stat"><div class="num">2.2 <small>h al día</small></div><p>juega en promedio el 24 % de las personas encuestadas que dijeron jugar videojuegos.</p><div class="src">Fuente: IFT, Encuesta Nacional de Consumo de Contenidos Audiovisuales (ENCCA) 2024.</div></div>
+    <p class="kicker" data-a>El problema</p>
+    <h1 data-a style="--d:.1">México juega mucho, <em>pero produce poco</em></h1>
+    <div class="nums">
+      <div class="num" data-a style="--d:.3"><b data-count="39">39</b><span>mil millones de pesos</span><div class="src">Mercado de videojuegos en México, 2023 · Statista (vía El Universal)</div></div>
+      <div class="num" data-a style="--d:.5"><b data-count="67">67</b><span>empresas de videojuegos</span><div class="src">≈2,400 empleos en todo el país · Endeavor (vía DPL News)</div></div>
+      <div class="num" data-a style="--d:.7"><b data-count="2.2">2.2</b><span>horas al día</span><div class="src">Juega quien juega videojuegos · IFT, ENCCA 2024</div></div>
     </div>
-    <div class="gap"><p>La demanda existe y la industria nacional es joven. Pero un estudiante que hace su primer juego <b>no tiene dónde publicarlo, dónde medir si gusta, ni cómo cobrar</b> sin pagar comisiones de hasta 30 % en tiendas extranjeras.</p></div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>2 / 10</span></div>
-    <aside>(≈50 s) El mercado mexicano de videojuegos superó los 39 mil millones de pesos en 2023 y sigue creciendo. Pero la industria que los crea es pequeña y joven: 67 empresas y unos 2,400 empleos, la mitad con menos de 5 años. Los jugadores sí están: quien juega, juega más de dos horas al día. El hueco está entre ambos: <b>un estudiante con su primer juego no tiene una vitrina</b>, ni datos de si su juego gusta, ni una forma justa de cobrar. Las tiendas grandes cobran hasta 30 %.</aside>
+    <p class="punch" data-a style="--d:1">Hay público. Falta <em>una vitrina para el talento estudiantil</em>.</p>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>2</span></div>
+    <aside>(≈45 s) El mercado mexicano superó los <b>39 mil millones de pesos</b> en 2023, pero solo hay <b>67 empresas</b> que hacen videojuegos. Y quien juega, juega más de <b>dos horas al día</b>. El público existe; lo que falta es una <b>vitrina</b> donde un estudiante publique, pruebe y cobre por su juego.</aside>
   </section>
 
-  <!-- 3 · PROPUESTA -->
-  <section class="slide">
-    <p class="kicker">La propuesta</p>
-    <h2>Una tienda de juegos hecha desde las aulas</h2>
-    <div class="prop">
-      <div>
-        <div class="pillars">
-          <div class="pillar"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M4 17v3h16v-3"/></svg><div><b>Publicar sin costo</b><span>Juegos HTML5, C++ o ejecutables, con página de tienda editable y logros con una línea del SDK.</span></div></div>
-          <div class="pillar"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><div><b>Jugar al instante</b><span>Los juegos HTML5 corren en el navegador, sin descargar e incluso sin internet.</span></div></div>
-          <div class="pillar"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg><div><b>Cobrar de forma justa</b><span>«Paga lo que quieras» desde $0, comisión preferente para estudios del TecNM y un Pase mensual que reparte por tiempo jugado.</span></div></div>
-          <div class="pillar"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg><div><b>Retroalimentación real</b><span>Reseñas solo tras 2 h de juego, estadísticas y logros con recompensas para el perfil.</span></div></div>
-        </div>
-        <p class="impact"><b>Impacto:</b> regional, con los Tecnológicos de Guanajuato como primera red de estudios; nacional, con cualquier campus del TecNM; y hacia afuera, porque un juego en el navegador se comparte con un enlace.</p>
-      </div>
-      <div>
-        <div class="mosaic" data-covers="g_mecaquack,g_furia,g_aerodron,g_neon"></div>
-        <p class="src" style="margin-top:10px">Los 7 juegos de la demostración son jugables y hechos por el Equipo Maravilla, incluido <b>Mecaquack</b>, nuestro juego de la fase local.</p>
-      </div>
+  <!-- 3 · ESTO ES DIVIERTETEC -->
+  <section class="slide s3">
+    <div class="side">
+      <p class="kicker" data-a>La solución</p>
+      <h1 data-a style="--d:.1;font-size:44px">Esto es<br><em>DivierteTEC</em></h1>
+      <p data-a style="--d:.25">La tienda de videojuegos de los estudiantes del TecNM.</p>
     </div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>3 / 10</span></div>
-    <aside>(≈45 s) DivierteTEC es una tienda y biblioteca de videojuegos, estilo Steam, pensada para estudiantes. <b>Publicar no cuesta.</b> Los juegos web <b>se juegan al instante</b>. Se cobra de forma justa: todo juego gratuito es <b>Paga lo que quieras</b>, y los estudios del TecNM tienen comisión preferente. Y hay <b>retroalimentación real</b>: solo reseña quien jugó 2 horas. Empezamos con los Tecnológicos de Guanajuato y escala a todo el TecNM.</aside>
+    <div class="win kb float" data-a="zoom" style="--d:.2"><img src="img/landing.jpg" alt="Bienvenida de DivierteTEC"></div>
+    <span class="cap blue" data-a="left" style="left:330px;top:170px;--d:.8">Juega en 1 clic</span>
+    <span class="cap green" data-a style="left:1040px;top:470px;--d:1">Funciona sin internet</span>
+    <span class="cap" data-a="left" style="left:360px;top:560px;--d:1.2">Hecho en el TecNM</span>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>3</span></div>
+    <aside>(≈35 s) DivierteTEC es la tienda de videojuegos de los estudiantes del TecNM. Se juega con <b>un clic</b>, en el navegador, e incluso <b>sin internet</b>. Todo lo que ven aquí funciona hoy y lo mostraremos en vivo.</aside>
   </section>
 
-  <!-- 4 · METODOLOGÍA -->
+  <!-- 4 · JUEGOS -->
   <section class="slide">
-    <p class="kicker">Metodología</p>
-    <h2>Del aula a la tienda en un solo flujo</h2>
-    <div class="diagram">
-      <svg viewBox="0 0 1136 470" role="img" aria-label="Flujo de publicación en DivierteTEC">
-        <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a6fd8"/></marker></defs>
-        <g transform="translate(0,20)">
-          <path class="d-box" d="M0 0h190l14 14v96H0z"/><text class="d-t" x="18" y="36">1 · Crear</text><text class="d-s" x="18" y="62">El estudio sube su</text><text class="d-s" x="18" y="82">juego o carpeta</text><text class="d-s" x="18" y="102">(HTML5, C++, EXE)</text>
-          <path class="d-arrow" d="M210 60h40"/>
-          <path class="d-box" d="M258 0h190l14 14v96H258z"/><text class="d-t" x="276" y="36">2 · Integrar</text><text class="d-s" x="276" y="62">SDK de 1 línea:</text><text class="d-s" x="276" y="82">logros, progreso y</text><text class="d-s" x="276" y="102">estadísticas</text>
-          <path class="d-arrow" d="M468 60h40"/>
-          <path class="d-box" d="M516 0h190l14 14v96H516z"/><text class="d-t" x="534" y="36">3 · Probar</text><text class="d-s" x="534" y="62">Modo prueba con</text><text class="d-s" x="534" y="82">consola y página</text><text class="d-s" x="534" y="102">de tienda editable</text>
-          <path class="d-arrow" d="M726 60h40"/>
-          <path class="d-hot" d="M774 0h190l14 14v96H774z"/><text class="d-t d-w" x="792" y="36" style="fill:#fff">4 · Revisión</text><text class="d-s" x="792" y="62" style="fill:#d6e6ff">10 criterios de contenido</text><text class="d-s" x="792" y="82" style="fill:#d6e6ff">(4 automáticos) antes</text><text class="d-s" x="792" y="102" style="fill:#d6e6ff">de publicarse</text>
-          <path class="d-arrow" d="M870 124v64"/>
-        </g>
-        <g transform="translate(0,220)">
-          <path class="d-box" d="M774 0h190l14 14v96H774z"/><text class="d-t" x="792" y="36">5 · Tienda</text><text class="d-s" x="792" y="62">Destacados, filtro</text><text class="d-s" x="792" y="82">«Hecho en el TecNM»</text><text class="d-s" x="792" y="102">y Pase</text>
-          <path class="d-arrow" d="M764 60h-40"/>
-          <path class="d-box" d="M516 0h190l14 14v96H516z"/><text class="d-t" x="534" y="36">6 · Jugar</text><text class="d-s" x="534" y="62">Al instante, en un</text><text class="d-s" x="534" y="82">reproductor aislado;</text><text class="d-s" x="534" y="102">teclado o mando</text>
-          <path class="d-arrow" d="M506 60h-40"/>
-          <path class="d-box" d="M258 0h190l14 14v96H258z"/><text class="d-t" x="276" y="36">7 · Valorar</text><text class="d-s" x="276" y="62">Paga lo que quieras,</text><text class="d-s" x="276" y="82">reseñas tras 2 h y</text><text class="d-s" x="276" y="102">recompensas</text>
-          <path class="d-arrow" d="M248 60h-40"/>
-          <path class="d-box" d="M0 0h190l14 14v96H0z"/><text class="d-t" x="18" y="36">8 · Mejorar</text><text class="d-s" x="18" y="62">Ingresos, estadísticas</text><text class="d-s" x="18" y="82">y opiniones regresan</text><text class="d-s" x="18" y="102">al estudio</text>
-          <path class="d-dash" d="M100 -12V-80"/><text class="d-s" x="112" y="-44">ciclo de mejora continua</text>
-        </g>
-      </svg>
+    <p class="kicker" data-a>Juegos reales, jugables hoy</p>
+    <h1 data-a style="--d:.1">De 2D a <em>3D en el navegador</em></h1>
+    <div class="fan">
+      <div class="win g1" data-a style="--d:.3"><img src="img/aerodron.jpg" alt="Aerodron 3D"></div>
+      <div class="win g3" data-a style="--d:.45"><img src="img/juego.jpg" alt="Mecaquack"></div>
+      <div class="win g2 float" data-a="zoom" style="--d:.6"><img src="img/furia.jpg" alt="Furia TEC"></div>
+      <span class="cap blue" data-a style="left:100px;top:0;--d:.9">Aerodron 3D</span>
+      <span class="cap" data-a style="left:520px;top:-36px;--d:1">Furia TEC</span>
+      <span class="cap green" data-a style="left:1000px;top:0;--d:1.1">Mecaquack</span>
     </div>
-    <div class="gap" style="margin-top:6px"><p>Los 8 pasos ya funcionan en el prototipo, con 3 roles: <b>estudio</b>, <b>administración</b> y <b>jugador</b>. Los mostramos en la demostración.</p></div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>4 / 10</span></div>
-    <aside>(≈45 s) El proceso tiene 8 pasos. El estudio <b>sube</b> su juego, lo <b>integra</b> con nuestro SDK de una línea para dar logros, lo <b>prueba</b> en modo consola y envía a <b>revisión</b>: 10 criterios de contenido, 4 se revisan solos. Ya aprobado, llega a la <b>tienda</b>, la gente lo <b>juega</b> al instante, lo <b>valora</b> con pagos y reseñas, y todo eso regresa al estudio para <b>mejorar</b> su juego.</aside>
+    <div class="foot"><span>7 juegos del Equipo Maravilla · motores 3D propios en WebGL · mandos con vibración</span><span>4</span></div>
+    <aside>(≈35 s) La plataforma ya tiene <b>7 juegos jugables</b> hechos por nuestro equipo: desde Mecaquack, nuestro juego educativo de la fase local, hasta <b>Furia TEC</b> y <b>Aerodron 3D</b>, con motores 3D propios que corren en el navegador y aceptan mandos con vibración.</aside>
   </section>
 
-  <!-- 5 · ESPECIFICACIÓN TÉCNICA -->
+  <!-- 5 · JUGADORES -->
   <section class="slide">
-    <p class="kicker">Especificación técnica y herramientas</p>
-    <h2>Funciona con doble clic, sin servidor ni internet</h2>
-    <div class="row grow" style="margin-top:14px">
-      <div class="diagram" style="flex:1.35;margin:0">
-        <svg viewBox="0 0 700 390" role="img" aria-label="Arquitectura de DivierteTEC">
-          <path class="d-box" d="M0 0h686l14 14v376H0z"/>
-          <text class="d-t" x="20" y="32">Navegador (Chrome / Edge)</text><text class="d-s" x="20" y="54">index.html · HTML, CSS y JavaScript sin librerías</text>
-          <g transform="translate(20,74)">
-            <path d="M0 0h200v120H0z" fill="#eaf2ff"/><text class="d-t" x="14" y="28">Interfaz</text><text class="d-s" x="14" y="52">Tienda · Biblioteca</text><text class="d-s" x="14" y="72">Desarrollador · Admin</text><text class="d-s" x="14" y="92">FAQ · Perfil</text>
-            <path d="M230 0h200v120H230z" fill="#eaf2ff"/><text class="d-t" x="244" y="28">Lógica</text><text class="d-s" x="244" y="52">Economía y comisiones</text><text class="d-s" x="244" y="72">Logros y recompensas</text><text class="d-s" x="244" y="92">Criterios de revisión</text>
-            <path d="M460 0h200v120H460z" fill="#1a6fd8"/><text class="d-t" x="474" y="28" style="fill:#fff">Reproductor</text><text class="d-s" x="474" y="52" style="fill:#d6e6ff">iframe aislado (sandbox)</text><text class="d-s" x="474" y="72" style="fill:#d6e6ff">SDK de logros inyectado</text><text class="d-s" x="474" y="92" style="fill:#d6e6ff">WebGL · Gamepad API</text>
-          </g>
-          <g transform="translate(20,228)">
-            <path d="M0 0h315v76H0z" fill="#fff" stroke="#d9e2f1"/><text class="d-t" x="14" y="30">localStorage</text><text class="d-s" x="14" y="54">Usuarios, juegos, compras, reseñas</text>
-            <path d="M345 0h315v76H345z" fill="#fff" stroke="#d9e2f1"/><text class="d-t" x="359" y="30">IndexedDB</text><text class="d-s" x="359" y="54">Archivos subidos, imágenes y videos</text>
-          </g>
-          <path class="d-arrow" d="M120 200v24"/><path class="d-arrow" d="M580 200v24"/>
-          <text class="d-s" x="20" y="340">3 roles (jugador, desarrollador, administrador) · dinero simulado</text><text class="d-s" x="20" y="362">Camino a producción: backend, pagos (OXXO, SPEI, tarjeta) y verificación con correo institucional</text>
-        </svg>
-      </div>
-      <div style="flex:1">
-        <div class="card">
-          <b style="font-size:17px;color:var(--navy)">Características técnicas</b>
-          <ul style="margin:8px 0 0;padding-left:18px;font-size:15.5px;line-height:1.5">
-            <li>Opera <b>sin internet</b>: todo vive en el navegador.</li>
-            <li>Juegos aislados: un juego no puede tocar la plataforma.</li>
-            <li>Motores 3D propios en <b>WebGL puro</b> (Aerodron 3D, Furia TEC).</li>
-            <li>Mandos de Xbox con <b>vibración</b>.</li>
-            <li>Revisión de contenido: violencia acorde a la edad, sin odio ni contenido adulto.</li>
-          </ul>
-        </div>
-        <div class="tools"><span>HTML5 · CSS · JavaScript</span><span>WebGL</span><span>Gamepad API</span><span>IndexedDB</span><span>Node.js (empaquetado)</span><span>Playwright (pruebas)</span><span>Git y GitHub</span></div>
-      </div>
+    <p class="kicker" data-a>Para jugadores</p>
+    <h1 data-a style="--d:.1">Como Steam, <em>pero nuestro</em></h1>
+    <div class="list">
+      <div data-a="left" style="--d:.3"><svg viewBox="0 0 24 24"><path d="M3 9h18l-2 11H5zM8 9V6a4 4 0 0 1 8 0v3"/></svg>Tienda y biblioteca</div>
+      <div data-a="left" style="--d:.45"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Logros con recompensas</div>
+      <div data-a="left" style="--d:.6"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg>Reseñas tras 2 h de juego</div>
+      <div data-a="left" style="--d:.75"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>Paga lo que quieras</div>
     </div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>5 / 10</span></div>
-    <aside>(≈45 s) Técnicamente es una aplicación web <b>sin servidor</b>: se abre con doble clic y funciona sin internet. Los datos viven en el navegador. Cada juego corre en un <b>reproductor aislado</b> con nuestro SDK inyectado, así que no puede afectar a la plataforma. Hicimos motores 3D propios en <b>WebGL</b> y soporte para mandos con vibración. Para la siguiente etapa: backend, pagos reales y verificación con correo institucional.</aside>
+    <div class="cascade">
+      <div class="win c1" data-a="zoom" style="--d:.3"><img src="img/tienda.jpg" alt="Tienda"></div>
+      <div class="win c2" data-a="zoom" style="--d:.5"><img src="img/biblioteca.jpg" alt="Biblioteca"></div>
+      <div class="win c3 float" data-a="zoom" style="--d:.7"><img src="img/perfil.jpg" alt="Perfil con logros"></div>
+    </div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>5</span></div>
+    <aside>(≈35 s) Para el jugador es como Steam: tienda, biblioteca, <b>logros que dan recompensas</b> para su perfil y <b>reseñas</b> que solo escribe quien jugó dos horas. Y ningún juego gratuito tiene barrera: es <b>Paga lo que quieras</b>.</aside>
   </section>
 
-  <!-- 6 · EJES TRANSVERSALES -->
+  <!-- 6 · ESTUDIOS -->
   <section class="slide">
-    <p class="kicker">Ejes transversales</p>
-    <h2>Ejes transversales de InnovaTecNM 2026</h2>
-    <p class="src mark" style="padding:8px 12px;margin-top:10px;font-size:14px;color:#6b5300"><b>Completar antes de presentar:</b> escriban el nombre oficial de cada eje según la Convocatoria y el Manual de Operación de InnovaTecNM 2026 y ajusten el texto de cada tarjeta.</p>
-    <div class="axes">
-      <div class="card axis mark"><span class="ph">[Eje transversal 1]</span><h4>Inclusión y acceso</h4><p>Todo juego gratuito es «Paga lo que quieras» desde $0 y la plataforma funciona sin internet, así que nadie queda fuera por dinero o conexión.</p></div>
-      <div class="card axis mark"><span class="ph">[Eje transversal 2]</span><h4>Educación</h4><p>Mecaquack enseña física con retos, como circuitos con la Ley de Ohm. Publicar es practicar el ciclo real de la industria: SDK, revisión, precios y reseñas.</p></div>
-      <div class="card axis mark"><span class="ph">[Eje transversal 3]</span><h4>Desarrollo económico regional</h4><p>La Semilla TEC da 0 % de comisión en los primeros $2,000 de cada estudio TecNM; después, 12 % contra 18 % de un estudio externo.</p></div>
-      <div class="card axis mark"><span class="ph">[Eje transversal 4]</span><h4>Contenido responsable</h4><p>Criterios de revisión sobre violencia acorde a la edad, temas bélicos, odio y contenido adulto, más reportes y filtro de palabras.</p></div>
+    <p class="kicker" data-a>Para estudios</p>
+    <h1 data-a style="--d:.1">Publicar es <em>gratis y rápido</em></h1>
+    <div class="list">
+      <div data-a="left" style="--d:.3"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M4 17v3h16v-3"/></svg>Sube HTML5, C++ o EXE</div>
+      <div data-a="left" style="--d:.45"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 9v11"/></svg>Diseña su página</div>
+      <div data-a="left" style="--d:.6"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Revisión de contenido</div>
+      <div data-a="left" style="--d:.75"><svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>Ventas y estadísticas</div>
     </div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>6 / 10</span></div>
-    <aside>(≈35 s) [Ajustar a los nombres oficiales de los ejes.] DivierteTEC incluye: juegos desde $0 y sin internet. Educa: juegos como Mecaquack y el propio proceso de publicar. Impulsa la economía regional con la Semilla TEC. Y cuida el contenido con criterios de revisión y moderación.</aside>
+    <div class="cascade">
+      <div class="win c1" data-a="zoom" style="--d:.3"><img src="img/editor.jpg" alt="Editor de páginas"></div>
+      <div class="win c2" data-a="zoom" style="--d:.5"><img src="img/revision.jpg" alt="Revisión de juegos"></div>
+      <div class="win c3 float" data-a="zoom" style="--d:.7"><img src="img/ventas.jpg" alt="Precio y ventas"></div>
+    </div>
+    <div class="foot"><span>Logros con una línea de código · prueba antes de publicar</span><span>6</span></div>
+    <aside>(≈35 s) Para un estudio, publicar es <b>gratis</b>: sube su juego, agrega logros con una línea de código, diseña su página con un editor visual, pasa una <b>revisión de contenido</b> y llega a la tienda, donde ve sus <b>ventas y estadísticas</b>.</aside>
   </section>
 
   <!-- 7 · MODELO DE NEGOCIO -->
   <section class="slide">
-    <p class="kicker">Modelo de negocio · Business Model Canvas</p>
-    <h2 style="font-size:36px">«Crece con tu estudio»: cobramos cuando ya vendes</h2>
-    <div class="bmc">
-      <div class="kp"><h5>Socios clave</h5><ul><li>Tecnológicos del TecNM y sus clubes de desarrollo</li><li>Procesadores de pago (Mercado Pago, Stripe, Conekta)</li><li>Empresas que patrocinen torneos</li></ul></div>
-      <div class="ka"><h5>Actividades clave</h5><ul><li>Revisión y moderación</li><li>Mantener SDK y plataforma</li><li>Promover estudios</li></ul></div>
-      <div class="kr"><h5>Recursos clave</h5><ul><li>Plataforma y SDK propios</li><li>Equipo de desarrollo</li><li>Red de campus TecNM</li></ul></div>
-      <div class="vp"><h5>Propuesta de valor</h5><ul><li><b>Estudios:</b> publicar gratis, 0 % en sus primeros $2,000 y comisión menor a la de tiendas grandes.</li><li><b>Jugadores:</b> juegos mexicanos al instante, desde $0, con logros y recompensas.</li><li><b>Campus:</b> vitrina de sus proyectos y hackatones.</li></ul></div>
-      <div class="cr"><h5>Relación con clientes</h5><ul><li>Reseñas, logros y perfil</li><li>Apoyo directo al estudio</li><li>Comunidad por campus</li></ul></div>
-      <div class="ch"><h5>Canales</h5><ul><li>Web: se juega con un enlace</li><li>Campus, clubes y hackatones</li><li>Redes sociales de los estudios</li></ul></div>
-      <div class="cs"><h5>Segmentos</h5><ul><li>Estudiantes del TecNM que crean juegos</li><li>Jugadores de 10 a 35 años, sobre todo universitarios</li><li>Estudios independientes externos</li><li>Instituciones educativas</li></ul></div>
-      <div class="co"><h5>Estructura de costos</h5><ul><li>Alojamiento y backend</li><li>Comisión del procesador de pagos (≈3–4 %)</li><li>Moderación y soporte</li></ul></div>
-      <div class="rs"><h5>Flujo de ingresos</h5><div class="rates"><b>Ventas: 0 % Semilla TEC → 12 % TecNM · 18 % externos</b><b>Pase $59/mes: 30 % plataforma · 70 % a estudios</b><b>Destacado $150 / 7 días</b><b>Propinas: 0 %</b><b>Licencias institucionales y torneos</b></div><p style="margin:6px 0 0">Referencia: Steam cobra 30 % en su tramo estándar y Epic Games Store 12 %.</p></div>
+    <p class="kicker" data-a>Modelo de negocio</p>
+    <h1 data-a style="--d:.1">Ganamos <em>cuando el estudio gana</em></h1>
+    <div class="model">
+      <div class="tile" data-a style="--d:.3"><b>$0+</b><span>Paga lo que quieras</span><small>Se juega sin pagar; quien quiere, apoya al estudio.</small></div>
+      <div class="tile" data-a style="--d:.45"><b>0 %</b><span>Semilla TEC</span><small>Sin comisión en los primeros $2,000 de cada estudio TecNM; luego 12 %.</small></div>
+      <div class="tile" data-a style="--d:.6"><b>70 %</b><span>Pase mensual</span><small>De cada suscripción va a los estudios, según el tiempo jugado.</small></div>
+      <div class="tile" data-a style="--d:.75"><b>+</b><span>Destacados</span><small>Los estudios pueden pagar por aparecer en portada.</small></div>
     </div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>7 / 10</span></div>
-    <aside>(≈50 s) Nuestro modelo se llama <b>«Crece con tu estudio»</b>. Publicar es gratis y los primeros 2,000 pesos de venta de un estudio TecNM no pagan comisión. Después cobramos 12 %, y 18 % a estudios externos, por debajo del 30 % de Steam. También hay un <b>Pase de 59 pesos</b> al mes, del que el 70 % se reparte entre los estudios por tiempo jugado, además de destacados patrocinados, licencias para campus y torneos.</aside>
+    <div class="proof" data-a style="--d:1">
+      <h3>Antecedentes · modelos que ya funcionan</h3>
+      <div class="row">
+        <div><b>itch.io</b>«Paga lo que quieras» desde $0; el creador decide la comisión (10 % por defecto).</div>
+        <div><b>Humble Bundle</b>Desde 2010 vende juegos indie a «paga lo que quieras».</div>
+        <div><b>Epic Games Store</b>Cobra 12 % y atrajo estudios con esa comisión baja.</div>
+        <div><b>Steam</b>La referencia: 30 % en su tramo estándar. Nosotros: 0 % a 12 %.</div>
+      </div>
+    </div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>7</span></div>
+    <aside>(≈50 s) Nuestro modelo: <b>ganamos cuando el estudio gana</b>. Todo juego gratuito es Paga lo que quieras. Los estudios del TecNM no pagan comisión en sus primeros 2,000 pesos y después pagan 12 %. El 70 % del Pase va a los estudios. Y no es una apuesta a ciegas: <b>itch.io</b> y <b>Humble Bundle</b> ya demostraron el «paga lo que quieras», y <b>Epic</b> atrajo estudios cobrando 12 % frente al 30 % de Steam.</aside>
   </section>
 
   <!-- 8 · SCAMPER -->
   <section class="slide">
-    <p class="kicker">Validación del modelo · SCAMPER</p>
-    <h2>Siete cambios reales que hicimos al prototipo</h2>
+    <p class="kicker" data-a>Validación · SCAMPER</p>
+    <h1 data-a style="--d:.1">Así <em>mejoramos</em> el prototipo</h1>
     <div class="scamper">
-      <div class="sc"><div class="L">S</div><h4>Sustituir</h4><p>Los emojis por arte SVG propio: portadas, insignias e infografías.</p><div class="why">Identidad visual propia y consistente.</div></div>
-      <div class="sc"><div class="L">C</div><h4>Combinar</h4><p>Tienda, biblioteca, SDK de logros y economía en una sola plataforma.</p><div class="why">El estudio no necesita otras herramientas.</div></div>
-      <div class="sc"><div class="L">A</div><h4>Adaptar</h4><p>Mecaquack, nuestro juego de la fase local, a la plataforma: logros, guardado y controles táctiles.</p><div class="why">Probamos el flujo con un juego real.</div></div>
-      <div class="sc"><div class="L">M</div><h4>Modificar</h4><p>Las reseñas: solo reseña quien jugó 2 horas.</p><div class="why">Opiniones más confiables para el estudio.</div></div>
-      <div class="sc"><div class="L">P</div><h4>Otros usos</h4><p>Medio de aprendizaje: juegos educativos y práctica del ciclo real de publicación.</p><div class="why">Valor para campus y docentes.</div></div>
-      <div class="sc"><div class="L">E</div><h4>Eliminar</h4><p>La barrera de pago: todo juego gratuito es «Paga lo que quieras» desde $0. Y los datos de ejemplo inventados.</p><div class="why">Más jugadores prueban; la demo es honesta.</div></div>
-      <div class="sc"><div class="L">R</div><h4>Reordenar</h4><p>La bienvenida: primero se juega con un clic, luego se explica.</p><div class="why">El valor se entiende jugando.</div></div>
+      <div class="sc" data-a style="--d:.25"><div class="L">S</div><h4>Sustituir</h4><p>Emojis por arte propio</p></div>
+      <div class="sc" data-a style="--d:.35"><div class="L">C</div><h4>Combinar</h4><p>Tienda, biblioteca y SDK en uno</p></div>
+      <div class="sc" data-a style="--d:.45"><div class="L">A</div><h4>Adaptar</h4><p>Mecaquack a la plataforma</p></div>
+      <div class="sc" data-a style="--d:.55"><div class="L">M</div><h4>Modificar</h4><p>Reseñas tras 2 h de juego</p></div>
+      <div class="sc" data-a style="--d:.65"><div class="L">P</div><h4>Otros usos</h4><p>Medio de aprendizaje</p></div>
+      <div class="sc" data-a style="--d:.75"><div class="L">E</div><h4>Eliminar</h4><p>La barrera de pago</p></div>
+      <div class="sc" data-a style="--d:.85"><div class="L">R</div><h4>Reordenar</h4><p>Primero jugar, luego explicar</p></div>
     </div>
-    <div class="gap" style="margin-top:18px"><p>Cada cambio se comprobó en la plataforma con <b>pruebas automatizadas en el navegador</b> (Playwright) antes de integrarlo.</p></div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>8 / 10</span></div>
-    <aside>(≈45 s) Validamos con SCAMPER sobre cambios que de verdad hicimos. <b>Sustituimos</b> los emojis por arte propio. <b>Combinamos</b> tienda, biblioteca y SDK. <b>Adaptamos</b> Mecaquack, nuestro juego de la fase local. <b>Modificamos</b> las reseñas: solo tras 2 horas de juego. Le dimos <b>otro uso</b> como medio de aprendizaje. <b>Eliminamos</b> la barrera de pago con «Paga lo que quieras». Y <b>reordenamos</b> la bienvenida para que primero se juegue.</aside>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>8</span></div>
+    <aside>(≈40 s) Validamos con SCAMPER sobre cambios reales: <b>sustituimos</b> emojis por arte propio, <b>combinamos</b> tienda, biblioteca y SDK, <b>adaptamos</b> Mecaquack, <b>modificamos</b> las reseñas, le dimos <b>otro uso</b> como medio de aprendizaje, <b>eliminamos</b> la barrera de pago y <b>reordenamos</b> la bienvenida para jugar primero.</aside>
   </section>
 
-  <!-- 9 · COSTOS -->
+  <!-- 9 · EJES TRANSVERSALES -->
   <section class="slide">
-    <p class="kicker">Proyección de costos</p>
-    <h2>De prototipo a plataforma en línea</h2>
-    <div class="costs">
-      <div class="card" style="padding:14px 18px">
-        <table>
-          <tr><th>Rubro (de la validación a la comercialización)</th><th>Monto</th></tr>
-          <tr><td><b>Escalamiento:</b> backend, base de datos y alojamiento</td><td class="tbd">[cotizar]</td></tr>
-          <tr><td><b>Pagos:</b> comisión del procesador por transacción</td><td>≈3–4 % por venta</td></tr>
-          <tr><td><b>Propiedad intelectual:</b> registro de marca «DivierteTEC»</td><td class="tbd">[cotizar]</td></tr>
-          <tr><td><b>Moderación y soporte técnico</b> a estudios</td><td class="tbd">[cotizar]</td></tr>
-          <tr><td><b>Promoción:</b> torneos y difusión en campus</td><td class="tbd">[cotizar]</td></tr>
-          <tr><td><b>Capacitación:</b> talleres de uso del SDK</td><td class="tbd">[cotizar]</td></tr>
-        </table>
-        <p class="src" style="margin:8px 0 0">El prototipo actual no genera costos de operación: corre en el navegador, sin servidor.</p>
-      </div>
-      <div class="card scenario">
-        <span class="tag">Supuestos, no datos reales</span>
-        <p style="font-size:16px;margin:12px 0 6px">Escenario mensual con <b>500 jugadores activos</b> y <b>30 estudios</b>:</p>
-        <div class="big">≈ $3,790 MXN</div>
-        <p style="font-size:15px;line-height:1.45;margin:8px 0 0">de ingreso para la plataforma: Pase $1,327 (15 % suscrito), ventas $1,560 (300 copias × $40) y destacados $900. Los estudios recibirían ≈$10,440 en ventas y ≈$3,100 del fondo del Pase.</p>
-        <p class="src" style="margin-top:8px">Fuente: docs/MODELO-DE-NEGOCIO.md, sección 4.</p>
-      </div>
+    <p class="kicker" data-a>Ejes transversales</p>
+    <h1 data-a style="--d:.1">Impacto <em>más allá del juego</em></h1>
+    <div class="axes">
+      <div class="axis" data-a style="--d:.3"><span class="ph">[Eje oficial 1]</span><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg><b>Inclusión</b><p>Juegos desde $0 y sin internet.</p></div>
+      <div class="axis" data-a style="--d:.45"><span class="ph">[Eje oficial 2]</span><svg viewBox="0 0 24 24"><path d="M2 7l10-4 10 4-10 4zM6 9v6c3 2 9 2 12 0V9"/></svg><b>Educación</b><p>Juegos educativos y práctica real de publicación.</p></div>
+      <div class="axis" data-a style="--d:.6"><span class="ph">[Eje oficial 3]</span><svg viewBox="0 0 24 24"><path d="M3 21V10l9-6 9 6v11M9 21v-6h6v6"/></svg><b>Economía regional</b><p>0 % de comisión para estudios del TecNM que empiezan.</p></div>
+      <div class="axis" data-a style="--d:.75"><span class="ph">[Eje oficial 4]</span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><b>Contenido responsable</b><p>Revisión de violencia, odio y contenido adulto.</p></div>
     </div>
-    <div class="foot"><span class="brand"><i>D</i><span>Divierte<b>TEC</b></span></span><span>9 / 10</span></div>
-    <aside>(≈30 s) Hoy el prototipo no cuesta operar: corre en el navegador. Para llevarlo a línea necesitamos backend, pagos, registro de marca, moderación, promoción y talleres [llenar montos cotizados]. Como <b>supuesto</b>, con 500 jugadores y 30 estudios la plataforma ingresaría unos 3,790 pesos al mes, y los estudios más de 13 mil.</aside>
+    <span class="todo" data-a style="--d:.9">Completar con los nombres oficiales de la Convocatoria InnovaTecNM 2026.</span>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>9</span></div>
+    <aside>(≈25 s) [Ajustar a los ejes oficiales.] DivierteTEC incluye: juegos desde $0 y sin internet. Educa. Impulsa la economía regional con 0 % de comisión para quien empieza. Y cuida el contenido.</aside>
   </section>
 
   <!-- 10 · CIERRE -->
-  <section class="slide s-end">
-    <p class="kicker" style="color:#8fbfff">Hecho en el TecNM</p>
-    <h2>Cada partida en DivierteTEC <b>impulsa a un estudio mexicano</b>.</h2>
-    <p class="lead">Ahora les mostramos cómo funciona: publicar, revisar, comprar y jugar, todo en vivo.</p>
-    <a class="go" href="../index.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>ABRIR DIVIERTETEC</a>
-    <div class="order"><span>Exposición · 7 min</span><span class="now">Demostración · 7 min</span><span>Preguntas · 6 min</span></div>
-    <div class="foot"><span>Equipo Maravilla · <b>Instituto Tecnológico Superior de Irapuato</b></span><span>10 / 10</span></div>
-    <aside>(≈25 s) Cada partida en DivierteTEC impulsa a un estudio mexicano. Gracias. Ahora pasamos a la demostración en vivo. [Clic en «Abrir DivierteTEC».]</aside>
+  <section class="slide dark s10">
+    <div class="wallbox"><div class="wall" data-wall></div></div>
+    <div class="veil"></div>
+    <div class="hero">
+      <p class="kicker" data-a>Hecho en el TecNM</p>
+      <h1 data-a="zoom" style="--d:.15">Cada partida <em>impulsa a un estudio mexicano.</em></h1>
+      <p data-a style="--d:.5">Ahora, véanlo funcionar.</p>
+    </div>
+    <div class="foot"><span>Equipo Maravilla · Instituto Tecnológico Superior de Irapuato</span><span>HackaTec Regional 2026</span></div>
+    <aside>(≈15 s) Cada partida en DivierteTEC impulsa a un estudio mexicano. Gracias. Ahora, véanlo funcionar. [Pasar a la plataforma para la demostración.]</aside>
   </section>
 
 </div></div>
@@ -395,42 +328,43 @@
 <div class="timer" id="timer">7:00</div>
 <div class="notes" id="notes"></div>
 <div class="help" id="help">← → navegar · N notas · T cronómetro · F pantalla completa</div>
-<button class="navbtn prev" id="prev" aria-label="Anterior">‹</button>
-<button class="navbtn next" id="next" aria-label="Siguiente">›</button>
 
-<script src="../js/core.js"></script>
-<script src="../js/art.js"></script>
-<script src="../js/catalog.js"></script>
 <script>
 (function () {
   'use strict';
   const slides = Array.from(document.querySelectorAll('.slide'));
   const stage = document.getElementById('stage'), bar = document.getElementById('bar'), notes = document.getElementById('notes'), timerEl = document.getElementById('timer');
 
-  /* Portadas reales de los juegos (arte SVG de la plataforma) */
-  try {
-    const games = window.DT && DT.seedState ? DT.seedState().games : [];
-    const byId = Object.fromEntries(games.map((g) => [g.id, g]));
-    document.querySelectorAll('[data-covers]').forEach((box) => {
-      box.innerHTML = box.dataset.covers.split(',').map((id) => byId[id]).filter(Boolean)
-        .map((g) => `<div class="cv">${DT.art.cover(g)}<span>${g.title}</span></div>`).join('');
-    });
-  } catch (e) { console.warn('Portadas no disponibles', e); }
+  /* Muro de capturas de la plataforma real (portada y cierre) */
+  const IMGS = ['landing', 'furia', 'tienda', 'aerodron', 'biblioteca', 'juego', 'perfil', 'editor', 'pase', 'revision', 'ventas', 'faq'];
+  document.querySelectorAll('[data-wall]').forEach((w) => {
+    w.innerHTML = [0, 1, 2].map((r) => { const row = IMGS.slice(r * 4).concat(IMGS.slice(0, r * 4)).slice(0, 6); return `<div class="lane">${row.concat(row).map((n) => `<img src="img/${n}.jpg" alt="">`).join('')}</div>`; }).join('');
+  });
 
   /* Escala 16:9 a la ventana */
-  const fit = () => { const k = Math.min(innerWidth / 1280, innerHeight / 720); stage.style.transform = `scale(${k})`; };
+  const fit = () => { stage.style.transform = `scale(${Math.min(innerWidth / 1280, innerHeight / 720)})`; };
   addEventListener('resize', fit); fit();
 
+  /* Contadores animados */
+  function count(slide) {
+    slide.querySelectorAll('[data-count]').forEach((el) => {
+      const to = parseFloat(el.dataset.count), dec = (el.dataset.count.split('.')[1] || '').length, t0 = performance.now() + 500;
+      el.textContent = (0).toFixed(dec);
+      const step = (t) => { const k = Math.max(0, Math.min(1, (t - t0) / 1400)), v = to * (1 - Math.pow(1 - k, 3)); el.textContent = v.toFixed(dec); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    });
+  }
+
   /* Navegación */
-  let cur = 0;
-  const hashIdx = parseInt((location.hash || '').replace('#', ''), 10);
-  if (hashIdx >= 1 && hashIdx <= slides.length) cur = hashIdx - 1;
+  let cur = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
   function go(i) {
-    cur = Math.max(0, Math.min(slides.length - 1, i));
+    if (i < 0 || i >= slides.length) return;
+    cur = i;
     slides.forEach((s, k) => { s.classList.toggle('on', k === cur); s.classList.toggle('back', k < cur); });
     bar.style.width = ((cur + 1) / slides.length * 100) + '%';
     const a = slides[cur].querySelector('aside');
     notes.innerHTML = `<b>Notas · ${cur + 1}/${slides.length}</b> — ${a ? a.innerHTML : ''}`;
+    count(slides[cur]);
     history.replaceState(null, '', '#' + (cur + 1));
   }
   addEventListener('keydown', (e) => {
@@ -442,10 +376,8 @@
     else if (e.key === 't' || e.key === 'T') toggleTimer();
     else if (e.key === 'f' || e.key === 'F') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => {}); }
   });
-  document.getElementById('prev').onclick = () => go(cur - 1);
-  document.getElementById('next').onclick = () => go(cur + 1);
-  document.querySelector('.deck').addEventListener('click', (e) => { if (e.target.closest('a, button')) return; go(cur + (e.clientX < innerWidth * 0.3 ? -1 : 1)); });
-  setTimeout(() => { document.getElementById('help').style.opacity = 0; }, 6000);
+  document.querySelector('.deck').addEventListener('click', (e) => go(cur + (e.clientX < innerWidth * 0.3 ? -1 : 1)));
+  setTimeout(() => { document.getElementById('help').style.opacity = 0; }, 5000);
 
   /* Cronómetro de la exposición: 7 minutos */
   let t0 = 0, tick = 0;

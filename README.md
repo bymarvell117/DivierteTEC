@@ -113,16 +113,14 @@ reseñas que lo usan lo indican.
 ## Presentación ante el jurado
 
 Abre **`presentacion/index.html`** con doble clic; funciona sin internet.
-- **Contenido:** 10 diapositivas pensadas para los **7 minutos de exposición** a cargo de una sola persona: problema, propuesta, metodología, especificación técnica, ejes transversales, Business Model Canvas, SCAMPER y costos. Siguen la estructura del Entregable HackaTec 2026.
+- **Contenido:** 10 diapositivas visuales para los **7 minutos de exposición** de una sola persona, con capturas reales de la plataforma en `presentacion/img/`. Recorren el problema, la plataforma, los juegos, jugadores, estudios, el modelo de negocio con sus antecedentes (itch.io, Humble Bundle, Epic, Steam), SCAMPER y los ejes transversales.
 - **Controles:**
   - ← → / espacio / clic: navegar;
-  - **N**: notas del orador con el tiempo sugerido;
+  - **N**: notas del orador;
   - **T**: cronómetro de 7:00;
   - **F**: pantalla completa.
-- **Paso a la demostración:** la última diapositiva abre la plataforma para los 7 minutos de demostración.
-- **Antes de presentar:** completar los **ejes transversales oficiales** (marcados en amarillo) y los montos marcados como **[cotizar]**.
-- **Respaldo en PDF:** Imprimir → Guardar como PDF (una diapositiva por hoja).
-- **Fuentes:** las cifras del problema citan su fuente en la propia diapositiva; la proyección de ingresos está rotulada como supuesto.
+- **Antes de presentar:** completar los ejes transversales oficiales, marcados en amarillo.
+- **Respaldo en PDF:** Imprimir → Guardar como PDF.
 
 ## Flujo para la presentación
 
