@@ -86,6 +86,8 @@ Irekua** (Irapuato); el estudio recibe lo mismo. La página del Pase tiene una s
 **Transparencia** con el reparto y los totales, y la calculadora desglosa comisión,
 donativo y operación. Todo con dinero simulado.
 Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
+Ahí también está el **desglose de costos anuales de infraestructura** (dominio, hosting, API,
+base de datos, almacenamiento y correos): ≈ $7,240 a $12,970 MXN al año con precios públicos.
 
 ## Estudios TecNM y preguntas frecuentes
 

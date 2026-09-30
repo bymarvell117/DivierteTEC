@@ -117,11 +117,56 @@ Escenario mensual con **500 jugadores activos** y **30 estudios**:
 | **Total** | | **≈ $2,970 MXN / mes** (y ≈ $820 para educación ambiental) |
 
 Además, los estudios reciben ≈ $10,440 de ventas y ≈ $3,100 del fondo del Pase.
-Costos a cubrir: alojamiento (hosting estático + backend pequeño), comisión del
-procesador de pagos (≈ 3–4 % por transacción según el proveedor) y moderación.
+Costos a cubrir: infraestructura (≈ $7,240 a $12,970 MXN al año, ver la sección 5),
+comisión del procesador de pagos (2.95–3.49 % + IVA por cobro) y moderación.
 Las licencias institucionales y el patrocinio de torneos quedan como ingreso adicional.
 
-## 5. Cómo se ve en la demo
+## 5. Costos anuales de operación (infraestructura)
+
+Precios públicos consultados el **30 de septiembre de 2026**. Los montos en dólares se
+convierten con el tipo de cambio FIX de Banxico del 29/09/2026 (**17.8413 MXN/USD**) y se
+redondean. Los volúmenes (GB y correos) son **supuestos**, no datos reales.
+
+Arquitectura del sitio web: juegos y páginas como archivos estáticos (Cloudflare Pages),
+una API pequeña (Cloudflare Workers), cuentas y base de datos (Supabase), archivos de los
+juegos (Cloudflare R2), correos de verificación TecNM y avisos (Resend) y cobros
+(Mercado Pago).
+
+| Concepto | Proveedor y precio público | A · Lanzamiento | B · Crecimiento |
+|---|---|---|---|
+| Dominio `.mx` | Akky: $689 MXN/año con IVA (1.er año en promoción: $344.50) | $689 | $689 |
+| Sitio y juegos (estático) | Cloudflare Pages: archivos estáticos y ancho de banda sin costo | $0 | $0 |
+| Certificado HTTPS | Incluido en Cloudflare | $0 | $0 |
+| Servidor / API | Cloudflare Workers Paid: US$5/mes (10 M solicitudes/mes incluidas) | ≈ $1,070 | ≈ $1,070 |
+| Cuentas y base de datos | Supabase Pro: US$25/mes (8 GB de base, 100 GB de archivos, 100 mil usuarios activos/mes) | ≈ $5,352 | ≈ $5,352 |
+| Archivos de juegos | Cloudflare R2: US$0.015 por GB/mes, 10 GB gratis, salida de datos gratis. Supuesto: 50 GB (A) y 500 GB (B) | ≈ $128 | ≈ $1,574 |
+| Correos transaccionales | Resend: gratis hasta 3,000/mes (100/día); Pro US$20/mes para 50 mil | $0 | ≈ $4,282 |
+| **Total fijo anual** | | **≈ $7,240** | **≈ $12,970** |
+
+- **Opcional:** correo del equipo con dominio propio (Google Workspace Business Starter,
+  ≈ $168 MXN por usuario al mes en plan flexible según una guía de precios; confirmar en
+  el sitio oficial). Con 3 cuentas: ≈ $6,050 al año.
+- **Costo variable, no fijo:** Mercado Pago cobra por cada pago con Link de pago 3.49 %
+  (dinero al instante), 3.19 % (a 7 días) o 2.95 % (a 30 días), más IVA. Falta decidir si
+  sale de la comisión de la plataforma o si se suma al precio.
+- **Mantenimiento y moderación:** los hace el equipo y, a futuro, estudiantes por
+  servicio social o residencias. No se les asigna un monto en este desglose.
+- **Contra los ingresos:** con la proyección de la sección 4 (supuesto: ≈ $2,970 MXN al
+  mes, ≈ $35,600 al año), los costos fijos quedan cubiertos incluso en el escenario B.
+  Ambas cifras son estimaciones.
+
+Fuentes (consultadas el 30/09/2026):
+[Akky, dominios](https://www.akky.mx/servicios/dominios) ·
+[Cloudflare Workers, precios](https://developers.cloudflare.com/workers/platform/pricing/) ·
+[Cloudflare Pages y hosting estático](https://guptadeepak.com/tools/top-5-static-site-hosting-jamstack-platforms-2026/) ·
+[Cloudflare R2, precios](https://www.spendbase.co/?p=35561) ·
+[Supabase, precios 2026](https://makerkit.dev/blog/md/saas/supabase-pricing) ·
+[Resend, precios 2026](https://automationatlas.io/answers/resend-pricing-explained-2026/) ·
+[Mercado Pago, Link de pago](https://www.mercadopago.com.mx/herramientas-para-vender/link-de-pago) ·
+[Banxico, tipo de cambio](https://www.banxico.org.mx/tipcamb/llenarTiposCambioAction.do?idioma=sp) ·
+[Google Workspace, precios 2026](https://www.eesel.ai/es/blog/google-workspace-pricing)
+
+## 6. Cómo se ve en la demo
 
 | Rol | Dónde |
 |---|---|
@@ -129,7 +174,7 @@ Las licencias institucionales y el patrocinio de torneos quedan como ingreso adi
 | Desarrollador | Pestaña **Precio y ventas** de cada juego: modalidad, descuento, Pase, vista previa de lo que recibe por copia, progreso de la Semilla TEC, ventas y **Destacado patrocinado** |
 | Administrador | **Finanzas**: ingresos por fuente, pagado a estudios, suscriptores, reparto del fondo del Pase, aprobación de promociones, tasas editables y libro de transacciones. En *Usuarios* se ve el campus de cada cuenta TecNM y solo una cuenta TecNM verificada puede recibir el rol de desarrollador |
 
-## 6. Camino a producción
+## 7. Camino a producción
 
 1. Backend con base de datos y cuentas reales (el estado hoy vive en el navegador).
 2. Procesador de pagos mexicano o internacional (Mercado Pago, Stripe, Conekta) con
