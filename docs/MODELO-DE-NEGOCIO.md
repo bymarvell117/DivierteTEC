@@ -26,13 +26,14 @@ ni guardan datos bancarios. Las tasas se cambian en *Admin → Finanzas*.
 
 | Tramo | Aplica a | Comisión | El estudio recibe |
 |---|---|---|---|
-| **Semilla TEC** | Primeros $2,000 MXN de ventas de un estudio TecNM verificado | **0 %** | 100 % |
-| Estudio TecNM | Estudios de estudiantes del TecNM verificados, después de la Semilla | **12 %** | 88 % |
+| **Semilla TEC** | Ventas de cada juego de un estudio TecNM verificado durante sus **3 primeras semanas** desde que se publica | **0 %** | 100 % |
+| Estudio TecNM | Juegos de estudios TecNM verificados, después de sus 3 semanas de Semilla | **12 %** | 88 % |
 | Externo | Estudios independientes o empresas | **18 %** | 82 % |
 
 Referencia de mercado: Steam cobra 30 % en su tramo estándar, Epic Games Store 12 %
 e itch.io deja que el estudio elija (10 % por defecto). DivierteTEC queda en la parte
-baja del mercado y con un tramo gratis para quien empieza.
+baja del mercado y cada lanzamiento TecNM tiene un periodo sin comisión: las primeras
+semanas, cuando más se vende, el estudio recibe el 100 %.
 
 ### Modalidades de precio para el estudio
 - **Paga lo que quieras (pilar de la plataforma).** En DivierteTEC no hay juegos
@@ -60,7 +61,10 @@ estudio TecNM que empieza.
 ## 3. Flujo del dinero (ejemplo con $100 MXN)
 
 ```
-Venta de un estudio TecNM (después de la Semilla):
+Venta de un juego TecNM en sus 3 primeras semanas (Semilla TEC):
+  Jugador paga $100 ──► Estudio $100 ──► DivierteTEC $0
+
+Venta de un juego TecNM después de la Semilla:
   Jugador paga $100 ──► Estudio $88 ──► DivierteTEC $12
 
 Suscripción al Pase:
@@ -75,7 +79,7 @@ Escenario mensual con **500 jugadores activos** y **30 estudios**:
 | Concepto | Supuesto | Ingreso de la plataforma |
 |---|---|---|
 | Pase | 15 % se suscribe → 75 × $59 = $4,425 | 30 % = **$1,327** |
-| Ventas | 300 copias × $40 promedio = $12,000 | ~13 % promedio (con Semilla) = **$1,560** |
+| Ventas | 300 copias × $40 promedio = $12,000 | ~13 % promedio (supuesto: parte de las ventas cae en la Semilla) = **$1,560** |
 | Destacados | 6 promociones × $150 | **$900** |
 | **Total** | | **≈ $3,790 MXN / mes** |
 
@@ -97,6 +101,7 @@ Las licencias institucionales y el patrocinio de torneos quedan como ingreso adi
 1. Backend con base de datos y cuentas reales (el estado hoy vive en el navegador).
 2. Procesador de pagos mexicano o internacional (Mercado Pago, Stripe, Conekta) con
    pagos con tarjeta, OXXO y SPEI; la plataforma nunca guarda datos de tarjeta.
-3. Verificación de estudios TecNM con el correo institucional de cada campus.
+3. Verificación TecNM (ya en el prototipo: correo institucional, número de control y
+   credencial) conectada a un servicio real de correo y almacenamiento cifrado.
 4. Pagos a estudios por transferencia con mínimo de retiro y facturación.
 5. Reportes fiscales y términos de servicio.

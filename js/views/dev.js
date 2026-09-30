@@ -103,7 +103,7 @@ document.getElementById('pts').onclick = function () {
         <div class="grid cols-3 kpis">
           <div class="kpi"><small>Ventas brutas</small><b>${DT.money(DT.devSalesTotal(me.id))}</b></div>
           <div class="kpi"><small>Saldo del estudio</small><b>${DT.money(DT.wallet(me.id))}</b></div>
-          <div class="kpi"><small>Comisión actual</small><b>${(() => { const c = DT.commissionFor(me.id, 100); return c.freePart >= 100 ? '0 % <small>Semilla TEC</small>' : Math.round(c.rate * 100) + ' %'; })()}</b></div>
+          <div class="kpi"><small>Comisión actual</small><b>${(() => { const n = mine.filter(DT.inSeed).length; return n ? `0 % <small>${n} ${n === 1 ? 'juego' : 'juegos'} en Semilla TEC</small>` : Math.round(DT.commissionFor(me.id, 100).rate * 100) + ' %'; })()}</b></div>
         </div>
         <h3 class="section-title">Mis juegos</h3>
         <div class="dev-games">
@@ -504,7 +504,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
     const e = DT.econ();
     const dev = DT.user(g.devId);
     const sales = s.ledger.filter((x) => x.gameId === g.id && (x.type === 'sale' || x.type === 'tip'));
-    const c = DT.commissionFor(g.devId, 100);
+    const c = DT.commissionFor(g.devId, 100, g.id);
     const promo = s.promos.find((x) => x.gameId === g.id && x.status === 'pending');
     body.innerHTML = `
       <div class="grid cols-2">
@@ -524,8 +524,9 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         <div>
           <div class="card">
             <h3>${DT.icon.briefcase} Tu comisión</h3>
-            <p>${DT.isTecnm(dev) ? `Estudio <b>TecNM verificado</b>: Semilla TEC de ${DT.money(e.seedAllowance)} sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta.  <a href="#/verificacion-tecnm">¿Eres del TecNM? Verifícate</a> para activar la Semilla TEC.`}</p>
-            ${DT.isTecnm(dev) ? `<div class="bar"><i style="width:${Math.min(100, DT.devSalesTotal(dev.id) / e.seedAllowance * 100)}%"></i></div><small class="muted">${DT.money(Math.min(e.seedAllowance, DT.devSalesTotal(dev.id)))} de ${DT.money(e.seedAllowance)} usados de la Semilla TEC</small>` : ''}
+            <p>${DT.isTecnm(dev) ? `Estudio <b>TecNM verificado</b>: Semilla TEC: las ${DT.seedText()} de cada juego, desde que se publica, sin comisión, después ${Math.round(e.rateStudent * 100)} %.` : `Estudio <b>${dev.student ? 'estudiantil (sin verificar)' : 'externo'}</b>: ${Math.round(c.rate * 100)} % por venta. <a href="#/verificacion-tecnm">¿Eres del TecNM? Verifícate</a> para activar la Semilla TEC.`}</p>
+            ${DT.isTecnm(dev) ? (g.status !== 'approved' ? `<small class="muted">La Semilla TEC de este juego empieza el día que se publique.</small>`
+              : (() => { const total = e.seedDays, left = DT.seedDaysLeft(g); return `<div class="bar"><i style="width:${Math.min(100, (total - left) / total * 100)}%"></i></div><small class="muted">${left ? `Quedan <b>${left} días</b> sin comisión (hasta el ${new Date(DT.seedUntil(g)).toLocaleDateString('es-MX')})` : 'La Semilla TEC de este juego terminó'}</small>`; })()) : ''}
           </div>
           <div class="card">
             <h3>${DT.icon.megaphone} Destacado patrocinado</h3>
@@ -547,7 +548,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
     const f = DT.$('[data-price]', body);
     const preview = () => {
       const price = Math.max(0, Number(f.price.value) || 0) * (1 - (Number(f.discount.value) || 0) / 100);
-      const cc = DT.commissionFor(g.devId, price);
+      const cc = DT.commissionFor(g.devId, price, g.id);
       DT.$('[data-prev]', body).innerHTML = `${f.mode.value === 'pwyw' ? `<p class="small muted">${DT.icon.heart} En DivierteTEC los juegos gratuitos usan <b>Paga lo que quieras</b>: con mínimo $0 cualquiera lo juega al instante y quien quiera aporta. El precio de arriba es el <b>sugerido</b>; abajo, lo que recibes por cada aporte sugerido.</p>` : ''}<div><span>${f.mode.value === 'pwyw' ? 'Aporte sugerido' : 'Precio al público'}</span><b>${DT.money(price)}</b></div><div><span>Comisión (${DT.esc(cc.note)})</span><b>−${DT.money(cc.commission)}</b></div><div class="total"><span>Recibes por copia</span><b>${DT.money(cc.net)}</b></div>`;
     };
     f.addEventListener('input', preview);

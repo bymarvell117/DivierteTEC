@@ -52,9 +52,6 @@
 .l-step p { font-size: clamp(16px, 2vw, 21px); color: #cfe0f7; margin: 0; }
 
 /* Contadores */
-.l-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; padding: 90px 16px 40px; text-align: center; }
-.l-stats b { display: block; font: 900 clamp(38px, 6vw, 72px)/1 var(--font-display); background: linear-gradient(180deg, #fff, #3d8fff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.l-stats span { color: #9fb4d4; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
 
 /* Aparición progresiva */
 .in-view { opacity: 0; transform: translateY(50px); transition: opacity .8s var(--d, 0s), transform .9s cubic-bezier(.2, .9, .2, 1) var(--d, 0s); }
@@ -123,8 +120,7 @@
   .l-shapes { grid-template-columns: 1fr; }
   .l-shapes .l-h2 { text-align: center; }
   .l-shapes-copy { text-align: center; }
-  .l-stats { grid-template-columns: 1fr 1fr; }
-  .l-collage { grid-template-columns: repeat(4, 1fr); }
+    .l-collage { grid-template-columns: repeat(4, 1fr); }
   .l-morph-stage { height: 320px; }
   .l-float.f4, .l-float.f5 { display: none; }
 }
@@ -193,3 +189,6 @@
 .l-axes .l-role h3 { font-size: 20px; }
 @media (max-width: 1000px) { .l-axes-cards { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .l-axes-cards { grid-template-columns: 1fr; } }
+
+.l-kicker { display: inline-block; margin-bottom: 10px; color: #ffd23f; font-weight: 800; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; }
+.l-campus-copy .l-small { font-size: 14px; color: #8ea3c4; margin-top: -8px; }

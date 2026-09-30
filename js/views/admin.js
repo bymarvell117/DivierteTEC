@@ -196,7 +196,7 @@
           <div class="form-grid">
             <label class="field"><span>Comisión estudios TecNM (%)</span><input type="number" name="rateStudent" min="0" max="50" value="${Math.round(e.rateStudent * 100)}"></label>
             <label class="field"><span>Comisión externa (%)</span><input type="number" name="rateExternal" min="0" max="50" value="${Math.round(e.rateExternal * 100)}"></label>
-            <label class="field"><span>Semilla TEC (MXN sin comisión)</span><input type="number" name="seedAllowance" min="0" value="${e.seedAllowance}"></label>
+            <label class="field"><span>Semilla TEC (semanas sin comisión por juego)</span><input type="number" name="seedWeeks" min="0" step="1" value="${Math.round(e.seedDays / 7)}"></label>
             <label class="field"><span>Precio del Pase (MXN/mes)</span><input type="number" name="passPrice" min="0" value="${e.passPrice}"></label>
             <label class="field"><span>Parte del Pase para estudios (%)</span><input type="number" name="passDevShare" min="0" max="100" value="${Math.round(e.passDevShare * 100)}"></label>
             <label class="field"><span>Destacado patrocinado (MXN)</span><input type="number" name="promoPrice" min="0" value="${e.promoPrice}"></label>
@@ -221,7 +221,7 @@
     DT.$('[data-rates]', body).onsubmit = (ev) => {
       ev.preventDefault();
       const fm = ev.target;
-      Object.assign(e, { rateStudent: fm.rateStudent.value / 100, rateExternal: fm.rateExternal.value / 100, seedAllowance: +fm.seedAllowance.value,
+      Object.assign(e, { rateStudent: fm.rateStudent.value / 100, rateExternal: fm.rateExternal.value / 100, seedDays: Math.max(0, Math.round(+fm.seedWeeks.value)) * 7,
         passPrice: +fm.passPrice.value, passDevShare: fm.passDevShare.value / 100, promoPrice: +fm.promoPrice.value });
       act('Actualizó las tasas de la plataforma.');
       DT.toast('Tasas guardadas.', { kind: 'ok' });

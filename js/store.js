@@ -31,6 +31,7 @@
     state.games.forEach(DT.normalizeGame); // repara juegos guardados con campos faltantes
     state.devRequests = state.devRequests || []; state.tecnmRequests = state.tecnmRequests || [];
     if (state.economy.passTecnmDiscount == null) state.economy.passTecnmDiscount = 0.3;
+    if (state.economy.seedDays == null) { state.economy.seedDays = 21; delete state.economy.seedAllowance; }
     return state;
   };
 

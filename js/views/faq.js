@@ -12,7 +12,7 @@
       { q: '¿De qué manera se puede enlazar con los TecNM?', icon: 'cap', a: `
         <p>DivierteTEC da <b>trato preferente a los estudios formados por estudiantes del TecNM</b>, de cualquier campus. Un estudio verificado como TecNM obtiene:</p>
         <ul>
-          <li><b>Semilla TEC:</b> sus primeros ${DT.money(e.seedAllowance)} en ventas no pagan comisión; después paga ${pct(e.rateStudent)} en lugar del ${pct(e.rateExternal)} de un estudio externo.</li>
+          <li><b>Semilla TEC:</b> cada juego que publica no paga comisión durante sus ${DT.seedText()}; después paga ${pct(e.rateStudent)} en lugar del ${pct(e.rateExternal)} de un estudio externo.</li>
           <li>Sello <b>Hecho en el TecNM</b> con su campus en la tienda y en la página del juego, y un filtro propio en la tienda para descubrir sus juegos.</li>
           <li><b>Prioridad en la cola de revisión</b>: sus juegos aparecen primero para la administración.</li>
         </ul>
@@ -33,7 +33,7 @@
         <p>En <a href="#/verificacion-tecnm">Verificación TecNM</a>: confirma tu correo institucional con un código, escribe tu número de control, elige tu campus y sube tu credencial vigente. La administración revisa que los datos coincidan.</p>
         <ul>
           <li><b>Como jugador:</b> Pase DivierteTEC con ${pct(e.passTecnmDiscount || 0.3)} de descuento (${DT.money(Math.round(e.passPrice * (1 - (e.passTecnmDiscount || 0.3)) * 100) / 100)} en lugar de ${DT.money(e.passPrice)}), insignia épica <b>Comunidad TecNM</b> y sello TecNM en tu perfil y reseñas.</li>
-          <li><b>Como desarrollador:</b> Semilla TEC (primeros ${DT.money(e.seedAllowance)} sin comisión), comisión de ${pct(e.rateStudent)} en lugar de ${pct(e.rateExternal)}, sello <b>Hecho en el TecNM</b> y prioridad en la revisión.</li>
+          <li><b>Como desarrollador:</b> Semilla TEC (las ${DT.seedText()} de cada juego sin comisión), comisión de ${pct(e.rateStudent)} en lugar de ${pct(e.rateExternal)}, sello <b>Hecho en el TecNM</b> y prioridad en la revisión.</li>
         </ul>
         <p class="muted">En el prototipo el código del correo se muestra en pantalla como simulación; en el sitio web llegaría a tu bandeja institucional.</p>` },
       { q: '¿Existe alguna limitante sobre qué juegos puedo jugar y/o crear?', icon: 'shield', a: `
@@ -71,8 +71,8 @@
       { q: '¿Cuál es el porcentaje de ganancia que se queda la página web?', icon: 'coin', a: `
         <table class="faq-table">
           <tr><th>Fuente</th><th>DivierteTEC</th><th>Estudio</th></tr>
-          <tr><td>Ventas de estudios TecNM (Semilla TEC, primeros ${DT.money(e.seedAllowance)})</td><td>0 %</td><td>100 %</td></tr>
-          <tr><td>Ventas de estudios TecNM después de la Semilla</td><td>${pct(e.rateStudent)}</td><td>${pct(1 - e.rateStudent)}</td></tr>
+          <tr><td>Ventas de un juego TecNM en sus ${DT.seedText()} (Semilla TEC)</td><td>0 %</td><td>100 %</td></tr>
+          <tr><td>Ventas de juegos TecNM después de la Semilla</td><td>${pct(e.rateStudent)}</td><td>${pct(1 - e.rateStudent)}</td></tr>
           <tr><td>Ventas de estudios externos</td><td>${pct(e.rateExternal)}</td><td>${pct(1 - e.rateExternal)}</td></tr>
           <tr><td>Pase DivierteTEC (${DT.money(e.passPrice)} al mes)</td><td>${pct(1 - e.passDevShare)}</td><td>${pct(e.passDevShare)}, repartido por tiempo jugado</td></tr>
           <tr><td>Propinas</td><td>0 %</td><td>100 %</td></tr>

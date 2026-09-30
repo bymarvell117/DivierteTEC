@@ -51,7 +51,7 @@
 
         <h2 class="section-title">${DT.icon.wrench} Para desarrolladores</h2>
         <div class="grid cols-3 tiers">
-          <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Tus primeros <b>${DT.money(e.seedAllowance)}</b> en ventas no pagan comisión. Para estudios de estudiantes del TecNM verificados.</p></div>
+          <div class="card tier"><div class="tier-rate">0 %</div><h4>Semilla TEC</h4><p>Las <b>${DT.seedText()}</b> de cada juego, desde que se publica, no pagan comisión. Para estudios de estudiantes del TecNM verificados.</p></div>
           <div class="card tier"><div class="tier-rate">${pct(e.rateStudent)}</div><h4>Estudio TecNM</h4><p>Después de la Semilla. Recibes el ${pct(1 - e.rateStudent)} de cada venta.</p></div>
           <div class="card tier"><div class="tier-rate">${pct(e.rateExternal)}</div><h4>Estudio externo</h4><p>Indies y empresas fuera del TecNM. Recibes el ${pct(1 - e.rateExternal)}.</p></div>
         </div>
@@ -61,6 +61,7 @@
             <div class="form-grid">
               <label class="field"><span>Precio del juego (MXN)</span><input type="number" min="0" value="49" data-c="price"></label>
               <label class="field"><span>Copias vendidas</span><input type="number" min="0" value="200" data-c="units"></label>
+              <label class="field wide"><span>De ellas, vendidas en las ${DT.seedText()} (Semilla TEC)</span><input type="number" min="0" value="50" data-c="early"></label>
               <label class="field wide"><span>Tipo de estudio</span><select data-c="type"><option value="student">Estudio TecNM verificado (con Semilla TEC)</option><option value="external">Externo</option></select></label>
             </div>
             <div class="calc" data-calc></div>
@@ -91,7 +92,8 @@
       const units = Math.max(0, Number(DT.$('[data-c="units"]', app).value) || 0);
       const student = DT.$('[data-c="type"]', app).value === 'student';
       const gross = price * units;
-      const free = student ? Math.min(gross, e.seedAllowance) : 0;
+      const early = Math.min(units, Math.max(0, Number(DT.$('[data-c="early"]', app).value) || 0));
+      const free = student ? price * early : 0;
       const rate = student ? e.rateStudent : e.rateExternal;
       const net = gross - (gross - free) * rate;
       const steam = gross * 0.7;

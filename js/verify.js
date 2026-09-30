@@ -29,7 +29,7 @@
         ['cap', 'Sello TecNM verificado en tu perfil y tus reseñas']
       ],
       dev: [
-        ['gift', `Semilla TEC: 0 % de comisión en tus primeros ${DT.money(e.seedAllowance)} de ventas`],
+        ['gift', `Semilla TEC: 0 % de comisión en las ${DT.seedText()} de cada juego que publiques`],
         ['chart', `Comisión de ${pct(e.rateStudent)} en lugar de ${pct(e.rateExternal)} después de la Semilla`],
         ['cap', 'Sello «Hecho en el TecNM» con tu campus y filtro propio en la tienda'],
         ['eye', 'Prioridad en la cola de revisión de juegos']

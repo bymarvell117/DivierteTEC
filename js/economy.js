@@ -1,7 +1,7 @@
 /* DivierteTEC — economía de la plataforma (modelo "Crece con tu estudio").
    Todo el dinero es SIMULADO: saldo de demostración, sin datos bancarios.
-   - Venta de juegos: Semilla TEC (0 % en los primeros $2,000 de estudios TecNM
-     verificados), luego 12 % estudios TecNM / 18 % estudios externos.
+   - Venta de juegos: Semilla TEC (0 % durante las 3 primeras semanas de cada juego de un
+     estudio TecNM verificado), luego 12 % estudios TecNM / 18 % estudios externos.
    - Pase DivierteTEC mensual: el 70 % va a un fondo que se reparte por tiempo jugado.
    - Promoción patrocinada en Destacados y propinas a desarrolladores.
    Cada movimiento queda en state.ledger (libro de transacciones). */
@@ -67,15 +67,22 @@
 
   /* ---------- Comisión escalonada ---------- */
   DT.devSalesTotal = (devId) => S().ledger.filter((e) => e.type === 'sale' && e.to === devId).reduce((t, e) => t + e.gross, 0);
-  DT.commissionFor = (devId, gross) => {
+  /* Semilla TEC: cada juego de un estudio TecNM no paga comisión durante sus primeros
+     seedDays días desde que se publica (g.createdAt se fija al aprobarlo). */
+  DT.seedWeeks = () => Math.max(0, Math.round(DT.econ().seedDays / 7));
+  DT.seedText = () => { const w = DT.seedWeeks(); return w === 1 ? 'primera semana' : w + ' primeras semanas'; };
+  DT.seedUntil = (g) => (g && DT.isTecnm(DT.user(g.devId)) && g.status === 'approved' ? (g.createdAt || 0) + DT.econ().seedDays * DAY : 0);
+  DT.inSeed = (g) => Date.now() < DT.seedUntil(g);
+  DT.seedDaysLeft = (g) => Math.max(0, Math.ceil((DT.seedUntil(g) - Date.now()) / DAY));
+  DT.commissionFor = (devId, gross, gameId) => {
     const e = DT.econ();
     const dev = DT.user(devId) || {};
     const student = DT.isTecnm(dev);
     const rate = student ? e.rateStudent : e.rateExternal;
-    let freePart = 0;
-    if (student) freePart = Math.min(gross, Math.max(0, e.seedAllowance - DT.devSalesTotal(devId)));
+    const g = gameId ? DT.game(gameId) : null;
+    const freePart = g && DT.inSeed(g) ? gross : 0;
     const commission = r2((gross - freePart) * rate);
-    const note = freePart >= gross ? 'Semilla TEC (0 %)' : freePart > 0 ? `Semilla TEC parcial + ${Math.round(rate * 100)} %` : (student ? 'Estudio TecNM' : 'Estudio externo') + ` (${Math.round(rate * 100)} %)`;
+    const note = freePart > 0 ? `Semilla TEC (0 %) · quedan ${DT.seedDaysLeft(g)} días` : (student ? 'Estudio TecNM' : 'Estudio externo') + ` (${Math.round(rate * 100)} %)`;
     return { rate, student, freePart: r2(freePart), commission, net: r2(gross - commission), note };
   };
 
@@ -85,7 +92,7 @@
     const g = DT.game(gid);
     const gross = r2(amount);
     if (DT.wallet(me.id) < gross) { DT.toast('Saldo insuficiente. Recarga saldo de demostración.', { kind: 'error' }); return false; }
-    const c = DT.commissionFor(g.devId, gross);
+    const c = DT.commissionFor(g.devId, gross, g.id);
     credit(me.id, -gross);
     credit(g.devId, c.net);
     if (gross > 0) record({ type: 'sale', from: me.id, to: g.devId, gameId: gid, gross, commission: c.commission, net: c.net, note: c.note });
@@ -137,7 +144,7 @@
     const amount = () => (pwyw ? Math.max(p.min, Number(amountEl.value) || 0) : p.final);
     const draw = () => {
       const a = amount();
-      const c = DT.commissionFor(g.devId, a);
+      const c = DT.commissionFor(g.devId, a, g.id);
       m.el.querySelector('[data-breakdown]').innerHTML = `
         <div><span>${DT.esc((DT.user(g.devId) || {}).name)} recibe</span><b>${DT.money(c.net)}</b></div>
         <div><span>Comisión DivierteTEC <small class="muted">${DT.esc(c.note)}</small></span><b>${DT.money(c.commission)}</b></div>

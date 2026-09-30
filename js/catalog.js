@@ -323,7 +323,7 @@
       reports: [],
       bannedWords: ['idiota', 'basura', 'estúpido'],
       /* ---- Economía (ver js/economy.js y docs/MODELO-DE-NEGOCIO.md) ---- */
-      economy: { rateStudent: 0.12, rateExternal: 0.18, seedAllowance: 2000, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7, passTecnmDiscount: 0.3 },
+      economy: { rateStudent: 0.12, rateExternal: 0.18, seedDays: 21, passPrice: 59, passDevShare: 0.7, passDiscount: 0.1, promoPrice: 150, promoDays: 7, passTecnmDiscount: 0.3 },
       wallets: { u_maravilla: 0, u_player: 0, u_admin: 0 }, // saldo simulado: se recarga con el botón de demostración
       purchases: {},
       passes: {},

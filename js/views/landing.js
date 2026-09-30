@@ -15,10 +15,8 @@
     const covers = games.concat(games, games).slice(0, 18);
     const instant = games.filter((g) => DT.isInstant(g));
     const star = DT.game('g_furia') && instant.includes(DT.game('g_furia')) ? DT.game('g_furia') : instant[0];
-    const devs = s.users.filter((u) => u.role === 'dev').length;
     const secs = Object.values(s.library).reduce((t, lib) => t + Object.values(lib).reduce((a, e) => a + (e.playtime || 0), 0), 0);
     const plays = games.reduce((t, g) => t + (g.plays || 0), 0);
-    const paid = Math.round((DT.financeSummary ? DT.financeSummary().toDevs : 0) || 0);
     const e = DT.econ();
     const rewardsShow = ['theme_cyber', 'frame_fire', 'av_dragon', 'fx_stars', 'em_crown', 'theme_arcade', 'badge_hackatec', 'frame_neon', 'av_ninja', 'theme_lava', 'av_pato', 'em_punch'];
     const CAMPUS = [['Irapuato', 'Búho Blanco', 28, 50], ['Celaya', 'Lince', 64, 46], ['León', 'León', 42, 22], ['Roque', 'Carnero', 88, 60], ['Uriangato', 'Halcón', 42, 84], ['Abasolo', 'Jaguar', 10, 76], ['Purísima del Rincón', 'Gato Negro', 14, 14], ['San Miguel de Allende', 'Coyote', 80, 16], ['Salvatierra', 'Puma', 74, 86]];
@@ -65,17 +63,10 @@
           <div class="l-mask" data-mask><span>JUEGA</span></div>
           <div class="l-reveal-copy">
             <div class="l-step" data-step="0"><h2>Juega aquí mismo</h2><p>Los juegos HTML5 corren en tu navegador con un clic. Sin instalar nada.</p></div>
-            <div class="l-step" data-step="1"><h2>Hecho en México</h2><p>Detrás de cada juego hay un estudio estudiantil de los Tecnológicos de Guanajuato.</p></div>
+            <div class="l-step" data-step="1"><h2>Hecho en México</h2><p>Detrás de cada juego hay un estudio estudiantil del TecNM.</p></div>
             <div class="l-step" data-step="2"><h2>Cada logro cuenta</h2><p>Desbloquea temas, marcos, avatares, efectos y stickers mientras juegas.</p></div>
           </div>
         </div>
-      </section>
-
-      <section class="l-stats">
-        <div data-count="${instant.length}"><b>0</b><span>juegos para jugar ya</span></div>
-        <div data-count="${plays}"><b>0</b><span>partidas jugadas aquí</span></div>
-        <div data-count="${devs}"><b>0</b><span>${devs === 1 ? 'estudio mexicano' : 'estudios mexicanos'}</span></div>
-        <div data-count="${paid}" data-prefix="$"><b>0</b><span>MXN pagados a estudios</span></div>
       </section>
 
       <section class="l-impact">
@@ -83,7 +74,7 @@
         <div class="l-flow">
           <div class="l-node in-view" style="--d:0s"><span class="l-node-ico">${DT.icon.gamepad}</span><b>Paga lo que quieras</b><small>Los juegos gratuitos se juegan ya; aporta desde $0 al estudio que te gustó.</small></div>
           <svg class="l-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M0 12h50M40 2l12 10-12 10" fill="none" stroke="currentColor" stroke-width="4"/></svg>
-          <div class="l-node in-view" style="--d:.12s"><span class="l-node-ico">${DT.icon.coin}</span><b>${Math.round((1 - e.rateStudent) * 100)} % al estudio</b><small>De cada venta; 0 % de comisión en sus primeros ${DT.money(e.seedAllowance)} (Semilla TEC).</small></div>
+          <div class="l-node in-view" style="--d:.12s"><span class="l-node-ico">${DT.icon.coin}</span><b>${Math.round((1 - e.rateStudent) * 100)} % al estudio</b><small>De cada venta; 0 % de comisión en las ${DT.seedText()} de cada juego (Semilla TEC).</small></div>
           <svg class="l-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M0 12h50M40 2l12 10-12 10" fill="none" stroke="currentColor" stroke-width="4"/></svg>
           <div class="l-node in-view" style="--d:.24s"><span class="l-node-ico">${DT.icon.ticket}</span><b>${Math.round(e.passDevShare * 100)} % del Pase</b><small>Se reparte entre estudios según el tiempo que juegas.</small></div>
           <svg class="l-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M0 12h50M40 2l12 10-12 10" fill="none" stroke="currentColor" stroke-width="4"/></svg>
@@ -94,11 +85,13 @@
 
       <section class="l-campus">
         <div class="l-campus-copy in-view">
-          <h2 class="l-h2">Hecho en los Tecnológicos de Guanajuato</h2>
-          <p>Nueve campus, nueve mascotas, un mismo talento. Todas pelean juntas en <b>Furia TEC</b>.</p>
-          ${DT.game('g_furia') ? playBtn(DT.game('g_furia'), 'Pelear con las mascotas') : ''}
+          <span class="l-kicker">Juego destacado · Furia TEC</span>
+          <h2 class="l-h2">Un homenaje a los Tecnológicos de Guanajuato</h2>
+          <p><b>Furia TEC</b> es un juego de pelea 3D creado por el <b>Equipo Maravilla (ITESI)</b>. En él, las mascotas de nueve Tecnológicos de Guanajuato se enfrentan como homenaje a sus campus.</p>
+          <p class="l-small">Los Tecnológicos no participaron en su desarrollo; las mascotas se representan sin logotipos oficiales.</p>
+          ${DT.game('g_furia') ? playBtn(DT.game('g_furia'), 'Jugar Furia TEC') : ''}
         </div>
-        <svg class="l-net in-view" viewBox="0 0 100 100" aria-label="Red de Tecnológicos de Guanajuato">
+        <svg class="l-net in-view" viewBox="0 0 100 100" aria-label="Mascotas de los Tecnológicos de Guanajuato que aparecen en Furia TEC">
           ${LINKS.map(([a, b]) => `<line x1="${CAMPUS[a][2]}" y1="${CAMPUS[a][3]}" x2="${CAMPUS[b][2]}" y2="${CAMPUS[b][3]}" class="l-net-line"/>`).join('')}
           ${CAMPUS.map(([c, m, x, y], i) => `<g class="l-net-node" style="--d:${i * .15}s"><circle cx="${x}" cy="${y}" r="3.2"/><circle cx="${x}" cy="${y}" r="6" class="l-net-halo"/><text x="${x}" y="${y - 5.5}" text-anchor="middle">${c}</text><text x="${x}" y="${y + 8}" text-anchor="middle" class="l-net-sub">${m}</text></g>`).join('')}
         </svg>
@@ -199,18 +192,13 @@
     addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
-    /* --- Aparición al entrar en pantalla y contadores --- */
+    /* --- Aparición al entrar en pantalla --- */
     const io = new IntersectionObserver((entries) => entries.forEach((en) => {
       if (!en.isIntersecting) return;
       en.target.classList.add('visible');
-      if (en.target.dataset.count !== undefined) {
-        const b = en.target.querySelector('b'); const target = +en.target.dataset.count; const pre = en.target.dataset.prefix || ''; const t0 = performance.now();
-        const step = (t) => { const k = Math.min(1, (t - t0) / 1200); b.textContent = pre + Math.round(target * (1 - Math.pow(1 - k, 3))).toLocaleString('es-MX'); if (k < 1) requestAnimationFrame(step); };
-        requestAnimationFrame(step);
-      }
       io.unobserve(en.target);
     }), { threshold: .2 });
-    DT.$$('.in-view, [data-count]', app).forEach((el) => io.observe(el));
+    DT.$$('.in-view', app).forEach((el) => io.observe(el));
 
     /* --- Partículas del héroe --- */
     const cv = DT.$('[data-particles]', app);
