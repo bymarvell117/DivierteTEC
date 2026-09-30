@@ -142,6 +142,11 @@ Abre **`presentacion/index.html`** con doble clic. El archivo es **autónomo**: 
 internet y las capturas van embebidas dentro del HTML, así que se puede copiar solo (USB,
 correo) sin la carpeta `img/`. Si cambias una captura en `presentacion/img/`, vuelve a
 embeberlas con `node tools/embed-deck-images.js`.
+
+**Versión editable en PowerPoint:** `presentacion/DivierteTEC-presentacion.pptx`, con las mismas 13
+diapositivas, textos y diagramas editables, capturas reales y notas del orador (sin las
+animaciones). Se regenera con `node tools/build-pptx.js` (requiere
+`npm install pptxgenjs react-icons react react-dom sharp`).
 - **Contenido:** 13 diapositivas visuales para los **7 minutos de exposición** de una sola persona, con capturas reales de la plataforma en `presentacion/img/`. Recorren el problema, la plataforma, los juegos, jugadores, estudios, las **cuentas verificadas** (solicitud de desarrollador y verificación TecNM), el **diagrama de flujo** de la plataforma, el **proceso de desarrollo a prueba y error**, el modelo de negocio con sus antecedentes (itch.io, Humble Bundle, Epic, Steam), SCAMPER y los ejes transversales (Inclusión y equidad, Impacto social, Sustentabilidad y sostenibilidad, Tecnologías emergentes), que también aparecen en la bienvenida y en la FAQ.
 - **Controles:**
   - ← → / espacio / clic: navegar;
