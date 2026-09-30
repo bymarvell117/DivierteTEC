@@ -189,9 +189,9 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         ${g.reviewNote && g.status !== 'approved' ? `<div class="notice ${g.status === 'rejected' ? 'bad' : 'warn'}">${DT.icon.note} <b>Nota de administración:</b> ${DT.esc(g.reviewNote)}</div>` : ''}
         ${g.status === 'withdrawn' ? `<div class="notice ${g.withdrawn && g.withdrawn.admin ? 'bad' : 'warn'}">${DT.icon.eyeOff} Este juego está <b>retirado de la tienda</b>${g.withdrawn && g.withdrawn.admin ? ' por la administración. Corrige lo señalado y envíalo de nuevo a revisión.' : '. Quien ya lo tenía lo conserva en su biblioteca.'}</div>` : ''}
         ${g.status === 'pending' ? `<div class="notice">${DT.icon.clock} Tu juego está en revisión. Un administrador lo aprobará pronto.</div>` : ''}
-        ${['draft', 'rejected', 'changes'].includes(g.status) ? `<details class="card selfcheck"><summary>${DT.icon.cap} Autoevaluación con los criterios TecNM · ${DT.criteriaStatus(g).filter((x) => x.auto && x.ok).length}/${DT.criteriaStatus(g).filter((x) => x.auto).length} automáticos cumplidos</summary>
-          <p class="muted small">${DT.TECNM_REF}</p>
-          <div class="crit-groups">${DT.TECNM_CRITERIA.map((grp) => `<div class="crit-group"><h5>${DT.ic(grp.icon)} ${grp.group}</h5>${grp.items.map((c) => { const ok = c.auto && c.auto(g); return `<div class="crit-item ${c.auto ? (ok ? 'auto ok' : 'auto bad') : ''}">${c.auto ? (ok ? DT.icon.check : DT.icon.x) : DT.icon.eye}<span>${c.text}</span><small>${c.auto ? 'automático' : 'lo revisa la administración'}</small></div>`; }).join('')}</div>`).join('')}</div></details>` : ''}
+        ${['draft', 'rejected', 'changes'].includes(g.status) ? `<details class="card selfcheck"><summary>${DT.icon.shield} Autoevaluación con los criterios de aprobación · ${DT.criteriaStatus(g).filter((x) => x.auto && x.ok).length}/${DT.criteriaStatus(g).filter((x) => x.auto).length} automáticos cumplidos</summary>
+          <p class="muted small">${DT.CRITERIA_REF}</p>
+          <div class="crit-groups">${DT.APPROVAL_CRITERIA.map((grp) => `<div class="crit-group"><h5>${DT.ic(grp.icon)} ${grp.group}</h5>${grp.items.map((c) => { const ok = c.auto && c.auto(g); return `<div class="crit-item ${c.auto ? (ok ? 'auto ok' : 'auto bad') : ''}">${c.auto ? (ok ? DT.icon.check : DT.icon.x) : DT.icon.eye}<span>${c.text}</span><small>${c.auto ? 'automático' : 'lo revisa la administración'}</small></div>`; }).join('')}</div>`).join('')}</div></details>` : ''}
         <div class="tabs" role="tablist">${tabs.map(([k, v]) => `<button role="tab" class="${ui.tab === k ? 'on' : ''}" data-tab="${k}">${v}</button>`).join('')}</div>
         <div class="tab-body" data-body></div>
       </section>`;
@@ -207,7 +207,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
       if (g.format === 'html' && !g.files) problems.push('Sube los archivos del juego (.html o carpeta).');
       if (g.format !== 'html' && !(g.download && g.download.uploadedAt)) problems.push('Sube el archivo descargable.');
       if (!g.short || !g.description) problems.push('Completa la descripción corta y la descripción larga.');
-      DT.criteriaStatus(g).filter((x) => x.auto && !x.ok && x.c.id !== 't_desc' && x.c.id !== 't_files').forEach((x) => problems.push('Criterio TecNM: ' + x.c.text + '.'));
+      DT.criteriaStatus(g).filter((x) => x.auto && !x.ok && x.c.id !== 't_desc' && x.c.id !== 't_files').forEach((x) => problems.push('Criterio de aprobación: ' + x.c.text + '.'));
       if (problems.length) return DT.modal({ title: 'Faltan algunos datos', body: `<ul>${problems.map((p) => `<li>${p}</li>`).join('')}</ul>`, actions: '<button class="btn primary" data-close>Entendido</button>' });
       g.status = 'pending';
       g.submittedAt = Date.now();
@@ -280,10 +280,10 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
         <label class="field"><span>Etiquetas (separadas por comas)</span><input name="tags" value="${DT.esc((g.tags || []).join(', '))}"></label>
         <label class="field"><span>Formato</span><select name="format">${Object.entries(DT.formatLabel).map(([k, v]) => `<option value="${k}" ${g.format === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
         <fieldset class="field wide compliance">
-          <legend>${DT.icon.cap} Declaración para la revisión (criterios TecNM)</legend>
+          <legend>${DT.icon.shield} Declaración de contenido para la revisión</legend>
           <div class="form-grid">
             <label class="field"><span>Edad recomendada</span><select name="age"><option value="">— Elige —</option>${DT.AGES.map((a) => `<option ${(g.compliance || {}).age === a ? 'selected' : ''}>${a}</option>`).join('')}</select></label>
-            <label class="field"><span>Logotipos institucionales</span><select name="brand">${[['no', 'No uso logotipos del TecNM ni de campus'], ['con', 'Los uso con autorización'], ['sin', 'Los uso sin autorización']].map(([k, v]) => `<option value="${k}" ${((g.compliance || {}).brand || 'no') === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+            <label class="field"><span>Tipo de violencia</span><select name="violence"><option value="">— Elige —</option>${DT.VIOLENCE.map(([k, v]) => `<option value="${k}" ${(g.compliance || {}).violence === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
             <label class="field wide"><span>Créditos y licencias de los recursos</span><textarea name="credits" rows="2" placeholder="Arte y música originales; fuente X con licencia OFL…">${DT.esc((g.compliance || {}).credits || '')}</textarea></label>
           </div>
         </fieldset>
@@ -309,7 +309,7 @@ DivierteTEC.progress('puntos_1000', score);</pre></div>
       if (DT.hasBanned(text)) { DT.toast('El texto contiene palabras no permitidas por la moderación.', { kind: 'error' }); return; }
       Object.assign(g, { title: f.title.value.trim(), genre: f.genre.value, short: f.short.value.trim(), description: f.description.value.trim(),
         tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), format: f.format.value });
-      g.compliance = { age: f.age.value, brand: f.brand.value, credits: f.credits.value.trim() };
+      g.compliance = { age: f.age.value, violence: f.violence.value, credits: f.credits.value.trim() };
       g.cover = Object.assign({}, g.cover, { c1: f.c1.value, c2: f.c2.value, motif: f.motif.value, pattern: f.pattern.value });
       if (g.cover.art && !DT.art.hasIllustration(g)) delete g.cover.art;
       DT.save();

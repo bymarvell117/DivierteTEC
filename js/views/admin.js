@@ -3,7 +3,7 @@
 (function (DT) {
   'use strict';
 
-  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['criterios', 'Criterios TecNM', 'cap'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
+  const TABS = [['resumen', 'Resumen', 'chart'], ['revision', 'Revisión de juegos', 'eye'], ['criterios', 'Criterios de aprobación', 'shield'], ['juegos', 'Catálogo', 'grid'], ['finanzas', 'Finanzas', 'chart'], ['usuarios', 'Desarrolladores y usuarios', 'users'],
     ['reportes', 'Reportes', 'flag'], ['moderacion', 'Moderación', 'shield'], ['registro', 'Registro', 'clock']];
 
   DT.views.admin = (app, tab) => {
@@ -67,7 +67,7 @@
             <div class="row"><h3 style="margin:0">${DT.esc(g.title)}</h3>${flagged ? '<span class="pill bad">' + DT.icon.warn + ' Palabras filtradas</span>' : ''}<span class="pill">${DT.formatLabel[g.format]}</span></div>
             <small class="muted">${DT.esc(dev.name)} ${dev.verified ? '✔' : '(sin verificar)'} · enviado ${DT.timeAgo(g.submittedAt || g.createdAt)}</small>
             <p>${DT.esc(g.short)}</p>
-            <div class="row small muted">${g.format === 'html' ? `Archivos: ${g.files ? g.files.count + ' · ' + DT.fmtBytes(g.files.size) : 'integrado'}` : 'Descargable'} · ${(g.achievements || []).length} logros · Edad: <b>${DT.esc((g.compliance || {}).age || 'sin declarar')}</b></div>
+            <div class="row small muted">${g.format === 'html' ? `Archivos: ${g.files ? g.files.count + ' · ' + DT.fmtBytes(g.files.size) : 'integrado'}` : 'Descargable'} · ${(g.achievements || []).length} logros · Edad: <b>${DT.esc((g.compliance || {}).age || 'sin declarar')}</b> · Violencia: <b>${DT.esc(((DT.VIOLENCE.find((v) => v[0] === (g.compliance || {}).violence) || [])[1]) || 'sin declarar')}</b></div>
             ${criteriaBlock(g)}
             <div class="row">
               ${g.format === 'html' ? `<button class="btn ghost sm" data-test="${g.id}">${DT.icon.play} Probar juego</button>` : ''}
@@ -75,7 +75,7 @@
               <span class="spacer"></span>
               <button class="btn warn sm" data-decide="changes" data-gid="${g.id}">Pedir cambios</button>
               <button class="btn danger sm" data-decide="rejected" data-gid="${g.id}">${DT.icon.x} Rechazar</button>
-              <button class="btn success sm" data-decide="approved" data-gid="${g.id}" ${DT.criteriaStatus(g).every((x) => x.ok) ? '' : 'disabled title="Marca todos los criterios TecNM para aprobar"'}>${DT.icon.check} Aprobar</button>
+              <button class="btn success sm" data-decide="approved" data-gid="${g.id}" ${DT.criteriaStatus(g).every((x) => x.ok) ? '' : 'disabled title="Marca todos los criterios para aprobar"'}>${DT.icon.check} Aprobar</button>
             </div>
           </div></div>`;
       }).join('') || `<div class="empty-inline">${DT.icon.check} No hay juegos pendientes de revisión.</div>`}`;
@@ -96,10 +96,10 @@
       const g = DT.game(b.dataset.gid);
       const st = b.dataset.decide;
       let note = '';
-      if (st === 'approved' && !DT.criteriaStatus(g).every((x) => x.ok)) { DT.toast('Faltan criterios TecNM por cumplir.', { kind: 'warn' }); return; }
+      if (st === 'approved' && !DT.criteriaStatus(g).every((x) => x.ok)) { DT.toast('Faltan criterios por cumplir.', { kind: 'warn' }); return; }
       if (st !== 'approved') {
         const missing = DT.criteriaStatus(g).filter((x) => !x.ok).map((x) => '• ' + x.c.text);
-        note = await DT.prompt(st === 'rejected' ? 'Motivo del rechazo' : 'Cambios solicitados', 'Mensaje para el desarrollador', missing.length ? 'No cumple estos criterios de aprobación (referencia TecNM):\n' + missing.join('\n') : '');
+        note = await DT.prompt(st === 'rejected' ? 'Motivo del rechazo' : 'Cambios solicitados', 'Mensaje para el desarrollador', missing.length ? 'No cumple estos criterios de aprobación:\n' + missing.join('\n') : '');
         if (note == null) return;
       }
       g.status = st;
@@ -111,13 +111,13 @@
     });
   }
 
-  /* Lista de criterios TecNM de un juego: automáticos (✓/✗) y casillas para el admin */
+  /* Lista de criterios de aprobación de un juego: automáticos (✓/✗) y casillas para el admin */
   function criteriaBlock(g) {
     const st = DT.criteriaStatus(g), ok = st.filter((x) => x.ok).length;
     return `<div class="crit">
-      <div class="row"><b>${DT.icon.cap} Criterios de aprobación TecNM</b><span class="spacer"></span><small data-critcount>${ok} / ${st.length}</small><button class="btn ghost sm" data-critall="${g.id}">Marcar revisados</button></div>
+      <div class="row"><b>${DT.icon.shield} Criterios de aprobación</b><span class="spacer"></span><small data-critcount>${ok} / ${st.length}</small><button class="btn ghost sm" data-critall="${g.id}">Marcar revisados</button></div>
       <div class="crit-meter"><i style="width:${ok / st.length * 100}%"></i></div>
-      <div class="crit-groups">${DT.TECNM_CRITERIA.map((grp) => `<div class="crit-group"><h5>${DT.ic(grp.icon)} ${grp.group}</h5>${grp.items.map((c) => {
+      <div class="crit-groups">${DT.APPROVAL_CRITERIA.map((grp) => `<div class="crit-group"><h5>${DT.ic(grp.icon)} ${grp.group}</h5>${grp.items.map((c) => {
         const x = st.find((y) => y.c === c);
         return c.auto ? `<div class="crit-item auto ${x.ok ? 'ok' : 'bad'}">${x.ok ? DT.icon.check : DT.icon.x}<span>${c.text}</span><small>automático</small></div>`
           : `<label class="crit-item"><input type="checkbox" data-crit="${c.id}" data-gid="${g.id}" ${x.ok ? 'checked' : ''}><span>${c.text}</span></label>`;
@@ -127,11 +127,11 @@
 
   function criterios(body) {
     body.innerHTML = `
-      <div class="page-head"><div><h1>Criterios de aprobación TecNM</h1><p>Lo que revisa la administración antes de publicar un juego.</p></div></div>
-      <div class="notice">${DT.icon.cap} ${DT.TECNM_REF}</div>
-      <div class="grid cols-2">${DT.TECNM_CRITERIA.map((grp) => `<div class="card crit-card"><h3>${DT.ic(grp.icon)} ${grp.group}</h3>${grp.ref ? `<small class="muted">Referencia: ${grp.ref}</small>` : ''}
+      <div class="page-head"><div><h1>Criterios de aprobación</h1><p>Lista ligera enfocada en el contenido: lo que revisa la administración antes de publicar un juego.</p></div></div>
+      <div class="notice">${DT.icon.shield} ${DT.CRITERIA_REF}</div>
+      <div class="grid cols-2">${DT.APPROVAL_CRITERIA.map((grp) => `<div class="card crit-card"><h3>${DT.ic(grp.icon)} ${grp.group}</h3>${grp.ref ? `<small class="muted">Referencia: ${grp.ref}</small>` : ''}
         <ul class="crit-list">${grp.items.map((c) => `<li>${c.auto ? `<span class="pill ok">Automático</span>` : `<span class="pill">Revisión</span>`} ${c.text}</li>`).join('')}</ul></div>`).join('')}</div>
-      <div class="card"><h3>${DT.icon.chart} Flujo de revisión</h3><ol class="crit-flow"><li><b>El estudio se autoevalúa</b> en su panel y declara edad recomendada, uso de marcas y créditos.</li><li><b>Los criterios técnicos</b> se verifican solos (archivos, textos, logros, edad).</li><li><b>La administración prueba el juego</b> y marca los criterios de ética, identidad, propiedad intelectual, datos y calidad.</li><li><b>Aprobar</b> se habilita al cumplir todo; si falta algo, «Pedir cambios» redacta la nota con lo pendiente.</li></ol></div>`;
+      <div class="card"><h3>${DT.icon.chart} Flujo de revisión</h3><ol class="crit-flow"><li><b>El estudio se autoevalúa</b> en su panel y declara edad recomendada, tipo de violencia y créditos.</li><li><b>Los criterios técnicos</b> se verifican solos (archivos, ficha, violencia acorde a la edad, créditos).</li><li><b>La administración prueba el juego</b> y confirma los criterios de contenido: violencia, temas bélicos, odio, contenido adulto y seguridad.</li><li><b>Aprobar</b> se habilita al cumplir todo; si falta algo, «Pedir cambios» redacta la nota con lo pendiente.</li></ol></div>`;
   }
 
   function juegos(body, s) {

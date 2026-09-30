@@ -47,8 +47,9 @@ ejecuta `node tools/build-games.js` para regenerar `js/games/*.js`.
 - **Reseñas con 2 horas de juego:** estrellas, recomendación, horas jugadas, votos «útil», edición y resumen infográfico.
   Para la demo: menú de usuario → *Simular +1 h de juego*. Los juegos descargables registran tiempo con el lanzador de la biblioteca.
 - **Borradores automáticos** en el panel del juego y ventana **¿Seguro que quieres salir?** (Salir sin guardar · Guardar y salir · Cancelar).
-- **Criterios de aprobación TecNM** en el panel de admin (automáticos + revisión manual; *Aprobar* se habilita al cumplirlos),
-  pestaña de referencia y autoevaluación para el estudio. Basados en principios públicos del TecNM; no sustituyen sus lineamientos oficiales.
+- **Criterios de aprobación** ligeros y enfocados en el contenido: tipo de violencia acorde a la edad (sin violencia,
+  caricaturesca, combate/bélica sin sangre, realista), sin glorificar guerras o tragedias reales, sin odio ni contenido adulto,
+  créditos y seguridad. Los técnicos se verifican solos; *Aprobar* se habilita al cumplirlos. El estudio se autoevalúa en su panel.
 - **Retirar juegos publicados:** el estudio (y la administración, con motivo) puede retirar un juego de la tienda; quien ya lo tiene lo conserva.
 - **Arte propio sin emojis** (`js/art.js`): portadas ilustradas en SVG, portadas generativas, avatares, stickers, insignias e íconos.
 - **Animaciones** (`js/fx.js`): inclinación 3D, entrada escalonada, ondas, confeti, apertura del juego en círculo y contadores.

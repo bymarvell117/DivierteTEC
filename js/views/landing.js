@@ -122,7 +122,7 @@
             <p>Sube tu juego, define logros con un SDK de una línea y diseña tu página con imágenes, GIFs y videos en cualquier forma.</p>
             <a class="btn primary sm" href="#/dev" data-asdev>${DT.icon.code} Publicar mi juego</a></article>
           <article class="l-role in-view" style="--d:.24s"><div class="l-role-ico">${DT.icon.shield}</div><h3>Administradores</h3>
-            <p>Revisión con criterios del TecNM, verificación de estudios, reportes y filtro de palabras.</p></article>
+            <p>Revisión de contenido (violencia, temas bélicos, odio), verificación de estudios, reportes y filtro de palabras.</p></article>
         </div>
       </section>
 

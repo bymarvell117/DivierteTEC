@@ -90,47 +90,38 @@
       check: (s) => s.published >= 1 }
   ];
 
-  /* ---------- Criterios de aprobación (referencia TecNM) ----------
-     auto(g): se evalúa solo; los demás los confirma la persona que revisa. */
-  DT.TECNM_REF = 'Lista basada en principios públicos del Tecnológico Nacional de México (TecNM): su Código de Ética y Código de Conducta, el uso de la identidad institucional, la igualdad y no discriminación, la protección de datos personales y el respeto a la propiedad intelectual. Es una guía de referencia para la demostración y no sustituye los lineamientos oficiales del TecNM.';
+  /* ---------- Criterios de aprobación (contenido) ----------
+     Lista ligera: lo técnico se revisa solo y la persona que revisa confirma el contenido.
+     auto(g): se evalúa solo; los demás los confirma la administración. */
+  DT.CRITERIA_REF = 'Lista de referencia de la plataforma, inspirada en las clasificaciones por edad de videojuegos (tipo de violencia, lenguaje, temas sensibles). No sustituye una clasificación oficial.';
   DT.AGES = ['Todo público', '+10', '+13', '+16', '+18'];
-  DT.TECNM_CRITERIA = [
-    { group: 'Técnicos', icon: 'gear', items: [
+  DT.VIOLENCE = [['ninguna', 'Sin violencia'], ['caricatura', 'Caricaturesca o de fantasía, sin sangre'], ['combate', 'Combate, armas o guerra sin sangre'], ['realista', 'Realista o con sangre']];
+  DT.VIOLENCE_MIN_AGE = { ninguna: 0, caricatura: 0, combate: 2, realista: 3 }; // índice mínimo en DT.AGES
+  DT.APPROVAL_CRITERIA = [
+    { group: 'Técnico', icon: 'gear', items: [
       { id: 't_files', text: 'Archivos del juego o descargable válidos', auto: (g) => (g.format === 'html' ? !!(g.files || (DT.BUILTIN && DT.BUILTIN[g.id])) : !!g.download) },
-      { id: 't_desc', text: 'Descripción corta y descripción larga completas', auto: (g) => !!(g.short && g.description) },
-      { id: 't_words', text: 'Textos sin palabras bloqueadas por la moderación', auto: (g) => !DT.hasBanned([g.title, g.short, g.description, (g.tags || []).join(' ')].join(' ')) },
-      { id: 't_ach', text: 'Logros con identificador único y nombre', auto: (g) => { const ids = (g.achievements || []).map((a) => a.id); return new Set(ids).size === ids.length && (g.achievements || []).every((a) => a.id && a.name); } },
-      { id: 't_age', text: 'Edad recomendada declarada por el estudio', auto: (g) => !!(g.compliance && g.compliance.age) },
-      { id: 't_run', text: 'Se ejecuta sin errores bloqueantes en el modo de prueba' }
+      { id: 't_desc', text: 'Ficha completa y sin palabras bloqueadas', auto: (g) => !!(g.short && g.description) && !DT.hasBanned([g.title, g.short, g.description, (g.tags || []).join(' ')].join(' ')) },
+      { id: 't_run', text: 'Se juega sin errores bloqueantes en el modo de prueba' }
     ] },
-    { group: 'Ética y convivencia', icon: 'heart', ref: 'Código de Ética y Código de Conducta del TecNM', items: [
-      { id: 'e_respeto', text: 'Promueve el respeto: sin discursos de odio, acoso ni burlas a personas o grupos' },
-      { id: 'e_igualdad', text: 'Igualdad y no discriminación (género, origen, discapacidad, religión…) con representación respetuosa' },
-      { id: 'e_violencia', text: 'Sin violencia gráfica explícita, apología de delitos ni consumo de sustancias' },
-      { id: 'e_edad', text: 'El contenido corresponde a la edad recomendada declarada' }
+    { group: 'Violencia y contenido bélico', icon: 'shield', items: [
+      { id: 'v_decl', text: 'Tipo de violencia declarado y acorde a la edad recomendada', auto: (g) => { const c = g.compliance || {}; return !!c.age && !!c.violence && DT.AGES.indexOf(c.age) >= (DT.VIOLENCE_MIN_AGE[c.violence] || 0); } },
+      { id: 'v_grafica', text: 'Sin violencia gráfica extrema: tortura, mutilación o sangre gratuita' },
+      { id: 'v_real', text: 'Sin glorificar guerras, atentados o tragedias reales, ni propaganda de grupos armados o extremistas' }
     ] },
-    { group: 'Identidad institucional', icon: 'building', ref: 'Uso de la imagen del TecNM y de cada campus', items: [
-      { id: 'i_logos', text: 'Logotipos del TecNM o de un campus solo con autorización', auto: (g) => !g.compliance || g.compliance.brand !== 'sin' },
-      { id: 'i_mascotas', text: 'Mascotas, nombres y símbolos de los Tecnológicos usados con respeto' }
+    { group: 'Otros temas sensibles', icon: 'heart', items: [
+      { id: 's_odio', text: 'Sin discursos de odio, discriminación ni acoso' },
+      { id: 's_adulto', text: 'Sin contenido sexual explícito, apuestas con dinero real ni promoción de drogas' }
     ] },
-    { group: 'Propiedad intelectual', icon: 'note', ref: 'Derechos de autor', items: [
-      { id: 'p_recursos', text: 'Arte, música y código propios o con licencia compatible' },
-      { id: 'p_creditos', text: 'Créditos y licencias declarados por el estudio', auto: (g) => !!(g.compliance && (g.compliance.credits || '').trim()) }
-    ] },
-    { group: 'Datos personales y seguridad', icon: 'shield', ref: 'Protección de datos personales', items: [
-      { id: 'd_datos', text: 'No recaba datos personales sin aviso de privacidad' },
-      { id: 'd_seguro', text: 'Sin código malicioso, minería ni enlaces externos no declarados' }
-    ] },
-    { group: 'Calidad y accesibilidad', icon: 'eye', items: [
-      { id: 'c_controles', text: 'Controles explicados dentro del juego o en su ficha' },
-      { id: 'c_legible', text: 'Textos legibles y con contraste suficiente' }
+    { group: 'Derechos y seguridad', icon: 'note', items: [
+      { id: 'p_creditos', text: 'Créditos y licencias de los recursos declarados', auto: (g) => !!(g.compliance && (g.compliance.credits || '').trim()) },
+      { id: 'd_seguro', text: 'Sin código malicioso ni recolección de datos personales sin aviso' }
     ] }
   ];
   /* Estado de cada criterio: auto → calculado; manual → marcado por el admin */
   DT.criteriaStatus = (g) => {
     const checks = (g.review && g.review.checks) || {};
     const out = [];
-    DT.TECNM_CRITERIA.forEach((grp) => grp.items.forEach((c) => out.push({ c, grp, auto: !!c.auto, ok: c.auto ? !!c.auto(g) : !!checks[c.id] })));
+    DT.APPROVAL_CRITERIA.forEach((grp) => grp.items.forEach((c) => out.push({ c, grp, auto: !!c.auto, ok: c.auto ? !!c.auto(g) : !!checks[c.id] })));
     return out;
   };
 
@@ -291,10 +282,10 @@
       g.storeLayout = g.storeLayout || DT.defaultStoreLayout(g);
       g.libraryLayout = g.libraryLayout || DT.defaultLibraryLayout(g);
       g.reviewNote = '';
-      g.compliance = g.compliance || { age: 'Todo público', brand: 'no', credits: 'Arte, sonido y código originales del Equipo Maravilla.' };
+      g.compliance = g.compliance || { age: 'Todo público', violence: 'ninguna', credits: 'Arte, sonido y código originales del Equipo Maravilla.' };
     });
-    byId0(games, 'g_furia').compliance = { age: '+10', brand: 'no', credits: 'Mascotas de los Tecnológicos de Guanajuato representadas como homenaje, sin logotipos. Motor WebGL, modelos y arte originales del Equipo Maravilla.' };
-    byId0(games, 'g_mecaquack').compliance = { age: 'Todo público', brand: 'no', credits: 'Arte y código originales del Equipo Maravilla (ITESI).' };
+    byId0(games, 'g_furia').compliance = { age: '+10', violence: 'caricatura', credits: 'Mascotas de los Tecnológicos de Guanajuato representadas como homenaje, sin logotipos. Motor WebGL, modelos y arte originales del Equipo Maravilla.' };
+    byId0(games, 'g_mecaquack').compliance = { age: 'Todo público', violence: 'caricatura', credits: 'Arte y código originales del Equipo Maravilla (ITESI).' };
 
     return {
       version: 10,
