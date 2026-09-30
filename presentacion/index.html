@@ -150,6 +150,50 @@
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
   @media (prefers-reduced-motion: reduce) { .wall .lane, .float, .kb img { animation: none !important; } }
+
+  /* Diagrama de flujo con carriles */
+  .flowsvg { position: relative; margin-top: 16px; flex: 1; min-height: 0; }
+  .flowsvg svg { width: 100%; height: 100%; overflow: visible; }
+  .lane-bg { fill: #fff; stroke: var(--line); }
+  .lane-t { font: 900 13px "Noto Sans", system-ui, sans-serif; letter-spacing: 2px; fill: #fff; }
+  .node rect { rx: 8; }
+  .node text { font: 800 15px "Noto Sans", system-ui, sans-serif; fill: var(--navy); }
+  .node .w { fill: #fff; }
+  .edge { fill: none; stroke: var(--blue); stroke-width: 3.2; stroke-linecap: round; marker-end: url(#arw); stroke-dasharray: 1400; stroke-dashoffset: 1400; }
+  .edge.back { stroke: #e0467c; marker-end: url(#arr); stroke-dasharray: 8 7; stroke-dashoffset: 0; opacity: 0; }
+  .on .edge { animation: drawEdge 1s ease forwards; animation-delay: calc(var(--d, 0) * 1s + .3s); }
+  .on .edge.back { animation: showEdge .8s ease forwards, dashRun 1.2s linear infinite; animation-delay: calc(var(--d, 0) * 1s + .3s), 0s; }
+  @keyframes drawEdge { to { stroke-dashoffset: 0; } }
+  @keyframes showEdge { to { opacity: 1; } }
+  @keyframes dashRun { to { stroke-dashoffset: -30; } }
+  .pulse { animation: pulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes pulse { 50% { transform: scale(1.06); } }
+
+  /* Progreso del desarrollo */
+  .cycle { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+  .cycle .st { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line); padding: 10px 14px; font-size: 16px; white-space: nowrap; font-weight: 800; color: var(--navy); }
+  .cycle .st i { font-style: normal; width: 30px; height: 30px; display: grid; place-items: center; background: var(--blue); color: #fff; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%); }
+  .cycle .ar { color: var(--blue); font-weight: 900; font-size: 22px; }
+  .cycle .loop { margin-left: 6px; font-size: 13px; color: #e0467c; font-weight: 800; }
+  .stats3 { position: absolute; right: 72px; top: 60px; display: flex; gap: 30px; }
+  .stats3 div { text-align: right; } .stats3 b { display: block; font-size: 44px; line-height: 1; font-weight: 900; color: var(--blue); } .stats3 span { font-size: 13px; color: var(--muted); font-weight: 700; }
+  .tl { position: relative; margin-top: 30px; height: 330px; }
+  .tl .tlaxis { position: absolute; left: 0; right: 0; top: 150px; height: 6px; background: linear-gradient(90deg, var(--blue), var(--blue2)); border-radius: 3px; transform-origin: left; }
+  .on .tl .tlaxis { animation: grow 1.6s cubic-bezier(.2,.8,.2,1) both .2s; }
+  @keyframes grow { from { transform: scaleX(0); } }
+  .tl .day { position: absolute; top: 318px; padding: 3px 10px; background: #e6f0ff; color: var(--blue) !important; font-size: 13px; font-weight: 900; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .ev { position: absolute; width: 132px; font-size: 13px; line-height: 1.25; color: var(--navy); font-weight: 700; }
+  .ev::before { content: ""; position: absolute; left: 12px; width: 2px; background: var(--line); }
+  .ev.up { bottom: 190px; } .ev.up::before { top: 100%; height: calc(190px - 150px + 4px - 100% + 100%); height: 40px; }
+  .ev.dn { top: 196px; } .ev.dn::before { bottom: 100%; height: 40px; }
+  .ev .dot { position: absolute; left: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--blue); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--blue); }
+  .ev.up .dot { bottom: -47px; } .ev.dn .dot { top: -47px; }
+  .ev small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; font-family: ui-monospace, monospace; }
+  .ev.fix { color: #b4234f; } .ev.fix .dot { background: #e0467c; box-shadow: 0 0 0 2px #e0467c; }
+  .ev.hot .dot { width: 18px; height: 18px; left: 4px; }
+  .legend { display: flex; gap: 18px; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 26px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--blue); margin-right: 6px; vertical-align: -1px; }
+  .legend i.f { background: #e0467c; }
 </style>
 </head>
 <body>
@@ -254,6 +298,68 @@
     <aside>(≈35 s) Para un estudio, publicar es <b>gratis</b>: sube su juego, agrega logros con una línea de código, diseña su página con un editor visual, pasa una <b>revisión de contenido</b> y llega a la tienda, donde ve sus <b>ventas y estadísticas</b>.</aside>
   </section>
 
+  <!-- 7 · DIAGRAMA DE FLUJO -->
+  <section class="slide">
+    <p class="kicker" data-a>Diagrama de flujo</p>
+    <h1 data-a style="--d:.1">Cómo <em>fluye</em> DivierteTEC</h1>
+    <div class="flowsvg" data-a style="--d:.2">
+      <svg viewBox="0 0 1136 470" role="img" aria-label="Flujo de uso de DivierteTEC en tres carriles: estudio, administración y jugador">
+        <defs>
+          <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a6fd8"/></marker>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#e0467c"/></marker>
+        </defs>
+        <!-- carriles -->
+        <g><rect class="lane-bg" x="0" y="0" width="1136" height="130" rx="10"/><rect x="0" y="0" width="120" height="130" rx="10" fill="#7c3aed"/><text class="lane-t" x="16" y="70">ESTUDIO</text></g>
+        <g><rect class="lane-bg" x="0" y="160" width="1136" height="130" rx="10"/><rect x="0" y="160" width="120" height="130" rx="10" fill="#0f766e"/><text class="lane-t" x="16" y="224">ADMIN</text></g>
+        <g><rect class="lane-bg" x="0" y="320" width="1136" height="150" rx="10"/><rect x="0" y="320" width="120" height="150" rx="10" fill="#1a6fd8"/><text class="lane-t" x="16" y="398">JUGADOR</text></g>
+        <!-- estudio -->
+        <g class="node"><rect x="150" y="38" width="190" height="54" fill="#f1ebff" stroke="#7c3aed"/><text x="245" y="71" text-anchor="middle">Sube su juego</text></g>
+        <g class="node"><rect x="380" y="38" width="190" height="54" fill="#f1ebff" stroke="#7c3aed"/><text x="475" y="71" text-anchor="middle">Logros con SDK</text></g>
+        <g class="node"><rect x="610" y="38" width="190" height="54" fill="#f1ebff" stroke="#7c3aed"/><text x="705" y="71" text-anchor="middle">Diseña su página</text></g>
+        <g class="node"><rect x="840" y="38" width="200" height="54" fill="#7c3aed"/><text class="w" x="940" y="71" text-anchor="middle">Envía a revisión</text></g>
+        <path class="edge" style="--d:.4" d="M340 65H374"/><path class="edge" style="--d:.55" d="M570 65H604"/><path class="edge" style="--d:.7" d="M800 65H834"/>
+        <!-- admin -->
+        <path class="edge" style="--d:.85" d="M940 92V192"/>
+        <g class="node"><rect x="820" y="198" width="240" height="54" fill="#e3f5f2" stroke="#0f766e"/><text x="940" y="224" text-anchor="middle">10 criterios de contenido</text><text x="940" y="243" text-anchor="middle" style="font-size:12px;fill:#5a6a86">4 automáticos + revisión</text></g>
+        <g class="node pulse"><rect x="560" y="198" width="190" height="54" fill="#0f766e"/><text class="w" x="655" y="231" text-anchor="middle">¿Aprobado?</text></g>
+        <path class="edge" style="--d:1" d="M820 225H756"/>
+        <path class="edge back" style="--d:1.15" d="M560 225H300V98"/><text x="330" y="216" style="font:800 13px sans-serif;fill:#e0467c">No: pide cambios</text>
+        <path class="edge" style="--d:1.2" d="M655 252V336H235V356"/><text x="665" y="300" style="font:800 13px sans-serif;fill:#0f766e">Sí: se publica</text>
+        <!-- jugador -->
+        <g class="node"><rect x="150" y="362" width="170" height="54" fill="#e6f0ff" stroke="#1a6fd8"/><text x="235" y="395" text-anchor="middle">Tienda</text></g>
+        <g class="node"><rect x="360" y="362" width="190" height="54" fill="#1a6fd8"/><text class="w" x="455" y="395" text-anchor="middle">Juega al instante</text></g>
+        <g class="node"><rect x="590" y="362" width="200" height="54" fill="#e6f0ff" stroke="#1a6fd8"/><text x="690" y="386" text-anchor="middle">Paga lo que quieras</text><text x="690" y="405" text-anchor="middle" style="font-size:12px;fill:#5a6a86">o con el Pase</text></g>
+        <g class="node"><rect x="830" y="362" width="210" height="54" fill="#e6f0ff" stroke="#1a6fd8"/><text x="935" y="386" text-anchor="middle">Logros y reseña</text><text x="935" y="405" text-anchor="middle" style="font-size:12px;fill:#5a6a86">reseña tras 2 h de juego</text></g>
+        <path class="edge" style="--d:1.4" d="M320 389H354"/><path class="edge" style="--d:1.55" d="M550 389H584"/><path class="edge" style="--d:1.7" d="M790 389H824"/>
+        <path class="edge back" style="--d:1.9" d="M1040 389H1100V65H1046"/><text x="1090" y="308" style="font:800 13px sans-serif;fill:#e0467c" text-anchor="end">Ingresos y opiniones regresan al estudio</text>
+      </svg>
+    </div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>7</span></div>
+    <aside>(≈30 s) Así fluye la plataforma. El <b>estudio</b> sube su juego, integra logros y envía a revisión. La <b>administración</b> revisa 10 criterios: si falta algo, regresa al estudio; si se aprueba, se publica. El <b>jugador</b> lo juega al instante, apoya al estudio y reseña. Y los ingresos y opiniones regresan al estudio para mejorar.</aside>
+  </section>
+
+  <!-- 8 · PROGRESO DEL DESARROLLO -->
+  <section class="slide">
+    <p class="kicker" data-a>Proceso de desarrollo</p>
+    <h1 data-a style="--d:.1">Así lo <em>construimos</em></h1>
+    <div class="cycle" data-a style="--d:.25">
+      <div class="st"><i>1</i>Requisito</div><span class="ar">→</span>
+      <div class="st"><i>2</i>Implementar</div><span class="ar">→</span>
+      <div class="st"><i>3</i>Probar</div><span class="ar">→</span>
+      <div class="st"><i>4</i>Corregir</div><span class="ar">→</span>
+      <div class="st"><i>5</i>Publicar</div>
+      <span class="loop">↺ se repite</span>
+    </div>
+    <div class="stats3" data-a style="--d:.3"><div><b data-count="15">15</b><span>versiones</span></div><div><b data-count="3">3</b><span>correcciones</span></div><div><b data-count="2">2</b><span>días</span></div></div>
+    <div class="tl" data-tl>
+      <div class="tlaxis"></div>
+      <span class="day" style="left:0">29 sep 2026</span><span class="day" style="left:639px">30 sep 2026</span>
+    </div>
+    <div class="legend" data-a style="--d:1.6"><span><i></i>Nueva función</span><span><i class="f"></i>Corrección</span><span>Fuente: historial de versiones (git) del proyecto</span></div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>8</span></div>
+    <aside>(≈30 s) Trabajamos en ciclos cortos: requisito, implementación, <b>prueba automática en el navegador</b>, corrección y publicación. En dos días hicimos 15 versiones: la plataforma, los juegos, Mecaquack, la fase de jugar primero, la depuración de datos, los criterios y la FAQ. Y quedaron registradas 3 correcciones, como la tienda vacía por juegos sin precio.</aside>
+  </section>
+
   <!-- 7 · MODELO DE NEGOCIO -->
   <section class="slide">
     <p class="kicker" data-a>Modelo de negocio</p>
@@ -273,7 +379,7 @@
         <div><b>Steam</b>La referencia: 30 % en su tramo estándar. Nosotros: 0 % a 12 %.</div>
       </div>
     </div>
-    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>7</span></div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>9</span></div>
     <aside>(≈50 s) Nuestro modelo: <b>ganamos cuando el estudio gana</b>. Todo juego gratuito es Paga lo que quieras. Los estudios del TecNM no pagan comisión en sus primeros 2,000 pesos y después pagan 12 %. El 70 % del Pase va a los estudios. Y no es una apuesta a ciegas: <b>itch.io</b> y <b>Humble Bundle</b> ya demostraron el «paga lo que quieras», y <b>Epic</b> atrajo estudios cobrando 12 % frente al 30 % de Steam.</aside>
   </section>
 
@@ -290,7 +396,7 @@
       <div class="sc" data-a style="--d:.75"><div class="L">E</div><h4>Eliminar</h4><p>La barrera de pago</p></div>
       <div class="sc" data-a style="--d:.85"><div class="L">R</div><h4>Reordenar</h4><p>Primero jugar, luego explicar</p></div>
     </div>
-    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>8</span></div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>10</span></div>
     <aside>(≈40 s) Validamos con SCAMPER sobre cambios reales: <b>sustituimos</b> emojis por arte propio, <b>combinamos</b> tienda, biblioteca y SDK, <b>adaptamos</b> Mecaquack, <b>modificamos</b> las reseñas, le dimos <b>otro uso</b> como medio de aprendizaje, <b>eliminamos</b> la barrera de pago y <b>reordenamos</b> la bienvenida para jugar primero.</aside>
   </section>
 
@@ -305,7 +411,7 @@
       <div class="axis" data-a style="--d:.75"><span class="ph">[Eje oficial 4]</span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><b>Contenido responsable</b><p>Revisión de violencia, odio y contenido adulto.</p></div>
     </div>
     <span class="todo" data-a style="--d:.9">Completar con los nombres oficiales de la Convocatoria InnovaTecNM 2026.</span>
-    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>9</span></div>
+    <div class="foot"><span class="brand">Divierte<b>TEC</b></span><span>11</span></div>
     <aside>(≈25 s) [Ajustar a los ejes oficiales.] DivierteTEC incluye: juegos desde $0 y sin internet. Educa. Impulsa la economía regional con 0 % de comisión para quien empieza. Y cuida el contenido.</aside>
   </section>
 
@@ -341,6 +447,33 @@
     w.innerHTML = [0, 1, 2].map((r) => { const row = IMGS.slice(r * 4).concat(IMGS.slice(0, r * 4)).slice(0, 6); return `<div class="lane">${row.concat(row).map((n) => `<img src="img/${n}.jpg" alt="">`).join('')}</div>`; }).join('');
   });
 
+
+  /* Línea de tiempo real (git log) */
+  const TL = [
+    ['4e0ebea', 'Plataforma base: tienda, biblioteca, dev y admin', 0, 'up'],
+    ['51b9167', 'Juegos jugables y modelo de negocio', 0, 'dn'],
+    ['b4234d5', 'Mecaquack integrado y diseño angular', 0, 'up'],
+    ['1048a5b', 'Aerodron 3D en WebGL', 0, 'dn'],
+    ['2dff3f4', 'Hélices siguen la inclinación del dron', 1, 'up'],
+    ['527f065', 'Furia TEC cooperativo', 0, 'dn'],
+    ['d09c6e5', 'Furia TEC 1 vs 1 y escenarios', 0, 'up'],
+    ['2478a14', 'Tienda y Pase vacíos por juegos sin precio', 1, 'dn'],
+    ['663812e', 'Jugar primero, reseñas con 2 h, arte propio', 0, 'up'],
+    ['3f4f40b', 'Se eliminan datos inventados de la demo', 1, 'dn'],
+    ['5a48daf', 'Criterios de contenido', 0, 'up'],
+    ['37bf9a0', 'FAQ y trato preferente TecNM', 0, 'dn'],
+    ['4687ef2', 'Juego personal (no comercial)', 0, 'up'],
+    ['7bc9f5b', 'Presentación para el jurado', 0, 'dn'],
+    ['5484be2', 'Presentación visual', 0, 'up']
+  ];
+  const tlBox = document.querySelector('[data-tl]');
+  if (tlBox) TL.forEach(([h, t, fix, pos], i) => {
+    const x = i * 71, el = document.createElement('div');
+    el.className = 'ev ' + pos + (fix ? ' fix' : '');
+    el.setAttribute('data-a', ''); el.style.cssText = `left:${x}px;--d:${(0.4 + i * 0.08).toFixed(2)}`;
+    el.innerHTML = `<span class="dot"></span><small>${h}</small>${t}`;
+    tlBox.appendChild(el);
+  });
   /* Escala 16:9 a la ventana */
   const fit = () => { stage.style.transform = `scale(${Math.min(innerWidth / 1280, innerHeight / 720)})`; };
   addEventListener('resize', fit); fit();

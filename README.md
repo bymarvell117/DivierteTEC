@@ -113,7 +113,7 @@ reseñas que lo usan lo indican.
 ## Presentación ante el jurado
 
 Abre **`presentacion/index.html`** con doble clic; funciona sin internet.
-- **Contenido:** 10 diapositivas visuales para los **7 minutos de exposición** de una sola persona, con capturas reales de la plataforma en `presentacion/img/`. Recorren el problema, la plataforma, los juegos, jugadores, estudios, el modelo de negocio con sus antecedentes (itch.io, Humble Bundle, Epic, Steam), SCAMPER y los ejes transversales.
+- **Contenido:** 12 diapositivas visuales para los **7 minutos de exposición** de una sola persona, con capturas reales de la plataforma en `presentacion/img/`. Recorren el problema, la plataforma, los juegos, jugadores, estudios, el **diagrama de flujo** de la plataforma, el **progreso del desarrollo y sus correcciones** (tomado del historial de versiones), el modelo de negocio con sus antecedentes (itch.io, Humble Bundle, Epic, Steam), SCAMPER y los ejes transversales.
 - **Controles:**
   - ← → / espacio / clic: navegar;
   - **N**: notas del orador;
