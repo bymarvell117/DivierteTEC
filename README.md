@@ -110,6 +110,20 @@ empiezan en $0 (dinero simulado). Todo lo que aparece se genera en vivo durante 
 presentación. *Simular +1 h* (menú de usuario) queda marcado como simulación, y las
 reseñas que lo usan lo indican.
 
+## Presentación ante el jurado
+
+Abre **`presentacion/index.html`** con doble clic; funciona sin internet.
+- **Contenido:** 10 diapositivas pensadas para los **7 minutos de exposición** a cargo de una sola persona: problema, propuesta, metodología, especificación técnica, ejes transversales, Business Model Canvas, SCAMPER y costos. Siguen la estructura del Entregable HackaTec 2026.
+- **Controles:**
+  - ← → / espacio / clic: navegar;
+  - **N**: notas del orador con el tiempo sugerido;
+  - **T**: cronómetro de 7:00;
+  - **F**: pantalla completa.
+- **Paso a la demostración:** la última diapositiva abre la plataforma para los 7 minutos de demostración.
+- **Antes de presentar:** completar los **ejes transversales oficiales** (marcados en amarillo) y los montos marcados como **[cotizar]**.
+- **Respaldo en PDF:** Imprimir → Guardar como PDF (una diapositiva por hoja).
+- **Fuentes:** las cifras del problema citan su fuente en la propia diapositiva; la proyección de ingresos está rotulada como supuesto.
+
 ## Flujo para la presentación
 
 1. **Bienvenida** (`#/`): animación de entrada y revelado al hacer scroll.
