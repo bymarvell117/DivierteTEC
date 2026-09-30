@@ -107,6 +107,12 @@ Detalles en [docs/MODELO-DE-NEGOCIO.md](docs/MODELO-DE-NEGOCIO.md).
   La administración marca los criterios y puede **aprobar** (la cuenta pasa a desarrollador), **rechazar** o **pedir más información**. En el prototipo los documentos se guardan en IndexedDB del navegador; en el sitio web se enviarían cifrados y se borrarían al terminar la revisión.
 - **FAQ** (`#/faq`, en la barra superior). Responde cómo se enlaza con los TecNM, límites de contenido, rendimiento, aprendizaje, fin del proyecto, complejidad de los juegos, comisiones, cooperativo, beneficios para estudiantes, ejes transversales, cómo ser desarrollador y cómo verificarse como TecNM. Las comisiones se leen de la configuración actual.
 
+## Social y sesión de demostración
+
+- **Buscar perfiles** en *Comunidad* (nombre, estudio o campus). Desde cualquier perfil se puede **seguir**, **añadir amigo** (la otra cuenta acepta o rechaza la solicitud; hay un aviso en la barra), **compartir** el enlace, **reportar** y **bloquear** (quita amistad y seguimiento, e impide nuevas solicitudes; las reseñas de la cuenta bloqueada se ocultan). El perfil propio muestra seguidores, siguiendo, amigos, solicitudes pendientes y cuentas bloqueadas.
+- **Sesión (placeholder)**: *Cerrar sesión* en el menú de usuario; con la sesión cerrada solo se ven bienvenida, tienda y FAQ, y jugar o comprar piden entrar. **Iniciar sesión** (`#/entrar`) con nombre o correo, o con un clic en las cuentas de la demo. **Registrarse** (`#/registro`) crea una cuenta real en el navegador y, en el mismo flujo, ofrece **Registrarme como TecNM** o **Hacerlo más tarde**. La contraseña no se valida ni se guarda en el prototipo.
+- No hay cuentas ni amistades sembradas: solo las 3 de la demo y las que se registren en vivo.
+
 ## Cómo abrirla
 
 Haz **doble clic en `index.html`**. El prototipo no necesita servidor, instalación ni
@@ -186,6 +192,8 @@ js/theme.js              Temas y efectos de partículas
 js/rewards.js            Motor de logros → recompensas
 js/economy.js            Monedero, compras, comisiones, Pase, promociones y libro de transacciones
 js/verify.js             Solicitud para ser desarrollador, verificación TecNM y su revisión en admin
+js/social.js             Seguir, amistad, bloquear, compartir y búsqueda de perfiles
+js/auth.js               Sesión de demostración: entrar, registrarse (con paso TecNM) y cerrar sesión
 js/games/*.js            Juegos integrados empaquetados (generados)
 games/*/index.html       Código fuente de los juegos integrados
 tools/build-games.js     Empaqueta games/ en js/games/

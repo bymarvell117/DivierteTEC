@@ -91,6 +91,16 @@
         </ul>
         <p>No es una alianza formal exclusiva entre el TecNM y el Parque Irekua, pero el ITESI, el municipio y el Centro de Educación Ambiental ya forman un ecosistema de colaboración. Además, abre la puerta a proyectos de residencia, servicio social o vinculación, por ejemplo de Ingeniería Electromecánica (paneles solares, bombeo, automatización y eficiencia energética).</p>
         <p class="muted">El acuerdo se formalizará con el Parque Irekua al lanzar el sitio web. En esta demostración el dinero es simulado; los totales se ven en <a href="#/planes">Pase → Transparencia</a>.</p>` },
+      { q: '¿Puedo seguir a otros jugadores o agregar amigos?', icon: 'users', a: `
+        <p><b>Sí.</b> En <a href="#/comunidad">Comunidad → Buscar perfiles</a> encuentras cuentas por nombre, estudio o campus. Desde cualquier perfil puedes:</p>
+        <ul>
+          <li><b>Seguir</b> a jugadores y estudios.</li>
+          <li><b>Añadir amigo:</b> la otra cuenta recibe la solicitud y la acepta o rechaza.</li>
+          <li><b>Compartir</b> el enlace del perfil.</li>
+          <li><b>Reportar</b> un perfil a la administración.</li>
+          <li><b>Bloquear:</b> esa cuenta ya no puede seguirte ni enviarte solicitudes y sus reseñas se ocultan para ti.</li>
+        </ul>
+        <p class="muted">Al registrarte puedes verificarte como TecNM en ese momento o hacerlo más tarde. En el prototipo, iniciar sesión y registrarse son simulados: la contraseña no se valida ni se guarda.</p>` },
       { q: '¿Pueden ser cooperativos (co-op) los juegos?', icon: 'gamepad', a: `
         <p><b>Sí, en cooperativo local.</b> <b>Furia TEC</b> se juega entre 2 personas en la misma computadora, con teclado o mandos de Xbox, e incluye ataques combinados y revivir al compañero. Cualquier estudio puede hacer juegos para varias personas en el mismo equipo.</p>
         <p class="muted">El multijugador en línea no forma parte del prototipo, que funciona sin conexión. Al estar en el sitio web, es una ampliación posible para una siguiente etapa; mientras tanto, un juego que lo necesite puede usar sus propios servidores.</p>` },

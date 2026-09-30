@@ -13,6 +13,8 @@
     [/^#\/faq$/, 'faq'],
     [/^#\/verificacion-tecnm$/, 'tecnm'],
     [/^#\/ser-desarrollador$/, 'devRequest'],
+    [/^#\/entrar$/, 'login'],
+    [/^#\/registro$/, 'signup'],
     [/^#\/perfil(?:\/([\w-]+))?$/, 'profile'],
     [/^#\/dev$/, 'dev', 'dev'],
     [/^#\/dev\/juego\/([\w-]+)$/, 'devGame', 'dev'],
@@ -58,6 +60,7 @@
     const y = scrollY;
     if (current.cleanup) { try { current.cleanup(); } catch (e) { console.error(e); } }
     if (!found) found = { name: 'notFound', params: [] };
+    if (!DT.isLoggedIn() && !DT.PUBLIC_ROUTES.includes(found.name)) { location.replace('#/entrar'); return; }
     current = found;
     document.body.dataset.route = found.name;
     app.classList.toggle('enter', !keepScroll); // animación de entrada solo al navegar
@@ -94,6 +97,24 @@
       <p>Este nivel no existe… todavía.</p><a class="btn primary" href="#/tienda">Ir a la tienda</a></section>`;
   };
 
+  /* ---------- Barra superior con la sesión cerrada ---------- */
+  const renderGuestbar = (r, isActive, dark) => {
+    DT.$('#topbar').innerHTML = `
+      <div class="topbar-inner">
+        <a class="brand" href="#/" aria-label="DivierteTEC inicio"><span class="brand-mark">D</span><span class="brand-name">Divierte<b>TEC</b></span></a>
+        <button class="icon-btn nav-toggle" aria-label="Menú" data-navtoggle>${DT.icon.grid}</button>
+        <nav class="mainnav" data-nav>
+          <a href="#/tienda" class="${isActive(['store', 'gamePage'])}">TIENDA</a>
+          <a href="#/faq" class="${isActive(['faq'])}">FAQ</a>
+        </nav>
+        <div class="topbar-right">
+          <button class="icon-btn" data-dark title="${dark ? 'Tema claro' : 'Tema oscuro'}" aria-label="Cambiar tema">${dark ? DT.icon.sun : DT.icon.moon}</button>
+          <a class="btn ghost sm ${isActive(['login'])}" href="#/entrar">${DT.icon.login} Iniciar sesión</a>
+          <a class="btn primary sm ${isActive(['signup'])}" href="#/registro">${DT.icon.userPlus} Registrarse</a>
+        </div>
+      </div>`;
+  };
+
   /* ---------- Barra superior ---------- */
   DT.renderTopbar = () => {
     const me = DT.me();
@@ -101,6 +122,8 @@
     const isActive = (names) => names.includes(r) ? 'active' : '';
     const eq = DT.equipped();
     const dark = eq.theme && eq.theme !== 'light';
+    if (!DT.isLoggedIn()) return renderGuestbar(r, isActive, dark);
+    const freq = DT.pendingFriendRequests(me.id);
     const unread = me.role === 'admin' ? DT.state().reports.filter((x) => x.status === 'open').length + DT.catalogGames().filter((g) => g.status === 'pending').length + DT.pendingRequests() : 0;
     DT.$('#topbar').innerHTML = `
       <div class="topbar-inner">
@@ -116,7 +139,7 @@
           <a href="#/faq" class="${isActive(['faq'])}">FAQ</a>
           ${me.role === 'dev' || me.role === 'admin' ? `<a href="#/dev" class="${isActive(['dev', 'devGame', 'editor'])}">DESARROLLADOR</a>` : ''}
           ${me.role === 'admin' ? `<a href="#/admin" class="${isActive(['admin'])}">ADMIN${unread ? `<span class="badge-count">${unread}</span>` : ''}</a>` : ''}
-          <a href="#/perfil" class="nav-user ${isActive(['profile'])}">${DT.esc(me.name.toUpperCase())}</a>
+          <a href="#/perfil" class="nav-user ${isActive(['profile'])}" ${freq ? `title="${freq} solicitud(es) de amistad"` : ''}>${DT.esc(me.name.toUpperCase())}${freq ? `<span class="badge-count">${freq}</span>` : ''}</a>
         </nav>
         <div class="topbar-right">
           <button class="wallet-chip" data-wallet title="Mi monedero">${DT.hasPass() ? DT.icon.ticket : DT.icon.wallet}<span class="amt"> ${DT.money(DT.wallet())}</span></button>
@@ -125,15 +148,18 @@
             <button class="user-chip" data-rolemenu aria-haspopup="true">${DT.avatarHTML(me, 30)}<span class="role-tag role-${me.role}">${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Admin' }[me.role]}</span>${DT.icon.chevDown}</button>
             <div class="dropdown" data-dropdown hidden>
               <div class="dropdown-title">Cambiar de rol (demo)</div>
-              ${DT.state().users.filter((u) => ['u_player', 'u_maravilla', 'u_admin'].includes(u.id)).map((u) => `
+              ${DT.state().users.filter((u) => ['u_player', 'u_maravilla', 'u_admin'].includes(u.id) || u.email).map((u) => `
                 <button class="dropdown-item ${u.id === me.id ? 'current' : ''}" data-switch="${u.id}">
                   ${DT.avatarHTML(u, 26)}<span><b>${DT.esc(u.name)}</b><small>${{ user: 'Usuario', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}</small></span></button>`).join('')}
               <hr>
               <a class="dropdown-item" href="#/perfil">${DT.icon.gift}<span>Perfil y recompensas</span></a>
+              <a class="dropdown-item" href="#/comunidad" data-findpeople>${DT.icon.search}<span>Buscar perfiles<small>${freq ? `${freq} solicitud(es) de amistad` : 'Sigue y agrega amigos'}</small></span></a>
               <a class="dropdown-item" href="#/verificacion-tecnm">${DT.ic('cap')}<span>Verificación TecNM<small>${DT.isTecnm(me) ? 'Cuenta verificada' : 'Beneficios exclusivos'}</small></span></a>
               ${me.role === 'user' ? `<a class="dropdown-item" href="#/ser-desarrollador">${DT.ic('code')}<span>Quiero ser desarrollador<small>Solicitud revisada por la administración</small></span></a>` : ''}
               <button class="dropdown-item" data-simulate>${DT.icon.clock}<span>Simular +1 h de juego<small>Simulación para la presentación · ${['gamePage', 'library'].includes(r) && current.params[0] ? 'en este juego' : 'en toda tu biblioteca'}</small></span></button>
               <button class="dropdown-item" data-reset>${DT.icon.reset}<span>Restablecer demo</span></button>
+              <hr>
+              <button class="dropdown-item" data-logout>${DT.icon.logout}<span>Cerrar sesión<small>Demostración</small></span></button>
             </div>
           </div>
         </div>
@@ -148,7 +174,10 @@
     const dd = DT.$('[data-dropdown]');
     if (t.closest('[data-rolemenu]')) { dd.hidden = !dd.hidden; return; }
     const sw = t.closest('[data-switch]');
+    if (t.closest('[data-logout]')) { dd.hidden = true; DT.logout(); return; }
+    if (t.closest('[data-findpeople]')) { dd.hidden = true; setTimeout(() => { const q = DT.$('[data-peopleq]'); if (q) q.focus(); }, 350); }
     if (sw) {
+      DT.state().loggedOut = false;
       DT.state().currentUserId = sw.dataset.switch;
       DT.applyTheme();
       DT.rewards.checkPlatform();

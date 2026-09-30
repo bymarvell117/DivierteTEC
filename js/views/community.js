@@ -2,6 +2,7 @@
 (function (DT) {
   'use strict';
 
+  let peopleQ = ''; // se conserva al redibujar (seguir, amistad…)
   DT.views.community = (app) => {
     const s = DT.state();
     const feed = [];
@@ -23,6 +24,19 @@
     app.innerHTML = `
       <section class="page">
         <div class="page-head"><div><h1>Comunidad</h1><p>Lo que está pasando en DivierteTEC.</p></div></div>
+        <div class="grid cols-2 people-grid">
+          <div class="card">
+            <h3>${DT.icon.search} Buscar perfiles</h3>
+            <label class="searchbox"><span>${DT.icon.search}</span><input data-peopleq placeholder="Nombre, estudio o campus" value="${DT.esc(peopleQ)}" autocomplete="off"></label>
+            <div class="people-list" data-people></div>
+          </div>
+          <div class="card">
+            <h3>${DT.icon.users} Tus amigos (${DT.friendsOf(DT.me().id).length})</h3>
+            ${DT.friendRequests(DT.me().id).map((r) => DT.userRow(DT.user(r.from), `<button class="btn success sm" data-freq="${r.id}" data-ok="1">${DT.icon.check} Aceptar</button><button class="btn ghost sm" data-freq="${r.id}" data-ok="0">Rechazar</button>`)).join('')}
+            ${DT.friendsOf(DT.me().id).map((id) => DT.userRow(DT.user(id))).join('') || (DT.friendRequests(DT.me().id).length ? '' : '<p class="muted">Aún no tienes amigos. Busca perfiles y envía una solicitud; la otra cuenta la acepta.</p>')}
+            <p class="muted small">Siguiendo a ${DT.following(DT.me().id).length} · ${DT.followers(DT.me().id).length} seguidores</p>
+          </div>
+        </div>
         <div class="community">
           <div class="card">
             <h3>Actividad reciente</h3>
@@ -34,5 +48,14 @@
           </div>
         </div>
       </section>`;
+    const q = DT.$('[data-peopleq]', app), box = DT.$('[data-people]', app);
+    const draw = () => {
+      peopleQ = q.value;
+      const res = DT.searchUsers(peopleQ);
+      box.innerHTML = res.map((u) => DT.userRow(u)).join('') || `<p class="muted">Ningún perfil coincide con «${DT.esc(peopleQ)}».</p>`;
+    };
+    q.addEventListener('input', draw);
+    draw();
+    if (peopleQ && document.activeElement !== q && location.hash === '#/comunidad') { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   };
 })(window.DT);

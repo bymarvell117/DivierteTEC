@@ -84,10 +84,10 @@
 
   DT.reportModal = (type, targetId, gameId) => {
     const reasons = { game: ['Contenido inapropiado', 'No funciona / enlace roto', 'Malware o engaño', 'Plagio / derechos de autor', 'Otro'],
-      dev: ['Suplantación de identidad', 'Comportamiento abusivo', 'Spam', 'Otro'],
+      dev: ['Suplantación de identidad', 'Comportamiento abusivo o acoso', 'Nombre o imagen ofensivos', 'Spam', 'Otro'],
       review: ['Lenguaje ofensivo', 'Spam', 'Spoilers sin aviso', 'Otro'] }[type];
     const m = DT.modal({
-      title: `${DT.icon.flag} Reportar ${{ game: 'juego', dev: 'desarrollador', review: 'reseña' }[type]}`,
+      title: `${DT.icon.flag} Reportar ${type === 'dev' && (DT.user(targetId) || {}).role !== 'dev' ? 'perfil' : { game: 'juego', dev: 'desarrollador', review: 'reseña' }[type]}`,
       body: `<label class="field"><span>Motivo</span><select data-reason>${reasons.map((r) => `<option>${r}</option>`).join('')}</select></label>
         <label class="field"><span>Detalles (opcional)</span><textarea rows="3" data-text placeholder="Cuéntale al equipo de moderación qué pasó"></textarea></label>`,
       actions: `<button class="btn ghost" data-close>Cancelar</button><button class="btn danger" data-send>Enviar reporte</button>`
@@ -288,11 +288,12 @@
               ${sorted.map((r) => {
                 const u = DT.user(r.userId) || { name: '¿?', id: '' };
                 const useful = (r.helpful || []).length, voted = (r.helpful || []).includes(me.id);
-                return `<article class="review ${r.up ? 'up' : 'down'}">
-                  <header>${DT.avatarHTML(u, 34)}<div><b>${DT.esc(u.name)}</b> ${DT.tecnmUserPill ? DT.tecnmUserPill(u) : ''}${r.stars ? DT.starsHTML(r.stars) : ''}<small>${r.up ? DT.icon.thumbUp + ' Recomendado' : DT.icon.thumbDown + ' No recomendado'} · ${r.hours ? `${r.hours.toFixed(1)} h jugadas al reseñar${r.simulated ? ' (incluye tiempo simulado para la demo)' : ''} · ` : ''}${DT.timeAgo(r.date)}${r.edited ? ' · editada' : ''}</small></div>
+                const art = `<article class="review ${r.up ? 'up' : 'down'}">
+                  <header>${DT.avatarHTML(u, 34)}<div><a href="#/perfil/${u.id}"><b>${DT.esc(u.name)}</b></a> ${DT.tecnmUserPill ? DT.tecnmUserPill(u) : ''}${r.stars ? DT.starsHTML(r.stars) : ''}<small>${r.up ? DT.icon.thumbUp + ' Recomendado' : DT.icon.thumbDown + ' No recomendado'} · ${r.hours ? `${r.hours.toFixed(1)} h jugadas al reseñar${r.simulated ? ' (incluye tiempo simulado para la demo)' : ''} · ` : ''}${DT.timeAgo(r.date)}${r.edited ? ' · editada' : ''}</small></div>
                   <button class="icon-btn sm" title="Reportar reseña" data-report-review="${r.id}">${DT.icon.flag}</button></header>
                   <p>${DT.stickerize(DT.esc(DT.censor(r.text)))}</p>
                   <footer><button class="rv-help ${voted ? 'on' : ''}" data-helpful="${r.id}" ${r.userId === me.id ? 'disabled' : ''}>${DT.icon.thumbUp} ¿Te fue útil? · ${useful}</button></footer></article>`;
+                return DT.isBlocked && DT.isBlocked(me.id, r.userId) ? `<details class="review-blocked"><summary>${DT.icon.ban} Reseña de una cuenta que bloqueaste · Mostrar</summary>${art}</details>` : art;
               }).join('') || '<p class="muted">Todavía no hay reseñas. ¡Juega 2 horas y sé el primero!</p>'}
             </div>
           </div>

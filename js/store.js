@@ -29,6 +29,7 @@
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
     if (!state || state.version !== 10) { state = DT.seedState(); DT.save(); }
     state.games.forEach(DT.normalizeGame); // repara juegos guardados con campos faltantes
+    state.social = state.social || { follows: {}, friends: {}, blocks: {}, requests: [] };
     state.devRequests = state.devRequests || []; state.tecnmRequests = state.tecnmRequests || [];
     if (state.economy.passTecnmDiscount == null) state.economy.passTecnmDiscount = 0.3;
     if (state.economy.causeRate == null) state.economy.causeRate = 0.05;

@@ -94,6 +94,16 @@
       return `<div class="acct-cards">${cards.join('')}</div>`;
     };
 
+    /* Solicitudes de amistad pendientes y cuentas bloqueadas (solo en el perfil propio) */
+    const socialCards = (u) => {
+      const reqs = DT.friendRequests(u.id), blocked = DT.blockedBy(u.id);
+      if (!reqs.length && !blocked.length) return '';
+      return `<div class="grid cols-2">
+        ${reqs.length ? `<div class="card"><h3>${DT.icon.userPlus} Solicitudes de amistad (${reqs.length})</h3>${reqs.map((r) => DT.userRow(DT.user(r.from), `<button class="btn success sm" data-freq="${r.id}" data-ok="1">${DT.icon.check} Aceptar</button><button class="btn ghost sm" data-freq="${r.id}" data-ok="0">Rechazar</button>`)).join('')}</div>` : ''}
+        ${blocked.length ? `<div class="card"><h3>${DT.icon.ban} Cuentas bloqueadas</h3>${blocked.map((id) => DT.userRow(DT.user(id), `<button class="btn ghost sm" data-unblock="${id}">Desbloquear</button>`)).join('')}</div>` : ''}
+      </div>`;
+    };
+
     app.innerHTML = `
       <section class="page">
         <div class="profile-head card">
@@ -102,7 +112,15 @@
             <h1>${DT.esc(u.name)} ${DT.tecnmUserPill(u)} ${badges.map((b) => `<span class="badge-ico" title="${DT.esc(all[b].name)}">${DT.art.badge(all[b])}</span>`).join('')}</h1>
             <p class="muted">${{ user: 'Jugador', dev: 'Desarrollador', admin: 'Administrador' }[u.role]}${u.verified ? ' · Estudio verificado ✔' : ''}${u.tecnm && u.tecnm.campus ? ' · ' + DT.esc(u.tecnm.campus) : ''} · Miembro ${DT.timeAgo(u.createdAt)}</p>
             <p data-bio>${DT.esc(u.bio || '')}</p>
-            ${mine ? `<button class="btn ghost sm" data-editbio>${DT.icon.edit} Editar biografía</button>` : `<button class="btn ghost sm" data-reportuser>${DT.icon.flag} Reportar</button>`}
+            <div class="social-counts">
+              ${(() => { const nf = DT.followers(u.id).length, nfr = DT.friendsOf(u.id).length; return `
+              <button data-people="followers"><b>${nf}</b> ${nf === 1 ? 'seguidor' : 'seguidores'}</button>
+              <button data-people="following"><b>${DT.following(u.id).length}</b> siguiendo</button>
+              <button data-people="friends"><b>${nfr}</b> ${nfr === 1 ? 'amigo' : 'amigos'}</button>`; })()}
+            </div>
+            <div class="social-bar">${mine ? `<button class="btn ghost sm" data-editbio>${DT.icon.edit} Editar biografía</button><button class="btn ghost sm" data-share="${u.id}">${DT.icon.share} Compartir perfil</button>` : DT.socialButtons(u)}</div>
+            ${!mine && DT.isBlocked(me.id, u.id) ? `<p class="notice warn">${DT.icon.ban} <span>Bloqueaste a esta cuenta: no puede seguirte ni enviarte solicitudes y sus reseñas se ocultan para ti.</span></p>` : ''}
+            ${!mine && DT.isBlocked(u.id, me.id) ? `<p class="notice">${DT.icon.ban} <span>Esta cuenta no acepta interacciones contigo.</span></p>` : ''}
           </div>
           <div class="profile-stats">
             <div><b>${st.owned}</b><small>Juegos</small></div>
@@ -113,6 +131,7 @@
         </div>
 
         ${mine ? accountCards(u) : ''}
+        ${mine ? socialCards(u) : ''}
 
         ${collection(inv, all)}
 
@@ -133,11 +152,9 @@
         ${section('badge', DT.icon.medal + ' Insignias')}
       </section>`;
 
-    if (!mine) {
-      const rb = DT.$('[data-reportuser]', app);
-      if (rb) rb.onclick = () => DT.reportModal('dev', u.id, null);
-      return;
-    }
+    const PEOPLE = { followers: ['Seguidores', DT.followers], following: ['Siguiendo', DT.following], friends: ['Amigos', DT.friendsOf] };
+    DT.$$('[data-people]', app).forEach((b) => b.onclick = () => { const [t, fn] = PEOPLE[b.dataset.people]; DT.peopleModal(`${t} de ${DT.esc(u.name)}`, fn(u.id)); });
+    if (!mine) return;
     DT.$('[data-editbio]', app).onclick = async () => {
       const v = await DT.prompt('Editar biografía', 'Cuéntale a la comunidad sobre ti', u.bio);
       if (v != null) { u.bio = DT.hasBanned(v) ? DT.censor(v) : v.slice(0, 280); DT.emit('user'); }
