@@ -311,7 +311,6 @@
     h2d.fillStyle = color || '#fff'; h2d.fillText(s, x, y);
   }
 
-
   /* =================== MALLAS EXTRA =================== */
   Geo.prototype.sphere = function (r, seg, ring, col, half) {
     const P = (a, b) => [r * Math.cos(b) * Math.cos(a), r * Math.sin(b), r * Math.cos(b) * Math.sin(a)];
@@ -323,12 +322,15 @@
     if (half) for (let i = 0; i < seg; i++) { const a0 = i / seg * 6.2832, a1 = (i + 1) / seg * 6.2832; this.tri([0, 0, 0], P(a0, 0), P(a1, 0), col); }
     return this;
   };
-  const SPHERE = upload(new Geo().sphere(0.5, 14, 7, W1));
-  const HEMI = upload(new Geo().sphere(0.5, 14, 5, W1, true));
+  const SPHERE = upload(new Geo().sphere(0.5, 16, 8, W1));
+  const HEMI = upload(new Geo().sphere(0.5, 16, 6, W1, true));
   const ball = (M, x, y, z, r, col, emit) => draw(SPHERE, C(M, T(x, y, z), SC(r * 2, r * 2, r * 2)), col, emit);
+  const ell = (M, x, y, z, rx, ry, rz, col, emit) => draw(SPHERE, C(M, T(x, y, z), SC(rx * 2, ry * 2, rz * 2)), col, emit);
 
-  /* =================== POSES =================== */
-  const basePose = () => ({ lean: 0.1, twist: 0.25, head: 0, rot: 0, drop: 0.06, bx: 0, spin: 0, fa1: 0.5, fa2: 1.6, fo: 0.12, ba1: 0.4, ba2: 1.6, bo: 0.12, fl1: 0.3, fl2: -0.45, bl1: -0.28, bl2: -0.25, sx: 1, sy: 1, mouth: 0.35, prop: 0, glow: 0, tail: 0 });
+  /* =================== POSES ===================
+     Claves: lean (inclinar), twist (girar torso), chest (pecho), head, headY, rot, drop, bob, bx, spin,
+     fa1/fa2 brazo delantero (hombro/codo), ba1/ba2 brazo trasero, fl1/fl2 y bl1/bl2 piernas (cadera/rodilla), sx/sy (estirar). */
+  const basePose = () => ({ lean: 0.1, twist: 0.25, chest: 0, head: 0, headY: 0, rot: 0, drop: 0.06, bob: 0, bx: 0, spin: 0, fa1: 0.5, fa2: 1.4, fo: 0.12, ba1: 0.4, ba2: 1.4, bo: 0.12, fl1: 0.3, fl2: -0.45, bl1: -0.28, bl2: -0.25, sx: 1, sy: 1, mouth: 0.35, prop: 0, glow: 0, tail: 0, pull: 0 });
   const ss = (a, b, x) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
   function clipPose(base, keys, t) {
     let i = 0;
@@ -339,173 +341,295 @@
     return out;
   }
 
-  /* =================== MODELOS (bloques originales, no se usa arte de las franquicias) =================== */
-  const rootM = (f, p, s) => C(T(f.x + (f.jit || 0), f.y, 0), RY((f.facing > 0 ? 0 : Math.PI) + p.spin), SC(s * p.sx, s * p.sy, s));
-  function humanoid(f, p, R, em) {
-    const s = f.scale * (R.scale || 1);
-    const B = rootM(f, p, s);
-    const root = C(B, T(p.bx, (R.hip || 0.95) - p.drop, 0), RZ(p.rot));
-    const lw = R.lw || 0.18, th = R.thigh || 0.48, sh = R.shin || 0.44;
-    for (const [z, a, b] of [[R.hw || 0.12, p.fl1, p.fl2], [-(R.hw || 0.12), p.bl1, p.bl2]]) {
-      const hp = C(root, T(0, -0.05, z), RZ(a)); box(hp, 0, -th / 2, 0, lw, th, lw, R.pants, em);
-      const kn = C(hp, T(0, -th, 0), RZ(b)); box(kn, 0, -sh / 2, 0, lw * 0.92, sh, lw * 0.92, R.legs || R.pants, em);
-      if (R.foot) R.foot(kn, sh, em); else box(kn, 0.06, -sh - 0.03, 0, lw * 1.7, 0.11, lw * 1.1, R.boots, em);
-    }
-    const tw = R.tw || 0.5, tH = R.th || 0.62, td = R.td || 0.34;
-    box(root, 0, 0, 0, tw * 0.9, 0.22, td, R.pants, em);
-    const tor = C(root, RY(p.twist), RZ(-p.lean));
-    if (R.torso) R.torso(tor, p, f, em); else box(tor, 0, tH / 2 + 0.02, 0, tw, tH, td, R.shirt, em);
-    if (R.extra) R.extra(tor, root, p, f, em);
-    const H = C(tor, T(0, tH + (R.neck || 0.2), 0), RZ(p.head));
-    R.head(H, p, f, em);
-    const aw = R.aw || 0.14, ua = R.ua || 0.34, la = R.la || 0.32;
-    const arms = R.arms ? R.arms(p) : [[1, 0, p.fa1, p.fa2, p.fo], [-1, 0, p.ba1, p.ba2, p.bo]];
-    arms.forEach(([side, dy, a1, a2, o], i) => {
-      const S = C(tor, T(0, tH - 0.06 + dy, side * (tw / 2 + aw / 2)), RX(side > 0 ? -o : o), RZ(a1));
-      box(S, 0, -ua / 2, 0, aw, ua, aw, R.sleeve || R.shirt, em);
-      const E = C(S, T(0, -ua, 0), RZ(a2));
-      box(E, 0, -la / 2, 0, aw * 0.9, la, aw * 0.9, R.arm || R.skin, em);
-      const Hd = C(E, T(0, -la - 0.05, 0));
-      box(Hd, 0, 0, 0, aw * 1.2, 0.13, aw * 1.2, R.hand || R.skin, em);
-      if (i === 0 && R.prop) R.prop(C(Hd, RZ((R.propA || 0) + p.prop)), p, f, em);
-      if (R.wrist && i === (R.wristArm || 1)) box(E, 0, -la + 0.06, 0, aw * 1.25, 0.1, aw * 1.25, R.wrist, 0.8);
-    });
-  }
+  /* =================== MODELOS DE BLOQUES ===================
+     Vista 3/4: el modelo gira hacia la cámara y se refleja al mirar a la izquierda, así el brazo del arma queda siempre al frente.
+     Ejes locales: x = frente, y = arriba, z = costado derecho (hacia la cámara). */
+  const YAW = -0.55;
+  const rootM = (f, p, s) => C(T(f.x + (f.jit || 0), f.y, 0), SC(f.facing < 0 ? -1 : 1, 1, 1), RY(YAW + p.spin), SC(s * p.sx, s * p.sy, s));
+  const DK = [0.07, 0.07, 0.08], WHT = [1, 1, 1];
   const eyes2 = (H, x, y, z, w, h, col, em) => { box(H, x, y, z, 0.02, h, w, col, em); box(H, x, y, -z, 0.02, h, w, col, em); };
 
-  /* --- Armas y accesorios (se sostienen en la mano delantera; su eje largo apunta a -y) --- */
+  /* Partes por defecto (cada personaje las reemplaza con las suyas) */
+  const P0 = {
+    thigh: (M, th, lw, R, em) => box(M, 0, -th / 2, 0, lw, th, lw * 1.05, R.pants, em),
+    shin: (M, sh, lw, R, em) => box(M, 0, -sh / 2, 0, lw * 0.92, sh, lw * 0.95, R.legs || R.pants, em),
+    foot: (M, lw, R, em) => { box(M, lw * 0.35, -0.06, 0, lw * 1.9, 0.13, lw * 1.12, R.boots, em); box(M, lw * 0.35, -0.13, 0, lw * 1.95, 0.03, lw * 1.16, R.sole || DK, em); },
+    pelvis: (M, W, D, R, em) => { box(M, 0, 0, 0, D * 0.95, 0.26, W * 0.8, R.pants, em); if (R.belt) box(M, 0, 0.1, 0, D, 0.07, W * 0.83, R.belt, em); },
+    abdomen: (M, W, D, R, em) => box(M, 0, 0.17, 0, D * 0.88, 0.26, W * 0.78, R.shirt, em),
+    chest: (M, W, D, cH, R, em) => box(M, 0, cH / 2, 0, D, cH, W, R.shirt, em),
+    upper: (S, ua, aw, R, em) => box(S, 0, -ua / 2, 0, aw, ua, aw, R.sleeve || R.shirt, em),
+    fore: (E, la, aw, R, em) => box(E, 0, -la / 2, 0, aw * 0.92, la, aw * 0.92, R.arm || R.skin, em),
+    hand: (Hd, aw, R, em) => { const c = R.hand || R.skin; box(Hd, 0, -0.02, 0, aw * 1.1, 0.13, aw * 1.05, c, em); box(Hd, aw * 0.3, -0.1, 0, aw * 0.6, 0.08, aw * 1.0, c, em); box(Hd, aw * 0.5, 0.0, aw * 0.3, aw * 0.4, 0.08, aw * 0.35, c, em); }
+  };
+  function humanoid(f, p, R, em) {
+    if (R.draw) return R.draw(f, p, R, em);
+    const s = f.scale * (R.scale || 1), B = rootM(f, p, s);
+    const W = R.w || 0.56, D = R.d || 0.32, hip = R.hip || 0.95;
+    const root = C(B, T(p.bx, hip - p.drop + p.bob, 0), RZ(p.rot));
+    const lw = R.lw || 0.2, th = R.thigh || 0.46, sh = R.shin || 0.44, lz = R.lz || W * 0.21;
+    for (const [side, a, b] of [[1, p.fl1, p.fl2], [-1, p.bl1, p.bl2]]) {
+      const hp = C(root, T(0, -0.07, side * lz), RZ(a));
+      (R.thighF || P0.thigh)(hp, th, lw, R, em, side);
+      const kn = C(hp, T(0, -th, 0), RZ(b));
+      (R.shinF || P0.shin)(kn, sh, lw, R, em, side);
+      (R.footF || P0.foot)(C(kn, T(0, -sh, 0), RZ(-(a + b) * 0.55)), lw, R, em, side);
+    }
+    (R.pelvis || P0.pelvis)(root, W, D, R, em);
+    const tor = C(root, RY(p.twist * 0.6), RZ(-p.lean));
+    (R.abdomen || P0.abdomen)(tor, W, D, R, em);
+    const cH = R.chestH || 0.4;
+    const ch = C(tor, T(0, 0.28, 0), RY(p.twist * 0.4), RZ(-p.chest));
+    (R.chest || P0.chest)(ch, W, D, cH, R, em, p, f);
+    if (R.back) R.back(ch, W, D, cH, R, em, p, f);
+    box(ch, 0, cH + 0.05, 0, 0.17, 0.14, 0.17, R.neck || R.skin, em);
+    const H = C(ch, T(0, cH + (R.headY || 0.25), 0), RZ(p.head), RY(p.headY));
+    R.head(H, p, f, em);
+    const aw = R.aw || 0.16, ua = R.ua || 0.34, la = R.la || 0.32;
+    const arms = R.arms ? R.arms(p) : [[1, 0, p.fa1, p.fa2, p.fo], [-1, 0, p.ba1, p.ba2, p.bo]];
+    arms.forEach(([side, dy, a1, a2, o], i) => {
+      const S = C(ch, T(0, cH - 0.07 + dy, side * (W / 2 + aw * 0.42)), RX(side > 0 ? -o : o), RZ(a1));
+      (R.upper || P0.upper)(S, ua, aw, R, em, side, i);
+      const E = C(S, T(0, -ua, 0), RZ(a2));
+      (R.fore || P0.fore)(E, la, aw, R, em, side, i, f);
+      const Hd = C(E, T(0, -la - 0.05, 0));
+      (R.handF || P0.hand)(Hd, aw, R, em, side);
+      if (i === 0 && R.prop) R.prop(C(Hd, RZ((R.propA || 0) + p.prop)), p, f, em);
+    });
+  }
+
+  /* --- Armas y accesorios (en la mano delantera; su eje largo apunta a -y) --- */
   const PROP = {
-    rifle: (M, p, f, em) => { box(M, 0, -0.18, 0, 0.1, 0.62, 0.12, [0.22, 0.26, 0.24], em); box(M, 0.08, -0.05, 0, 0.12, 0.22, 0.1, [0.3, 0.34, 0.3], em); box(M, 0, -0.52, 0, 0.06, 0.1, 0.06, [0.1, 0.1, 0.1], em); box(M, 0.05, -0.3, 0, 0.04, 0.12, 0.04, [0.3, 0.9, 1], 0.9); },
-    shotgun: (M, p, f, em) => { box(M, 0, -0.3, 0.03, 0.06, 0.7, 0.06, [0.2, 0.2, 0.22], em); box(M, 0, -0.3, -0.03, 0.06, 0.7, 0.06, [0.2, 0.2, 0.22], em); box(M, 0.02, 0.05, 0, 0.12, 0.26, 0.1, [0.45, 0.28, 0.14], em); },
-    chainsaw: (M, p, f, em) => { box(M, 0.04, -0.1, 0, 0.26, 0.3, 0.16, [0.8, 0.2, 0.1], em); box(M, 0, -0.55, 0, 0.1, 0.6, 0.03, [0.75, 0.78, 0.8], 0.2); },
-    sword: (M, p, f, em) => { box(M, 0, 0.05, 0, 0.26, 0.05, 0.05, [0.3, 0.2, 0.1], em); box(M, 0, -0.42, 0, 0.1, 0.7, 0.03, [0.35, 0.95, 0.95], 0.35); box(M, 0, 0.14, 0, 0.05, 0.16, 0.05, [0.35, 0.22, 0.1], em); },
-    espada: (M, p, f, em) => { box(M, 0, 0.06, 0, 0.1, 0.16, 0.1, [0.5, 0.5, 0.55], em); box(M, 0, -0.4, 0.04, 0.05, 0.7, 0.02, [0.4, 0.8, 1], 1); box(M, 0, -0.4, -0.04, 0.05, 0.7, 0.02, [0.4, 0.8, 1], 1); },
-    spatula: (M, p, f, em) => { box(M, 0, -0.18, 0, 0.05, 0.4, 0.05, [0.95, 0.95, 0.95], em); box(M, 0, -0.44, 0, 0.22, 0.18, 0.02, [0.8, 0.8, 0.85], em); },
-    pickaxe: (M, p, f, em) => { box(M, 0, -0.3, 0, 0.06, 0.72, 0.06, [0.45, 0.3, 0.16], em); box(M, 0, -0.64, 0, 0.5, 0.08, 0.08, [0.55, 0.3, 0.9], 0.2); },
-    axe: (M, p, f, em) => { box(M, 0, -0.26, 0, 0.06, 0.66, 0.06, [0.35, 0.22, 0.12], em); box(M, 0.14, -0.52, 0, 0.26, 0.24, 0.03, [0.7, 0.82, 0.95], 0.25); box(M, 0.26, -0.52, 0, 0.04, 0.28, 0.035, [0.85, 0.93, 1], 0.4); },
-    blades: (M, p, f, em) => { box(M, 0, -0.22, 0, 0.07, 0.5, 0.03, [0.75, 0.75, 0.8], 0.2); box(M, 0.04, -0.4, 0, 0.1, 0.1, 0.035, [1, 0.45, 0.1], 0.7); },
+    rifle: (M, p, f, em) => { const g = [0.22, 0.25, 0.23], d = [0.12, 0.13, 0.13]; box(M, 0, -0.2, 0, 0.12, 0.66, 0.13, g, em); box(M, 0.09, -0.06, 0, 0.14, 0.24, 0.11, g, em); box(M, 0.06, -0.33, 0, 0.1, 0.16, 0.1, d, em); box(M, 0, -0.57, 0, 0.07, 0.12, 0.07, d, em); box(M, -0.07, -0.25, 0, 0.05, 0.16, 0.06, d, em); box(M, 0.07, -0.26, 0, 0.03, 0.1, 0.05, [0.3, 0.9, 1], 0.9); },
+    shotgun: (M, p, f, em) => { const m = [0.25, 0.26, 0.28]; box(M, 0, -0.32, 0.035, 0.065, 0.74, 0.065, m, em); box(M, 0, -0.32, -0.035, 0.065, 0.74, 0.065, m, em); box(M, 0.03, 0.05, 0, 0.13, 0.3, 0.1, [0.45, 0.28, 0.14], em); box(M, 0.05, -0.2, 0, 0.1, 0.18, 0.13, [0.35, 0.22, 0.12], em); },
+    chainsaw: (M, p, f, em) => { box(M, 0.04, -0.1, 0, 0.28, 0.32, 0.17, [0.8, 0.2, 0.1], em); box(M, 0.12, 0.05, 0, 0.06, 0.2, 0.06, DK, em); box(M, 0, -0.56, 0, 0.12, 0.62, 0.035, [0.75, 0.78, 0.8], 0.2); for (let i = 0; i < 6; i++) box(M, 0.07, -0.3 - i * 0.1, 0, 0.03, 0.05, 0.04, DK, 0); },
+    sword: (M, p, f, em) => { box(M, 0, 0.05, 0, 0.28, 0.06, 0.06, [0.3, 0.2, 0.1], em); box(M, 0, -0.42, 0, 0.12, 0.74, 0.035, [0.35, 0.95, 0.95], 0.35); box(M, 0, -0.42, 0, 0.05, 0.74, 0.04, [0.6, 1, 1], 0.5); box(M, 0, 0.15, 0, 0.06, 0.16, 0.06, [0.35, 0.22, 0.1], em); },
+    espada: (M, p, f, em) => { box(M, 0, 0.06, 0, 0.1, 0.18, 0.1, [0.5, 0.5, 0.55], em); box(M, 0, -0.42, 0.045, 0.06, 0.74, 0.02, [0.4, 0.8, 1], 1); box(M, 0, -0.42, -0.045, 0.06, 0.74, 0.02, [0.4, 0.8, 1], 1); box(M, 0, -0.42, 0, 0.03, 0.7, 0.07, [0.8, 0.95, 1], 1); },
+    spatula: (M, p, f, em) => { box(M, 0, -0.18, 0, 0.05, 0.4, 0.05, [0.95, 0.95, 0.95], em); box(M, 0, -0.46, 0, 0.24, 0.2, 0.02, [0.8, 0.8, 0.85], em); },
+    pickaxe: (M, p, f, em) => { box(M, 0, -0.3, 0, 0.07, 0.74, 0.07, [0.45, 0.3, 0.16], em); box(M, 0, -0.66, 0, 0.56, 0.1, 0.09, [0.55, 0.3, 0.9], 0.25); box(M, 0.26, -0.62, 0, 0.1, 0.1, 0.08, [0.75, 0.55, 1], 0.3); box(M, -0.26, -0.62, 0, 0.1, 0.1, 0.08, [0.75, 0.55, 1], 0.3); },
+    axe: (M, p, f, em) => { box(M, 0, -0.26, 0, 0.07, 0.7, 0.07, [0.35, 0.22, 0.12], em); box(M, 0.15, -0.54, 0, 0.28, 0.28, 0.035, [0.7, 0.82, 0.95], 0.25); box(M, 0.29, -0.54, 0, 0.05, 0.32, 0.04, [0.85, 0.93, 1], 0.45); box(M, 0.02, -0.54, 0, 0.1, 0.12, 0.06, [0.4, 0.55, 0.7], em); },
+    blades: (M, p, f, em) => { box(M, 0, -0.22, 0, 0.08, 0.52, 0.035, [0.75, 0.75, 0.8], 0.2); box(M, 0.04, -0.42, 0, 0.12, 0.12, 0.04, [1, 0.45, 0.1], 0.8); box(M, 0, 0.02, 0, 0.1, 0.12, 0.08, [0.35, 0.25, 0.15], em); },
     pistol: (M, p, f, em) => { box(M, 0, -0.14, 0, 0.08, 0.3, 0.07, [0.2, 0.2, 0.22], em); box(M, 0.06, 0.02, 0, 0.1, 0.12, 0.06, [0.2, 0.2, 0.22], em); }
   };
 
+  /* =================== PERSONAJES =================== */
+  // Master Chief
+  const CF = { g: [0.36, 0.45, 0.22], g2: [0.25, 0.32, 0.16], u: [0.12, 0.13, 0.12], gr: [0.2, 0.22, 0.2], v: [1, 0.74, 0.2] };
+  const RIG_CHIEF = { w: 0.68, d: 0.4, lw: 0.23, aw: 0.19, ua: 0.33, la: 0.32, hip: 0.98, chestH: 0.44, pants: CF.u, shirt: CF.u, skin: CF.u, neck: CF.u, hand: CF.gr, boots: CF.g2, prop: PROP.rifle, propA: 1.5,
+    thighF: (M, th, lw, R, em) => { box(M, 0, -th / 2, 0, lw, th, lw * 1.05, CF.u, em); box(M, 0.03, -th * 0.42, 0, lw * 0.75, th * 0.72, lw * 1.14, CF.g, em); },
+    shinF: (M, sh, lw, R, em) => { box(M, 0, -sh / 2, 0, lw * 1.08, sh, lw * 1.08, CF.g, em); box(M, 0.06, -0.05, 0, lw * 0.7, 0.16, lw * 0.85, CF.g2, em); box(M, -0.03, -sh * 0.55, 0, lw * 0.5, sh * 0.5, lw * 1.12, CF.u, em); },
+    footF: (M, lw, R, em) => { box(M, 0.05, -0.07, 0, lw * 2.0, 0.16, lw * 1.28, CF.g2, em); box(M, 0.14, -0.01, 0, lw * 1.2, 0.08, lw * 1.12, CF.g, em); },
+    pelvis: (M, W, D, R, em) => { box(M, 0, 0, 0, D * 0.9, 0.26, W * 0.8, CF.u, em); box(M, D * 0.47, -0.03, 0, 0.05, 0.2, W * 0.3, CF.g, em); box(M, 0, 0.1, 0, D * 0.96, 0.08, W * 0.84, CF.g2, em); for (const z of [-1, 1]) box(M, 0, -0.04, z * W * 0.38, D * 0.7, 0.16, 0.05, CF.g, em); },
+    abdomen: (M, W, D, R, em) => { box(M, 0, 0.17, 0, D * 0.85, 0.26, W * 0.7, CF.u, em); for (const z of [-1, 1]) box(M, 0.02, 0.17, z * W * 0.31, D * 0.72, 0.2, 0.08, CF.g2, em); },
+    chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, CF.g, em); box(M, D * 0.52, cH * 0.56, 0, 0.07, cH * 0.72, W * 0.64, CF.g, em); box(M, D * 0.56, cH * 0.56, 0, 0.02, 0.05, W * 0.52, CF.g2, em); box(M, D * 0.54, cH * 0.28, 0, 0.03, 0.06, W * 0.4, CF.g2, em); box(M, 0, cH + 0.02, 0, D * 0.8, 0.08, W * 0.62, CF.g2, em); },
+    back: (M, W, D, cH, R, em) => { box(M, -D * 0.62, cH * 0.5, 0, 0.18, cH * 0.9, W * 0.62, CF.g2, em); box(M, -D * 0.75, cH * 0.3, 0, 0.06, 0.14, W * 0.42, CF.gr, em); },
+    upper: (S, ua, aw, R, em) => { box(S, 0, -ua / 2, 0, aw, ua, aw, CF.u, em); box(S, 0, -0.03, 0, aw * 1.65, aw * 1.25, aw * 1.65, CF.g, em); box(S, 0, 0.07, 0, aw * 1.35, 0.05, aw * 1.35, CF.g2, em); },
+    fore: (E, la, aw, R, em) => { box(E, 0, -la / 2, 0, aw * 1.12, la, aw * 1.12, CF.g, em); box(E, 0, -la * 0.15, 0, aw * 1.2, 0.06, aw * 1.2, CF.g2, em); },
+    head: (H, p, f, em) => { box(H, 0, 0.02, 0, 0.4, 0.38, 0.38, CF.g, em); box(H, 0.18, 0.04, 0, 0.05, 0.2, 0.34, CF.u, em); box(H, 0.2, 0.04, 0, 0.03, 0.15, 0.3, CF.v, 0.75); box(H, 0.211, 0.07, 0.07, 0.01, 0.04, 0.1, [1, 0.95, 0.7], 1);
+      box(H, 0.17, -0.14, 0, 0.1, 0.1, 0.2, CF.g2, em); box(H, 0.02, 0.22, 0, 0.3, 0.05, 0.14, CF.g2, em); for (const z of [-1, 1]) box(H, -0.02, 0.02, z * 0.2, 0.18, 0.16, 0.04, CF.g2, em); box(H, -0.13, -0.11, 0, 0.16, 0.1, 0.3, CF.g2, em); } };
+  // Doomguy
+  const DG = { g: [0.26, 0.4, 0.16], g2: [0.17, 0.27, 0.11], br: [0.4, 0.26, 0.13], gy: [0.46, 0.47, 0.5], dk: [0.12, 0.12, 0.12], sk: [0.82, 0.62, 0.48] };
+  const RIG_DOOM = { w: 0.64, d: 0.36, lw: 0.22, aw: 0.18, hip: 0.96, chestH: 0.42, pants: DG.dk, shirt: DG.g, skin: DG.sk, neck: DG.dk, hand: DG.dk, boots: DG.br, prop: PROP.shotgun, propA: 1.55,
+    thighF: (M, th, lw, R, em, side) => { box(M, 0, -th / 2, 0, lw, th, lw * 1.05, DG.g2, em); box(M, 0.01, -th * 0.4, side * lw * 0.55, lw * 0.6, th * 0.35, 0.07, DG.br, em); },
+    shinF: (M, sh, lw, R, em) => { box(M, 0, -sh / 2, 0, lw * 1.05, sh, lw * 1.05, DG.g, em); box(M, 0.06, -0.04, 0, lw * 0.75, 0.15, lw * 0.9, DG.gy, em); },
+    footF: (M, lw, R, em) => { box(M, 0.05, -0.07, 0, lw * 2.0, 0.16, lw * 1.25, DG.br, em); box(M, 0.05, -0.14, 0, lw * 2.05, 0.03, lw * 1.3, DG.dk, em); },
+    pelvis: (M, W, D, R, em) => { box(M, 0, 0, 0, D * 0.92, 0.26, W * 0.8, DG.dk, em); box(M, 0, 0.09, 0, D * 1.0, 0.09, W * 0.86, DG.br, em); for (const z of [-0.6, 0, 0.6]) box(M, D * 0.5, 0.06, z * W * 0.4, 0.07, 0.12, 0.1, DG.br, em); },
+    abdomen: (M, W, D, R, em) => { box(M, 0, 0.17, 0, D * 0.86, 0.26, W * 0.74, DG.g2, em); for (let i = 0; i < 3; i++) box(M, D * 0.44, 0.08 + i * 0.08, 0, 0.02, 0.03, W * 0.5, DG.dk, em); },
+    chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, DG.g, em); box(M, D * 0.52, cH * 0.55, 0, 0.06, cH * 0.6, W * 0.34, DG.gy, em); box(M, D * 0.5, cH * 0.55, W * 0.3, 0.05, cH * 0.7, 0.08, DG.br, em); box(M, 0, cH + 0.02, 0, D * 0.82, 0.07, W * 0.58, DG.dk, em); },
+    back: (M, W, D, cH, R, em) => box(M, -D * 0.58, cH * 0.55, 0, 0.12, cH * 0.7, W * 0.5, DG.g2, em),
+    upper: (S, ua, aw, R, em, side) => { box(S, 0, -ua / 2, 0, aw, ua, aw, DG.dk, em); ell(S, 0, -0.02, 0, aw * (side > 0 ? 1.0 : 1.15), aw * 0.75, aw * (side > 0 ? 1.0 : 1.15), DG.g, em); box(S, 0, -0.1, 0, aw * 1.5, 0.06, aw * 1.5, DG.g2, em); },
+    fore: (E, la, aw, R, em) => { box(E, 0, -la / 2, 0, aw * 0.95, la, aw * 0.95, DG.dk, em); box(E, 0, -la * 0.55, 0, aw * 1.2, la * 0.6, aw * 1.2, DG.gy, em); },
+    head: (H, p, f, em) => { box(H, 0, 0.02, 0, 0.38, 0.39, 0.38, DG.g, em); box(H, 0.18, 0.03, 0, 0.05, 0.13, 0.32, DG.dk, em); box(H, 0.2, 0.04, 0, 0.02, 0.05, 0.26, [1, 0.55, 0.1], 0.8); box(H, 0.16, -0.14, 0, 0.1, 0.1, 0.22, DG.g2, em);
+      box(H, 0.2, -0.13, 0, 0.02, 0.06, 0.12, DG.gy, em); box(H, 0.01, 0.22, 0, 0.26, 0.05, 0.1, DG.g2, em); for (const z of [-1, 1]) box(H, 0, -0.02, z * 0.2, 0.2, 0.2, 0.04, DG.g2, em); } };
+  // Steve: proporciones exactas de bloque (16 px = 1 unidad), extremidades rígidas
+  const ST = { sk: [0.78, 0.58, 0.42], hr: [0.33, 0.2, 0.1], sh: [0.05, 0.66, 0.68], pa: [0.23, 0.24, 0.62], sho: [0.36, 0.36, 0.4], ey: [0.27, 0.22, 0.62], no: [0.58, 0.38, 0.27], mo: [0.4, 0.23, 0.12] };
+  function drawSteve(f, p, R, em) {
+    const s = f.scale, B = rootM(f, p, s), px = 0.0625;
+    const root = C(B, T(p.bx, 0.75 - p.drop * 0.5 + p.bob, 0), RZ(p.rot));
+    for (const [side, a] of [[1, p.fl1], [-1, p.bl1]]) { const L = C(root, T(0, 0, side * 0.125), RZ(a)); box(L, 0, -0.375, 0, 0.25, 0.75, 0.25, ST.pa, em); box(L, 0, -0.69, 0, 0.26, 0.12, 0.26, ST.sho, em); }
+    const tor = C(root, RY(p.twist * 0.5), RZ(-p.lean * 0.7));
+    box(tor, 0, 0.375, 0, 0.25, 0.75, 0.5, ST.sh, em); box(tor, 0, 0.03, 0, 0.26, 0.06, 0.51, ST.pa, em);
+    box(tor, 0.126, 0.69, 0, 0.01, 0.06, 0.12, ST.sk, em);
+    const H = C(tor, T(0, 0.75, 0), RZ(p.head), RY(p.headY));
+    box(H, 0, 0.25, 0, 0.5, 0.5, 0.5, ST.sk, em);
+    box(H, 0, 0.475, 0, 0.52, 0.07, 0.52, ST.hr, em); box(H, -0.13, 0.3, 0, 0.27, 0.36, 0.52, ST.hr, em); box(H, 0.253, 0.438, 0, 0.012, px, 0.5, ST.hr, em);
+    for (const z of [-1, 1]) box(H, 0.1, 0.4, z * 0.256, 0.32, 0.12, 0.012, ST.hr, em);
+    const Y = (r) => 0.5 - (r + 0.5) * px, Z = (c) => (3.5 - c) * px, face = (r, c, col, w) => box(H, 0.253, Y(r), Z(c + (w || 1) / 2 - 0.5), 0.012, px, px * (w || 1), col, em);
+    face(4, 1, WHT); face(4, 2, ST.ey); face(4, 5, ST.ey); face(4, 6, WHT); face(5, 3, ST.no, 2); face(6, 2, ST.mo, 4); face(7, 3, ST.mo, 2);
+    for (const [side, a] of [[1, p.fa1], [-1, p.ba1]]) {
+      const S = C(tor, T(0, 0.69, side * 0.375), RZ(a));
+      box(S, 0, -0.31, 0, 0.25, 0.75, 0.25, ST.sk, em); box(S, 0, -0.06, 0, 0.26, 0.27, 0.26, ST.sh, em);
+      if (side > 0 && R.prop) R.prop(C(S, T(0, -0.62, 0), RZ((R.propA || 0) + p.prop)), p, f, em);
+    }
+  }
+  // Ben 10
+  const BN = { wh: [0.96, 0.96, 0.96], bk: [0.08, 0.08, 0.08], gp: [0.3, 0.42, 0.2], sk: [0.96, 0.78, 0.64], hr: [0.45, 0.28, 0.14], sn: [0.16, 0.16, 0.18], om: [0.2, 1, 0.35] };
+  const omnitrix = (E, la, aw, em) => { box(E, 0, -la * 0.78, 0, aw * 1.3, 0.1, aw * 1.3, BN.bk, em); draw(CYL, C(E, T(0, -la * 0.78, -aw * 0.72), RX(Math.PI / 2), SC(0.12, 0.06, 0.12)), [0.25, 0.25, 0.28], em); box(E, 0, -la * 0.78, -aw * 0.78, 0.07, 0.07, 0.02, BN.om, 1); };
+  const RIG_BEN = { w: 0.5, d: 0.28, lw: 0.17, aw: 0.14, ua: 0.3, la: 0.29, thigh: 0.42, shin: 0.4, hip: 0.88, chestH: 0.38, pants: BN.gp, shirt: BN.wh, skin: BN.sk, boots: BN.sn, sole: WHT,
+    thighF: (M, th, lw, R, em, side) => { box(M, 0, -th / 2, 0, lw, th, lw * 1.05, BN.gp, em); box(M, 0.0, -th * 0.55, side * lw * 0.56, lw * 0.7, th * 0.3, 0.06, [0.25, 0.35, 0.16], em); },
+    chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, BN.wh, em); box(M, D / 2 + 0.004, cH / 2, 0, 0.012, cH, W * 0.2, BN.bk, em); box(M, -D / 2 - 0.004, cH / 2, 0, 0.012, cH, W * 0.2, BN.bk, em); box(M, 0.02, cH + 0.01, 0, D * 0.7, 0.04, W * 0.5, BN.wh, em); },
+    abdomen: (M, W, D, R, em) => { box(M, 0, 0.17, 0, D * 0.9, 0.26, W * 0.8, BN.wh, em); box(M, D * 0.45 + 0.004, 0.17, 0, 0.012, 0.26, W * 0.16, BN.bk, em); },
+    upper: (S, ua, aw, R, em) => { box(S, 0, -ua / 2, 0, aw, ua, aw, BN.sk, em); box(S, 0, -0.07, 0, aw * 1.25, 0.2, aw * 1.25, BN.wh, em); },
+    fore: (E, la, aw, R, em, side, i) => { box(E, 0, -la / 2, 0, aw * 0.92, la, aw * 0.92, BN.sk, em); if (side < 0) omnitrix(E, la, aw, em); },
+    head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.34, 0.36, 0.33, BN.sk, em); box(H, -0.02, 0.19, 0, 0.36, 0.1, 0.35, BN.hr, em); box(H, -0.13, 0.06, 0, 0.12, 0.28, 0.35, BN.hr, em);
+      for (let i = 0; i < 4; i++) box(C(H, T(0.15, 0.17, (i - 1.5) * 0.08), RZ(-0.5)), 0, 0, 0, 0.12, 0.07, 0.07, BN.hr, em);
+      for (const z of [-1, 1]) box(H, 0.02, 0.0, z * 0.175, 0.07, 0.1, 0.03, BN.sk, em);
+      eyes2(H, 0.19, 0.03, 0.075, 0.07, 0.06, WHT, em); eyes2(H, 0.195, 0.03, 0.07, 0.035, 0.05, [0.2, 0.7, 0.3], em); eyes2(H, 0.192, 0.09, 0.075, 0.08, 0.02, BN.hr, em); box(H, 0.19, -0.09, 0, 0.02, 0.025, 0.1, [0.6, 0.35, 0.3], em); } };
+  // Jonesy
+  const JN = { ol: [0.36, 0.42, 0.28], ve: [0.38, 0.3, 0.2], jn: [0.26, 0.34, 0.52], bo: [0.26, 0.19, 0.12], sk: [0.9, 0.7, 0.54], hr: [0.36, 0.22, 0.12], gl: [0.12, 0.12, 0.12], st: [0.7, 0.54, 0.42] };
+  const RIG_JONESY = { w: 0.56, d: 0.3, lw: 0.2, aw: 0.16, hip: 0.95, chestH: 0.4, pants: JN.jn, shirt: JN.ol, skin: JN.sk, hand: JN.gl, boots: JN.bo, belt: JN.bo, prop: PROP.pickaxe, propA: 1.2,
+    chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, JN.ol, em); box(M, 0, cH * 0.45, 0, D * 1.06, cH * 0.6, W * 0.9, JN.ve, em); for (const z of [-1, 1]) box(M, D * 0.55, cH * 0.4, z * W * 0.22, 0.06, 0.12, 0.13, [0.3, 0.24, 0.16], em); box(M, D * 0.54, cH * 0.7, 0, 0.02, 0.06, W * 0.84, [0.3, 0.24, 0.16], em); },
+    back: (M, W, D, cH, R, em) => { box(M, -D * 0.62, cH * 0.45, 0, 0.18, cH * 0.85, W * 0.66, [0.3, 0.32, 0.22], em); box(M, -D * 0.74, cH * 0.25, 0, 0.06, 0.14, W * 0.44, [0.24, 0.26, 0.18], em); },
+    upper: (S, ua, aw, R, em) => { box(S, 0, -ua / 2, 0, aw, ua, aw, JN.sk, em); box(S, 0, -0.07, 0, aw * 1.22, 0.2, aw * 1.22, JN.ol, em); },
+    head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.34, 0.37, 0.32, JN.sk, em); box(H, -0.02, 0.2, 0, 0.34, 0.09, 0.34, JN.hr, em); box(H, -0.14, 0.08, 0, 0.1, 0.26, 0.34, JN.hr, em); for (let i = 0; i < 5; i++) box(H, 0.02 + (i % 2) * 0.05, 0.25, (i - 2) * 0.06, 0.1, 0.05, 0.06, JN.hr, em);
+      box(H, 0.186, -0.1, 0, 0.012, 0.1, 0.24, JN.st, em); eyes2(H, 0.19, 0.04, 0.07, 0.06, 0.05, WHT, em); eyes2(H, 0.195, 0.04, 0.065, 0.03, 0.045, [0.25, 0.2, 0.15], em); eyes2(H, 0.19, 0.1, 0.075, 0.08, 0.025, JN.hr, em);
+      box(H, 0.2, -0.02, 0, 0.04, 0.07, 0.05, [0.82, 0.6, 0.46], em); box(H, 0.188, -0.1, 0, 0.012, 0.025, 0.1, [0.55, 0.3, 0.25], em); for (const z of [-1, 1]) box(H, 0.02, 0.0, z * 0.17, 0.07, 0.1, 0.03, JN.sk, em); } };
+  // Sonic
+  const SN = { bl: [0.1, 0.3, 0.88], pe: [0.98, 0.8, 0.62], rd: [0.9, 0.1, 0.1], gd: [0.98, 0.78, 0.2], gr: [0.15, 0.75, 0.3] };
+  const RIG_SONIC = { w: 0.4, d: 0.34, lw: 0.12, aw: 0.1, ua: 0.28, la: 0.28, thigh: 0.4, shin: 0.4, hip: 0.86, chestH: 0.34, headY: 0.34, pants: SN.bl, shirt: SN.bl, skin: SN.pe, neck: SN.bl,
+    footF: (M, lw, R, em) => { box(M, 0.1, -0.08, 0, 0.42, 0.18, 0.2, SN.rd, em); box(M, 0.26, -0.1, 0, 0.14, 0.14, 0.19, SN.rd, em); box(M, 0.08, -0.05, 0, 0.1, 0.19, 0.21, WHT, em); box(M, 0.08, -0.05, 0.106, 0.06, 0.06, 0.01, SN.gd, 0.4); box(M, 0.1, -0.17, 0, 0.44, 0.03, 0.21, WHT, em); box(M, 0, 0.02, 0, 0.14, 0.06, 0.15, WHT, em); },
+    abdomen: (M, W, D, R, em) => { box(M, 0, 0.17, 0, D * 0.9, 0.26, W * 0.8, SN.bl, em); box(M, D * 0.42, 0.17, 0, 0.04, 0.22, W * 0.56, SN.pe, em); },
+    chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, SN.bl, em); box(M, D * 0.46, cH * 0.4, 0, 0.04, cH * 0.7, W * 0.6, SN.pe, em); for (let i = 0; i < 2; i++) draw(CONE, C(M, T(-D * 0.5, cH * (0.6 - i * 0.35), 0), RZ(1.9), SC(0.12, 0.26, 0.12)), SN.bl, em); },
+    upper: (S, ua, aw, R, em) => box(S, 0, -ua / 2, 0, aw, ua, aw, SN.pe, em),
+    handF: (Hd, aw, R, em) => { box(Hd, 0, -0.06, 0, 0.19, 0.2, 0.19, WHT, em); box(Hd, 0, 0.04, 0, 0.21, 0.06, 0.21, WHT, em); },
+    head: (H, p, f, em) => { ball(H, 0, 0.04, 0, 0.3, SN.bl, em);
+      for (let i = 0; i < 3; i++) for (const z of [-1, 0, 1]) { if (z && i === 0) continue; draw(CONE, C(H, T(-0.2, 0.2 - i * 0.16, z * 0.1), RY(z * 0.35), RZ(1.75 + i * 0.3), SC(0.2, 0.52 - i * 0.06, 0.16)), SN.bl, em); }
+      for (const z of [0.14, -0.14]) draw(CONE, C(H, T(-0.02, 0.3, z), RX(-z * 1.5), SC(0.12, 0.2, 0.08)), SN.bl, em);
+      ell(H, 0.2, -0.08, 0, 0.14, 0.1, 0.17, SN.pe, em); ball(H, 0.33, -0.04, 0, 0.045, DK, em);
+      box(H, 0.26, 0.08, 0, 0.06, 0.16, 0.26, WHT, em); eyes2(H, 0.29, 0.07, 0.06, 0.06, 0.1, SN.gr, em); eyes2(H, 0.3, 0.07, 0.055, 0.03, 0.07, DK, em);
+      box(H, 0.26, 0.17, 0, 0.05, 0.03, 0.24, SN.bl, em); box(H, 0.3, -0.13, 0, 0.02, 0.025, 0.1, [0.5, 0.2, 0.2], em); } };
+  // Kratos
+  const KR = { sk: [0.88, 0.85, 0.8], rt: [0.72, 0.1, 0.08], bd: [0.12, 0.1, 0.08], lb: [0.38, 0.26, 0.14], cl: [0.32, 0.26, 0.2], gb: [0.62, 0.46, 0.2] };
+  const RIG_KRATOS = { w: 0.7, d: 0.38, lw: 0.23, aw: 0.2, ua: 0.34, la: 0.33, hip: 0.98, chestH: 0.44, pants: KR.cl, shirt: KR.sk, skin: KR.sk, hand: KR.sk, boots: KR.lb, prop: PROP.axe, propA: 1.4,
+    thighF: (M, th, lw, R, em) => box(M, 0, -th / 2, 0, lw, th, lw * 1.05, KR.sk, em),
+    shinF: (M, sh, lw, R, em) => { box(M, 0, -sh / 2, 0, lw * 0.95, sh, lw * 0.95, KR.sk, em); for (let i = 0; i < 4; i++) box(M, 0, -sh * (0.3 + i * 0.17), 0, lw * 1.02, 0.05, lw * 1.02, KR.lb, em); },
+    pelvis: (M, W, D, R, em) => { box(M, 0, 0, 0, D * 0.95, 0.26, W * 0.8, KR.cl, em); box(M, 0, 0.1, 0, D * 1.02, 0.08, W * 0.86, KR.lb, em); box(M, D * 0.52, 0.1, 0, 0.04, 0.1, 0.1, KR.gb, em);
+      for (const [x, z, w2, d2] of [[D * 0.4, 0, 0.06, W * 0.46], [-D * 0.4, 0, 0.06, W * 0.46], [0, W * 0.36, D * 0.7, 0.06], [0, -W * 0.36, D * 0.7, 0.06]]) box(M, x, -0.16, z, w2, 0.3, d2, KR.cl, em); },
+    abdomen: (M, W, D, R, em) => { box(M, 0, 0.17, 0, D * 0.86, 0.26, W * 0.76, KR.sk, em); for (const y of [0.1, 0.2]) for (const z of [-1, 1]) box(M, D * 0.44, y, z * 0.06, 0.02, 0.07, 0.1, [0.8, 0.77, 0.72], em); },
+    chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, KR.sk, em); for (const z of [-1, 1]) box(M, D * 0.52, cH * 0.66, z * W * 0.2, 0.05, cH * 0.36, W * 0.36, [0.84, 0.81, 0.76], em);
+      box(M, D * 0.55, cH * 0.5, -W * 0.3, 0.02, cH * 0.95, 0.09, KR.rt, em); box(M, 0, cH - 0.02, -W * 0.3, D * 1.02, 0.06, 0.09, KR.rt, em);
+      box(C(M, T(D * 0.53, cH * 0.5, 0), RX(0.8)), 0, 0, 0, 0.03, 0.06, W * 1.2, KR.lb, em); },
+    back: (M, W, D, cH, R, em) => { box(M, -D * 0.53, cH * 0.6, -W * 0.3, 0.02, cH * 0.7, 0.09, KR.rt, em); box(C(M, T(-D * 0.53, cH * 0.5, 0), RX(-0.8)), 0, 0, 0, 0.03, 0.06, W * 1.2, KR.lb, em); },
+    upper: (S, ua, aw, R, em, side) => { box(S, 0, -ua / 2, 0, aw, ua, aw, KR.sk, em); if (side < 0) { box(S, 0, -0.02, 0, aw * 1.6, aw * 1.1, aw * 1.6, KR.lb, em); box(S, 0, 0.05, 0, aw * 1.4, 0.05, aw * 1.4, KR.gb, em); } else box(S, 0.001, -ua * 0.5, 0, aw * 0.3, ua * 0.8, aw * 1.01, KR.rt, em); },
+    fore: (E, la, aw, R, em) => { box(E, 0, -la / 2, 0, aw * 0.95, la, aw * 0.95, KR.sk, em); box(E, 0, -la * 0.55, 0, aw * 1.25, la * 0.62, aw * 1.25, KR.gb, em); box(E, 0, -la * 0.55, 0, aw * 1.3, 0.05, aw * 1.3, KR.lb, em); },
+    head: (H, p, f, em) => { box(H, 0.02, 0.02, 0, 0.36, 0.4, 0.34, KR.sk, em); box(H, 0.02, 0.02, -0.08, 0.37, 0.41, 0.07, KR.rt, em);
+      box(H, 0.12, -0.14, 0, 0.18, 0.18, 0.3, KR.bd, em); box(H, 0.2, -0.24, 0, 0.08, 0.1, 0.14, KR.bd, em); box(H, 0.2, -0.05, 0, 0.02, 0.03, 0.18, KR.bd, em);
+      eyes2(H, 0.2, 0.06, 0.07, 0.07, 0.035, [0.25, 0.12, 0.08], em); eyes2(H, 0.203, 0.06, 0.07, 0.035, 0.025, [0.95, 0.75, 0.25], 0.4); eyes2(H, 0.2, 0.1, 0.075, 0.1, 0.035, [0.6, 0.57, 0.52], em); box(H, 0.21, 0.02, 0, 0.04, 0.09, 0.06, [0.82, 0.78, 0.72], em); } };
+
   /* --- Personajes ---
-     stats: peso, velocidad al correr, salto, velocidad en el aire, escala
-     style(p, f): capa de animación propia de cada uno (nunca se comparte) */
+     estadísticas: peso, carrera, salto, velocidad en el aire, escala
+     style(p, f): capa de animación propia de cada uno */
   const CHARS = [
-    { id: 'chief', name: 'Master Chief', from: 'Halo', ini: 'MC', c1: '#3d5a2a', c2: '#0e1a0a', weight: 118, run: 7.6, jump: 12.6, air: 5.8, scale: 1.12,
+    { id: 'chief', name: 'Master Chief', from: 'Halo', ini: 'MC', c1: '#3d5a2a', c2: '#0e1a0a', weight: 118, run: 7.6, jump: 12.6, air: 5.8, scale: 1.08,
       desc: 'Soldado blindado: rifle, espada de energía, propulsores y granada de plasma.',
-      specials: ['Ráfaga de rifle', 'Espada de energía', 'Propulsores', 'Granada de plasma', 'Láser Spartan'],
-      rig: { tw: 0.56, td: 0.38, lw: 0.2, aw: 0.16, pants: [0.28, 0.36, 0.2], legs: [0.3, 0.38, 0.22], boots: [0.16, 0.18, 0.14], shirt: [0.32, 0.42, 0.22], skin: [0.24, 0.3, 0.18], hand: [0.14, 0.15, 0.12], prop: PROP.rifle, propA: 1.5,
-        torso: (M, p, f, em) => { box(M, 0, 0.33, 0, 0.56, 0.64, 0.38, [0.32, 0.42, 0.22], em); box(M, 0.2, 0.42, 0, 0.06, 0.34, 0.3, [0.22, 0.28, 0.16], em); box(M, -0.24, 0.4, 0, 0.14, 0.44, 0.32, [0.2, 0.24, 0.16], em); for (const z of [0.3, -0.3]) box(M, 0, 0.6, z, 0.3, 0.14, 0.14, [0.36, 0.46, 0.24], em); },
-        head: (H, p, f, em) => { box(H, 0, 0.02, 0, 0.36, 0.36, 0.34, [0.34, 0.44, 0.24], em); box(H, 0.16, 0.03, 0, 0.08, 0.14, 0.28, [1, 0.72, 0.16], 0.75); box(H, -0.02, 0.2, 0, 0.3, 0.06, 0.12, [0.3, 0.4, 0.2], em); box(H, 0.15, -0.14, 0, 0.1, 0.08, 0.2, [0.24, 0.3, 0.18], em); } },
-      style: (p, f) => { if (!f.atk && f.grounded) { p.fa1 = 1.35; p.fa2 = 0.35; p.ba1 = 1.1; p.ba2 = 0.9; p.twist = 0.5; } } },
-    { id: 'doom', name: 'Doomguy', from: 'DOOM', ini: 'DG', c1: '#4a5a1e', c2: '#1a0808', weight: 112, run: 8.6, jump: 12.8, air: 6.2, scale: 1.08,
+      specials: ['Ráfaga de rifle', 'Espada de energía', 'Propulsores', 'Granada de plasma', 'Láser Spartan'], rig: RIG_CHIEF,
+      style: (p, f) => { if (!f.atk && (f.state === 'idle' || f.state === 'run')) { p.fa1 = 1.25 + (f.state === 'run' ? 0.1 : 0); p.fa2 = 0.4; p.ba1 = 1.05; p.ba2 = 0.95; p.twist = 0.55; p.head = -0.05; } if (f.state === 'run') { p.lean = 0.28; } } },
+    { id: 'doom', name: 'Doomguy', from: 'DOOM', ini: 'DG', c1: '#4a5a1e', c2: '#1a0808', weight: 112, run: 8.6, jump: 12.8, air: 6.2, scale: 1.05,
       desc: 'Arrasa con escopeta doble y motosierra; salta con cohetes.',
-      specials: ['Escopeta doble', 'Motosierra', 'Salto con cohete', 'Puño berserker', 'BFG'],
-      rig: { tw: 0.54, td: 0.36, lw: 0.2, aw: 0.16, pants: [0.3, 0.34, 0.18], legs: [0.36, 0.4, 0.2], boots: [0.22, 0.18, 0.14], shirt: [0.3, 0.4, 0.14], skin: [0.8, 0.62, 0.48], sleeve: [0.34, 0.42, 0.16], hand: [0.25, 0.22, 0.16], prop: PROP.shotgun, propA: 1.55,
-        torso: (M, p, f, em) => { box(M, 0, 0.33, 0, 0.54, 0.62, 0.36, [0.3, 0.4, 0.14], em); box(M, 0.2, 0.36, 0, 0.06, 0.36, 0.3, [0.5, 0.45, 0.35], em); box(M, 0.01, 0.08, 0, 0.56, 0.1, 0.38, [0.35, 0.25, 0.15], em); },
-        head: (H, p, f, em) => { box(H, 0, 0.02, 0, 0.36, 0.38, 0.36, [0.34, 0.44, 0.16], em); box(H, 0.17, 0.02, 0, 0.06, 0.12, 0.28, [0.08, 0.08, 0.06], 0.1); box(H, 0.17, 0.04, 0, 0.065, 0.04, 0.24, [0.9, 0.35, 0.1], 0.5); box(H, 0.1, -0.16, 0, 0.16, 0.08, 0.26, [0.28, 0.36, 0.14], em); } },
-      style: (p, f) => { if (f.state === 'run') { p.lean = 0.5; p.fa1 = 1.3; p.fa2 = 0.3; } if (f.state === 'idle') { p.head += Math.sin(f.t * 8) * 0.06; p.fa1 = 1.1; p.fa2 = 0.6; } } },
+      specials: ['Escopeta doble', 'Motosierra', 'Salto con cohete', 'Puño berserker', 'BFG'], rig: RIG_DOOM,
+      style: (p, f) => { if (f.state === 'run') { p.lean = 0.55; p.fa1 = 1.45; p.fa2 = 0.25; p.ba1 = 1.2; p.ba2 = 0.8; p.twist = 0.5; } if (f.state === 'idle' && !f.atk) { p.head += Math.sin(f.t * 8) * 0.05; p.fa1 = 1.15; p.fa2 = 0.55; p.ba1 = 0.9; p.ba2 = 0.9; p.drop += 0.05; p.lean = 0.22; } } },
     { id: 'steve', name: 'Steve', from: 'Minecraft', ini: 'ST', c1: '#3a9a3a', c2: '#5a3a1a', weight: 104, run: 6.9, jump: 12.2, air: 5.4, scale: 1.0,
       desc: 'Todo en bloques: arco, TNT, torre y muro. Se anima "a pasos".',
-      specials: ['Arco', 'TNT', 'Torre de bloques', 'Muro de bloques', 'Lluvia de yunques'],
-      rig: { tw: 0.5, td: 0.26, lw: 0.24, aw: 0.24, thigh: 0.46, shin: 0.46, ua: 0.36, la: 0.34, pants: [0.22, 0.24, 0.62], legs: [0.22, 0.24, 0.62], boots: [0.35, 0.35, 0.38], shirt: [0.05, 0.64, 0.64], skin: [0.78, 0.58, 0.42], sleeve: [0.05, 0.64, 0.64], prop: PROP.sword, propA: 1.6,
-        foot: (M, sh, em) => box(M, 0, -sh - 0.03, 0, 0.25, 0.08, 0.25, [0.35, 0.35, 0.38], em),
-        head: (H, p, f, em) => { box(H, 0, 0.05, 0, 0.5, 0.5, 0.5, [0.78, 0.58, 0.42], em); box(H, -0.02, 0.27, 0, 0.52, 0.08, 0.52, [0.36, 0.22, 0.12], em); box(H, -0.26, 0.1, 0, 0.04, 0.4, 0.52, [0.36, 0.22, 0.12], em); box(H, 0.25, 0.08, 0.12, 0.02, 0.08, 0.12, [1, 1, 1], em); box(H, 0.25, 0.08, -0.12, 0.02, 0.08, 0.12, [1, 1, 1], em); box(H, 0.255, 0.08, 0.09, 0.02, 0.08, 0.06, [0.3, 0.3, 0.8], em); box(H, 0.255, 0.08, -0.15, 0.02, 0.08, 0.06, [0.3, 0.3, 0.8], em); box(H, 0.255, -0.1, 0, 0.02, 0.06, 0.18, [0.5, 0.3, 0.25], em); box(H, 0.255, -0.03, 0, 0.02, 0.05, 0.08, [0.55, 0.36, 0.26], em); } },
-      style: (p, f) => { for (const k of ['fa1', 'fa2', 'ba1', 'ba2', 'fl1', 'fl2', 'bl1', 'bl2', 'lean', 'head', 'twist']) p[k] = Math.round(p[k] / 0.3927) * 0.3927; p.fa2 = Math.min(p.fa2, 0.4); p.ba2 = Math.min(p.ba2, 0.4); p.fl2 = 0; p.bl2 = 0; } },
+      specials: ['Arco', 'TNT', 'Torre de bloques', 'Muro de bloques', 'Lluvia de yunques'], rig: { draw: drawSteve, prop: PROP.sword, propA: 1.6 },
+      style: (p, f) => { if (f.state === 'run') { const ph = f.t * 11; p.fl1 = Math.sin(ph) * 0.9; p.bl1 = -Math.sin(ph) * 0.9; p.fa1 = -Math.sin(ph) * 0.9; p.ba1 = Math.sin(ph) * 0.9; p.lean = 0.1; }
+        if (f.state === 'idle' && !f.atk) { p.fa1 = 0.1 + Math.sin(f.t * 1.4) * 0.05; p.ba1 = -0.05; p.fl1 = 0; p.bl1 = 0; }
+        for (const k of ['fa1', 'ba1', 'fl1', 'bl1', 'lean', 'head', 'twist']) p[k] = Math.round(p[k] / 0.2618) * 0.2618; } },
     { id: 'sponge', name: 'Bob Esponja', from: 'Bob Esponja', ini: 'BE', c1: '#f5e04a', c2: '#2a7fd0', weight: 82, run: 7.6, jump: 13.6, air: 6.4, scale: 0.95,
       desc: 'Elástico y rebotón: burbujas, karate y red de medusas.',
-      specials: ['Burbuja atrapadora', 'Karate', 'Paseo en burbuja', 'Patada giratoria', 'Red de medusas'],
-      custom: 'sponge',
-      style: (p, f) => { const k = clamp(-f.vy * 0.03, -0.25, 0.25); p.sy *= 1 + k + (f.squash || 0); p.sx *= 1 - k * 0.6 - (f.squash || 0) * 0.6; if (f.state === 'idle') { const b = Math.abs(Math.sin(f.t * 5)) * 0.08; p.sy *= 1 - b; p.sx *= 1 + b * 0.7; } } },
-    { id: 'ben', name: 'Ben 10', from: 'Ben 10', ini: 'B10', c1: '#2fbf3f', c2: '#101010', weight: 92, run: 8.0, jump: 13.0, air: 6.0, scale: 0.92,
+      specials: ['Burbuja atrapadora', 'Karate', 'Paseo en burbuja', 'Patada giratoria', 'Red de medusas'], custom: 'sponge',
+      style: (p, f) => { const k = clamp(-f.vy * 0.035, -0.3, 0.3); p.sy *= 1 + k + (f.squash || 0) * -1.2; p.sx *= 1 - k * 0.6 + (f.squash || 0) * 0.9;
+        if (f.state === 'idle' && !f.atk) { const b = Math.abs(Math.sin(f.t * 5)) * 0.09; p.sy *= 1 - b; p.sx *= 1 + b * 0.8; p.mouth = 0.5 + Math.sin(f.t * 2.5) * 0.2; p.fa1 = 0.4 + Math.sin(f.t * 5) * 0.3; p.ba1 = 0.4 - Math.sin(f.t * 5) * 0.3; }
+        if (f.state === 'run') { const ph = f.t * 16; p.fl1 = Math.sin(ph) * 1.3; p.bl1 = -Math.sin(ph) * 1.3; p.fa1 = 2 + Math.sin(ph) * 0.8; p.ba1 = 2 - Math.sin(ph) * 0.8; p.sy *= 1 + Math.abs(Math.cos(ph)) * 0.08; p.mouth = 0.9; } } },
+    { id: 'ben', name: 'Ben 10', from: 'Ben 10', ini: 'B10', c1: '#2fbf3f', c2: '#101010', weight: 92, run: 8.0, jump: 13.0, air: 6.0, scale: 0.95,
       desc: 'El reloj alienígena lo transforma: Fuego o Cuatro Brazos con ataques distintos.',
-      specials: ['Rayo del reloj', 'Súper Velocidad', 'Alas de Insecto', 'Transformación', 'Gigante'],
-      rig: { tw: 0.44, td: 0.28, pants: [0.32, 0.46, 0.2], legs: [0.32, 0.46, 0.2], boots: [0.1, 0.1, 0.1], shirt: [0.95, 0.95, 0.95], skin: [0.95, 0.75, 0.6], sleeve: [0.95, 0.95, 0.95], wrist: [0.15, 1, 0.35], wristArm: 1,
-        torso: (M, p, f, em) => { box(M, 0, 0.33, 0, 0.44, 0.6, 0.28, [0.95, 0.95, 0.95], em); box(M, 0.001, 0.33, 0, 0.45, 0.6, 0.08, [0.06, 0.06, 0.06], em); },
-        head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.32, 0.32, 0.3, [0.95, 0.75, 0.6], em); for (let i = 0; i < 4; i++) box(H, -0.04 - i * 0.03, 0.18 + (i % 2) * 0.03, (i - 1.5) * 0.08, 0.3, 0.1, 0.1, [0.4, 0.24, 0.12], em); eyes2(H, 0.175, 0.03, 0.07, 0.05, 0.05, [0.2, 0.75, 0.3], em); } },
-      style: (p, f) => { if (f.state === 'idle' && !f.form) { p.ba1 = 1.8; p.ba2 = 1.9; p.head = 0.25; } } },
+      specials: ['Rayo del reloj', 'Súper Velocidad', 'Alas de Insecto', 'Transformación', 'Gigante'], rig: RIG_BEN,
+      style: (p, f) => { if (f.state === 'idle' && !f.form && !f.atk) { p.ba1 = 1.5; p.ba2 = 1.7; p.head = -0.15; p.headY = -0.2; p.fa1 = 0.25; } if (f.form === 'four' && f.state === 'idle') { p.fa1 = 0.5; p.fa2 = 1.2; p.drop += 0.08; p.lean = 0.2; } } },
     { id: 'jonesy', name: 'Jonesy', from: 'Fortnite', ini: 'JY', c1: '#3a78d8', c2: '#6a3ad8', weight: 100, run: 8.2, jump: 13.0, air: 6.0, scale: 1.0,
       desc: 'Constructor veloz: dispara, pica, levanta rampas y muros. Baile por defecto.',
-      specials: ['Rifle', 'Pico', 'Rampa', 'Muro', 'Autobús de batalla'],
-      rig: { tw: 0.48, td: 0.3, pants: [0.22, 0.32, 0.55], legs: [0.24, 0.34, 0.58], boots: [0.2, 0.16, 0.12], shirt: [0.36, 0.4, 0.24], skin: [0.88, 0.68, 0.52], sleeve: [0.36, 0.4, 0.24], prop: PROP.pickaxe, propA: 1.2,
-        head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.32, 0.34, 0.3, [0.88, 0.68, 0.52], em); box(H, -0.02, 0.18, 0, 0.34, 0.1, 0.32, [0.4, 0.25, 0.12], em); box(H, -0.14, 0.08, 0, 0.08, 0.22, 0.32, [0.4, 0.25, 0.12], em); eyes2(H, 0.175, 0.04, 0.07, 0.05, 0.04, [0.15, 0.2, 0.3], em); box(H, 0.18, -0.08, 0, 0.02, 0.03, 0.1, [0.5, 0.3, 0.25], em); },
-        extra: (M, root, p, f, em) => box(M, -0.22, 0.35, 0, 0.12, 0.4, 0.32, [0.3, 0.3, 0.2], em) },
-      style: (p, f) => {} },
-    { id: 'sonic', name: 'Sonic', from: 'Sonic the Hedgehog', ini: 'SN', c1: '#1f5fe0', c2: '#0a1a4a', weight: 86, run: 12.4, jump: 13.4, air: 7.0, scale: 0.9,
+      specials: ['Rifle', 'Pico', 'Rampa', 'Muro', 'Autobús de batalla'], rig: RIG_JONESY,
+      style: (p, f) => { if (f.state === 'run') { p.lean = 0.25; p.fa1 = 1.1 + Math.sin(f.t * 16) * 0.2; p.fa2 = 0.6; p.prop = -0.9; } if (f.state === 'idle' && !f.atk) { p.fa1 = 0.35; p.fa2 = 0.4; p.prop = -0.6; p.bx = Math.sin(f.t * 1.3) * 0.03; } } },
+    { id: 'sonic', name: 'Sonic', from: 'Sonic the Hedgehog', ini: 'SN', c1: '#1f5fe0', c2: '#0a1a4a', weight: 86, run: 12.4, jump: 13.4, air: 7.0, scale: 0.92,
       desc: 'El más rápido: ataque teledirigido, spin dash y resorte.',
-      specials: ['Ataque teledirigido', 'Spin Dash', 'Resorte', 'Carga de giro', 'Súper Sonic'],
-      rig: { tw: 0.38, td: 0.3, lw: 0.13, aw: 0.11, thigh: 0.42, shin: 0.42, pants: [0.12, 0.3, 0.85], legs: [0.12, 0.3, 0.85], boots: [0.9, 0.12, 0.12], shirt: [0.12, 0.3, 0.85], skin: [0.12, 0.3, 0.85], hand: [1, 1, 1],
-        foot: (M, sh, em) => { box(M, 0.1, -sh - 0.05, 0, 0.36, 0.16, 0.18, [0.9, 0.12, 0.12], em); box(M, 0.05, -sh - 0.02, 0, 0.1, 0.17, 0.19, [1, 1, 1], em); },
-        torso: (M, p, f, em) => { box(M, 0, 0.3, 0, 0.38, 0.56, 0.3, [0.12, 0.3, 0.85], em); box(M, 0.14, 0.28, 0, 0.12, 0.36, 0.22, [0.98, 0.82, 0.62], em); },
-        head: (H, p, f, em) => { ball(H, 0, 0.05, 0, 0.26, [0.12, 0.3, 0.85], em); ball(H, 0.16, -0.05, 0, 0.13, [0.98, 0.82, 0.62], em); ball(H, 0.27, -0.02, 0, 0.04, [0.05, 0.05, 0.05], em); eyes2(H, 0.2, 0.08, 0.06, 0.08, 0.12, [1, 1, 1], em); eyes2(H, 0.215, 0.07, 0.05, 0.04, 0.07, [0.1, 0.7, 0.2], em);
-          for (let i = 0; i < 3; i++) draw(CONE, C(H, T(-0.22, 0.14 - i * 0.14, 0), RZ(1.9 + i * 0.25), SC(0.18, 0.42, 0.14)), [0.12, 0.3, 0.85], em);
-          for (const z of [0.11, -0.11]) draw(CONE, C(H, T(-0.02, 0.28, z), SC(0.1, 0.18, 0.08)), [0.12, 0.3, 0.85], em); } },
-      style: (p, f) => { if (f.state === 'run') { const ph = f.t * 26; p.fl1 = Math.sin(ph) * 1.4; p.bl1 = -Math.sin(ph) * 1.4; p.fl2 = -1 - Math.cos(ph) * 0.8; p.bl2 = -1 + Math.cos(ph) * 0.8; p.lean = 0.7; p.fa1 = -0.6; p.ba1 = -0.7; p.fa2 = 0.4; p.ba2 = 0.4; }
-        if (f.state === 'idle' && !f.atk) { p.fl1 = 0.3 + Math.max(0, Math.sin(f.t * 9)) * 0.3; p.fa1 = 0.9; p.fa2 = 2.2; p.ba1 = 0.8; p.ba2 = 2.2; } if (f.ball) f.ballSpin = (f.ballSpin || 0) + 0.5; } },
-    { id: 'kratos', name: 'Kratos', from: 'God of War', ini: 'KR', c1: '#8a1a1a', c2: '#1a0a06', weight: 126, run: 7.1, jump: 12.0, air: 5.6, scale: 1.14,
+      specials: ['Ataque teledirigido', 'Spin Dash', 'Resorte', 'Carga de giro', 'Súper Sonic'], rig: RIG_SONIC,
+      style: (p, f) => { if (f.state === 'run') { const ph = f.t * 30; p.fl1 = Math.sin(ph) * 1.5; p.bl1 = -Math.sin(ph) * 1.5; p.fl2 = -1.1 - Math.cos(ph) * 0.9; p.bl2 = -1.1 + Math.cos(ph) * 0.9; p.lean = 0.75; p.fa1 = -0.9; p.ba1 = -1.0; p.fa2 = 0.3; p.ba2 = 0.3; p.head = 0.35; p.bob = Math.abs(Math.sin(ph)) * 0.05; }
+        if (f.state === 'idle' && !f.atk) { p.fl1 = 0.25 + Math.max(0, Math.sin(f.t * 9)) * 0.25; p.fl2 = -0.3; p.fa1 = 1.0; p.fa2 = 2.1; p.ba1 = 0.9; p.ba2 = 2.1; p.twist = 0.4; } if (f.ball) f.ballSpin = (f.ballSpin || 0) + 0.5; } },
+    { id: 'kratos', name: 'Kratos', from: 'God of War', ini: 'KR', c1: '#8a1a1a', c2: '#1a0a06', weight: 126, run: 7.1, jump: 12.0, air: 5.6, scale: 1.1,
       desc: 'Fuerza espartana: Espadas del Caos, hacha que regresa y Furia Espartana.',
-      specials: ['Espadas del Caos', 'Hacha Leviatán', 'Salto espartano', 'Escudo', 'Furia Espartana'],
-      rig: { tw: 0.6, td: 0.36, lw: 0.21, aw: 0.18, pants: [0.35, 0.22, 0.12], legs: [0.9, 0.86, 0.8], boots: [0.3, 0.2, 0.12], shirt: [0.9, 0.86, 0.8], skin: [0.9, 0.86, 0.8], hand: [0.35, 0.25, 0.15], prop: PROP.axe, propA: 1.4,
-        torso: (M, p, f, em) => { box(M, 0, 0.33, 0, 0.6, 0.62, 0.36, [0.9, 0.86, 0.8], em); box(M, 0.001, 0.36, 0.14, 0.62, 0.62, 0.05, [0.72, 0.1, 0.08], em); box(M, 0.3, 0.33, 0.12, 0.02, 0.56, 0.06, [0.72, 0.1, 0.08], em); box(M, 0, 0.62, -0.22, 0.4, 0.18, 0.14, [0.4, 0.3, 0.2], em); },
-        head: (H, p, f, em) => { box(H, 0.02, 0.02, 0, 0.34, 0.38, 0.34, [0.9, 0.86, 0.8], em); box(H, 0.1, -0.14, 0, 0.2, 0.18, 0.3, [0.12, 0.1, 0.08], em); box(H, 0.001, 0.05, 0.12, 0.36, 0.4, 0.05, [0.72, 0.1, 0.08], em); eyes2(H, 0.19, 0.07, 0.07, 0.05, 0.03, [0.9, 0.7, 0.2], em); } },
-      style: (p, f) => { if (f.state === 'idle') { const b = Math.sin(f.t * 2.2); p.drop = 0.12 + b * 0.02; p.lean = 0.2; p.fa1 = 0.4; p.ba1 = 0.3; p.twist = 0.4; } if (f.rage > 0) p.glow = 0.35 + Math.sin(f.t * 20) * 0.15; } },
+      specials: ['Espadas del Caos', 'Hacha Leviatán', 'Salto espartano', 'Escudo', 'Furia Espartana'], rig: RIG_KRATOS,
+      style: (p, f) => { if (f.state === 'idle' && !f.atk) { const b = Math.sin(f.t * 2.2); p.drop = 0.14 + b * 0.02; p.chest = -0.05 + b * 0.04; p.lean = 0.25; p.fa1 = 0.45; p.fa2 = 0.9; p.ba1 = 0.35; p.ba2 = 1.0; p.twist = 0.45; p.head = -0.1; }
+        if (f.state === 'run') { p.lean = 0.4; p.twist = Math.sin(f.t * 12) * 0.45; p.drop += 0.06; } if (f.rage > 0) p.glow = 0.35 + Math.sin(f.t * 20) * 0.15; } },
     { id: 'pac', name: 'Pac-Man', from: 'Pac-Man', ini: 'PM', c1: '#ffd21f', c2: '#101060', weight: 94, run: 7.9, jump: 13.2, air: 6.2, scale: 0.9,
       desc: 'Come todo: fruta, pastilla de poder, trampolín e hidrante.',
-      specials: ['Fruta', 'Pastilla de poder', 'Trampolín', 'Hidrante', 'Súper Pac-Man'],
-      custom: 'pac',
-      style: (p, f) => { p.mouth = f.state === 'run' || f.state === 'walk' ? 0.1 + Math.abs(Math.sin(f.t * 14)) * 0.6 : f.atk ? p.mouth : 0.15 + Math.abs(Math.sin(f.t * 3)) * 0.25; if (f.state === 'run') p.drop = -Math.abs(Math.sin(f.t * 14)) * 0.15; } }
+      specials: ['Fruta', 'Pastilla de poder', 'Trampolín', 'Hidrante', 'Súper Pac-Man'], custom: 'pac',
+      style: (p, f) => { p.mouth = f.state === 'run' ? 0.05 + Math.abs(Math.sin(f.t * 14)) * 0.55 : f.atk ? p.mouth : 0.08 + Math.abs(Math.sin(f.t * 3)) * 0.18;
+        if (f.state === 'run') { p.bob = Math.abs(Math.sin(f.t * 14)) * 0.18; p.rot = -0.15; const ph = f.t * 14; p.fl1 = Math.sin(ph) * 1.2; p.bl1 = -Math.sin(ph) * 1.2; p.fa1 = -Math.sin(ph) * 1.1; p.ba1 = Math.sin(ph) * 1.1; }
+        if (f.state === 'idle' && !f.atk) { p.bob = Math.abs(Math.sin(f.t * 3)) * 0.05; p.fa1 = 0.5 + Math.sin(f.t * 3) * 0.2; p.ba1 = 0.5 - Math.sin(f.t * 3) * 0.2; } } }
   ];
   const CH = Object.fromEntries(CHARS.map((c) => [c.id, c]));
 
   /* Ben 10: formas alienígenas (cambian modelo, peso y ataques) */
+  const HB = { m: [0.3, 0.07, 0.03], c: [1, 0.5, 0.08], y: [1, 0.85, 0.3] };
+  const FA = { r: [0.82, 0.18, 0.13], r2: [0.66, 0.12, 0.1], bk: [0.1, 0.1, 0.1], ye: [1, 0.85, 0.15] };
   const BEN_FORMS = {
-    heat: { name: 'Fuego', weight: 96, scale: 1.05, rig: { tw: 0.46, td: 0.3, pants: [0.55, 0.12, 0.05], legs: [0.95, 0.4, 0.08], boots: [0.35, 0.08, 0.02], shirt: [0.9, 0.35, 0.05], skin: [1, 0.55, 0.1], sleeve: [0.9, 0.35, 0.05],
-      head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.3, 0.3, 0.28, [0.9, 0.35, 0.05], 0.5); for (let i = 0; i < 5; i++) draw(CONE, C(H, T(-0.02 + (i % 2) * 0.05, 0.18, (i - 2) * 0.06), RZ(Math.sin(f.t * 12 + i) * 0.2), SC(0.12, 0.3 + (i % 3) * 0.08, 0.1)), [1, 0.8, 0.1], 1); eyes2(H, 0.155, 0.02, 0.07, 0.06, 0.05, [1, 1, 0.6], 1); } } },
-    four: { name: 'Cuatro Brazos', weight: 135, scale: 1.3, rig: { tw: 0.66, td: 0.4, lw: 0.24, aw: 0.2, pants: [0.08, 0.08, 0.08], legs: [0.75, 0.15, 0.12], boots: [0.08, 0.08, 0.08], shirt: [0.75, 0.15, 0.12], skin: [0.75, 0.15, 0.12], sleeve: [0.75, 0.15, 0.12],
-      torso: (M, p, f, em) => { box(M, 0, 0.33, 0, 0.66, 0.62, 0.4, [0.75, 0.15, 0.12], em); box(M, 0, 0.36, 0, 0.18, 0.62, 0.42, [0.08, 0.08, 0.08], em); },
-      arms: (p) => [[1, 0, p.fa1, p.fa2, p.fo], [-1, 0, p.ba1, p.ba2, p.bo], [1, -0.28, p.fa1 * 0.8 + 0.2, p.fa2, p.fo + 0.2], [-1, -0.28, p.ba1 * 0.8 + 0.2, p.ba2, p.bo + 0.2]],
-      head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.32, 0.3, 0.32, [0.75, 0.15, 0.12], em); for (const [y, z] of [[0.06, 0.07], [0.06, -0.07], [-0.02, 0.07], [-0.02, -0.07]]) box(H, 0.17, y, z, 0.02, 0.04, 0.05, [1, 0.9, 0.1], 0.8); } } }
+    heat: { name: 'Fuego', weight: 96, scale: 1.05, rig: { w: 0.54, d: 0.32, lw: 0.2, aw: 0.16, hip: 0.95, pants: HB.m, shirt: HB.m, skin: HB.m, hand: HB.m, boots: HB.m, neck: HB.m,
+      chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, HB.m, em); for (const [y, z, h] of [[0.3, 0.1, 0.18], [0.12, -0.12, 0.14], [0.22, -0.04, 0.1]]) box(M, D * 0.5 + 0.005, y, z, 0.01, h, 0.05, HB.c, 1); box(M, D * 0.52, cH * 0.55, 0, 0.02, 0.1, 0.1, [0.2, 1, 0.35], 0.9); },
+      thighF: (M, th, lw, R, em) => { box(M, 0, -th / 2, 0, lw, th, lw * 1.05, HB.m, em); box(M, lw * 0.5 + 0.003, -th * 0.5, 0, 0.01, th * 0.7, 0.04, HB.c, 1); },
+      fore: (E, la, aw, R, em) => { box(E, 0, -la / 2, 0, aw * 0.95, la, aw * 0.95, HB.m, em); box(E, aw * 0.48 + 0.003, -la * 0.5, 0, 0.01, la * 0.6, 0.04, HB.c, 1); },
+      head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.3, 0.32, 0.3, HB.m, 0.2); for (let i = 0; i < 7; i++) draw(CONE, C(H, T(-0.04 + (i % 3) * 0.06, 0.16, (i - 3) * 0.05), RZ(-0.3 + Math.sin(f.t * 14 + i) * 0.25), SC(0.12, 0.32 + (i % 3) * 0.1 + Math.sin(f.t * 20 + i) * 0.05, 0.1)), i % 2 ? HB.c : HB.y, 1);
+        eyes2(H, 0.165, 0.02, 0.07, 0.06, 0.05, [1, 1, 0.6], 1); box(H, 0.17, -0.08, 0, 0.01, 0.04, 0.12, HB.c, 1); } } },
+    four: { name: 'Cuatro Brazos', weight: 135, scale: 1.28, rig: { w: 0.78, d: 0.42, lw: 0.25, aw: 0.21, ua: 0.33, la: 0.33, hip: 0.95, chestH: 0.46, pants: FA.bk, shirt: FA.r, skin: FA.r, hand: FA.r2, boots: FA.bk, neck: FA.r, belt: FA.ye,
+      thighF: (M, th, lw, R, em) => box(M, 0, -th / 2, 0, lw, th, lw * 1.05, FA.r, em),
+      chest: (M, W, D, cH, R, em) => { box(M, 0, cH / 2, 0, D, cH, W, FA.r, em); box(M, D * 0.5, cH * 0.55, 0, 0.04, cH * 0.9, W * 0.3, FA.bk, em); for (const z of [-1, 1]) box(M, D * 0.52, cH * 0.7, z * W * 0.25, 0.04, cH * 0.35, W * 0.3, FA.r2, em); box(M, D * 0.54, cH * 0.6, 0, 0.02, 0.09, 0.09, [0.2, 1, 0.35], 0.9); },
+      arms: (p) => [[1, 0, p.fa1, p.fa2, p.fo], [-1, 0, p.ba1, p.ba2, p.bo], [1, -0.26, p.fa1 * 0.7 + 0.3, p.fa2, p.fo + 0.25], [-1, -0.26, p.ba1 * 0.7 + 0.3, p.ba2, p.bo + 0.25]],
+      upper: (S, ua, aw, R, em) => { box(S, 0, -ua / 2, 0, aw * 1.15, ua, aw * 1.15, FA.r, em); },
+      fore: (E, la, aw, R, em) => { box(E, 0, -la / 2, 0, aw * 1.2, la, aw * 1.2, FA.r, em); box(E, 0, -la * 0.7, 0, aw * 1.28, 0.06, aw * 1.28, FA.bk, em); },
+      head: (H, p, f, em) => { box(H, 0.02, 0, 0, 0.32, 0.3, 0.32, FA.r, em); box(H, -0.04, 0.14, 0, 0.26, 0.06, 0.28, FA.bk, em); box(H, 0.16, -0.1, 0, 0.04, 0.08, 0.2, FA.r2, em);
+        for (const [y, z] of [[0.07, 0.07], [0.07, -0.07], [-0.01, 0.08], [-0.01, -0.08]]) box(H, 0.17, y, z, 0.02, 0.04, 0.05, FA.ye, 0.8); } } }
   };
 
   /* --- Modelos especiales: Bob Esponja y Pac-Man --- */
+  const SB = { y: [0.98, 0.92, 0.28], po: [0.74, 0.76, 0.2], pa: [0.55, 0.36, 0.16], bl: [0.08, 0.08, 0.08], rd: [0.85, 0.1, 0.1], bu: [0.25, 0.55, 0.95], ch: [0.95, 0.55, 0.3] };
   function drawSponge(f, p, em) {
-    const s = f.scale;
-    const B = rootM(f, p, s);
-    const root = C(B, T(p.bx, 0.62 - p.drop, 0), RZ(p.rot));
-    const Y = [0.98, 0.9, 0.25];
-    for (const [z, a, b] of [[0.14, p.fl1, p.fl2], [-0.14, p.bl1, p.bl2]]) {
-      const hp = C(root, T(0, -0.02, z), RZ(a)); box(hp, 0, -0.22, 0, 0.07, 0.44, 0.07, Y, em); box(hp, 0, -0.14, 0, 0.1, 0.12, 0.1, [1, 1, 1], em); box(hp, 0, -0.11, 0, 0.105, 0.03, 0.105, [0.85, 0.15, 0.15], em);
-      box(C(hp, T(0, -0.44, 0), RZ(b)), 0.07, -0.04, 0, 0.26, 0.1, 0.14, [0.08, 0.08, 0.08], em);
+    const s = f.scale, B = rootM(f, p, s);
+    const root = C(B, T(p.bx, 0.62 - p.drop + p.bob, 0), RZ(p.rot));
+    for (const [z, a, b] of [[0.15, p.fl1, p.fl2], [-0.15, p.bl1, p.bl2]]) {
+      const hp = C(root, T(0, -0.04, z), RZ(a));
+      box(hp, 0, -0.24, 0, 0.075, 0.46, 0.075, SB.y, em);
+      box(hp, 0, -0.34, 0, 0.1, 0.18, 0.1, WHT, em); box(hp, 0, -0.29, 0, 0.105, 0.025, 0.105, SB.rd, em); box(hp, 0, -0.33, 0, 0.105, 0.025, 0.105, SB.bu, em);
+      box(C(hp, T(0, -0.46, 0), RZ(b)), 0.08, -0.04, 0, 0.28, 0.11, 0.16, SB.bl, em); box(C(hp, T(0, -0.46, 0), RZ(b)), 0.1, 0.0, 0, 0.12, 0.03, 0.13, [0.3, 0.3, 0.32], 0.2);
     }
     const tor = C(root, RY(p.twist * 0.5), RZ(-p.lean));
-    box(tor, 0, 0.06, 0, 0.72, 0.16, 0.3, [0.55, 0.36, 0.16], em); // pantalones
-    box(tor, 0, 0.17, 0, 0.72, 0.06, 0.3, [1, 1, 1], em); // camisa
-    box(tor, 0.151, 0.13, 0, 0.02, 0.16, 0.06, [0.85, 0.1, 0.1], em); // corbata
-    const body = C(tor, T(0, 0.62, 0), RZ(p.head * 0.5));
-    box(body, 0, 0, 0, 0.72, 0.84, 0.28, Y, em);
-    for (const [x, y] of [[-0.24, 0.26], [0.22, -0.2], [-0.2, -0.28], [0.26, 0.3], [0, -0.05]]) box(body, 0.141, y, x, 0.02, 0.08, 0.08, [0.75, 0.68, 0.15], em);
-    for (const z of [0.12, -0.12]) { ball(body, 0.13, 0.14, z, 0.11, [1, 1, 1], em); ball(body, 0.21, 0.14, z, 0.05, [0.2, 0.55, 0.95], em); ball(body, 0.245, 0.14, z, 0.025, [0.02, 0.02, 0.02], em); }
-    draw(CYL, C(body, T(0.2, 0.02, 0), RZ(-Math.PI / 2), SC(0.07, 0.12, 0.07)), Y, em);
-    box(body, 0.141, -0.12, 0, 0.02, 0.05 + (p.mouth || 0) * 0.1, 0.34, [0.45, 0.08, 0.08], em);
-    for (const z of [0.04, -0.04]) box(body, 0.145, -0.1, z, 0.02, 0.06, 0.06, [1, 1, 1], em);
+    box(tor, 0, 0.07, 0, 0.32, 0.18, 0.74, SB.pa, em); box(tor, 0, 0.13, 0, 0.33, 0.035, 0.75, SB.bl, em);
+    for (const z of [-0.26, -0.1, 0.1, 0.26]) box(tor, 0.166, 0.13, z, 0.01, 0.036, 0.06, WHT, em);
+    box(tor, 0, 0.2, 0, 0.32, 0.08, 0.74, WHT, em); box(tor, 0.166, 0.2, 0, 0.01, 0.07, 0.08, SB.rd, em); box(tor, 0.17, 0.12, 0, 0.01, 0.1, 0.05, SB.rd, em);
+    const body = C(tor, T(0, 0.66, 0), RZ(p.head * 0.5));
+    box(body, 0, 0, 0, 0.3, 0.86, 0.74, SB.y, em);
+    for (const [y, z, r] of [[0.32, -0.26, 0.05], [0.3, 0.28, 0.04], [-0.3, 0.27, 0.05], [-0.32, -0.24, 0.035], [0.34, 0.02, 0.03], [-0.2, -0.3, 0.03]]) box(body, 0.151, y, z, 0.01, r * 1.6, r * 1.6, SB.po, em);
+    for (const [y, x] of [[0.25, 0.05], [-0.15, -0.06], [0.05, 0.08]]) { box(body, x, y, 0.371, 0.08, 0.08, 0.01, SB.po, em); box(body, x, y, -0.371, 0.08, 0.08, 0.01, SB.po, em); }
+    for (const z of [0.14, -0.14]) {
+      ell(body, 0.16, 0.14, z, 0.05, 0.13, 0.12, WHT, em); ell(body, 0.2, 0.13, z * 0.95, 0.03, 0.065, 0.065, SB.bu, em); ell(body, 0.22, 0.13, z * 0.95, 0.02, 0.03, 0.03, SB.bl, em);
+      for (const k of [-1, 0, 1]) box(C(body, T(0.17, 0.29, z + k * 0.06), RX(k * 0.4)), 0, 0.03, 0, 0.015, 0.07, 0.015, SB.bl, em);
+      box(body, 0.153, -0.06, z * 1.6, 0.01, 0.05, 0.06, SB.ch, em);
+    }
+    draw(CYL, C(body, T(0.2, 0.02, 0), RZ(-Math.PI / 2), SC(0.07, 0.14, 0.07)), SB.y, em);
+    const mh = 0.05 + (p.mouth || 0) * 0.1;
+    box(body, 0.152, -0.12 - mh / 2 + 0.03, 0, 0.01, mh, 0.34, [0.45, 0.08, 0.08], em); for (const z of [0.045, -0.045]) box(body, 0.156, -0.1, z, 0.01, 0.06, 0.06, WHT, em);
+    box(body, 0.153, -0.08, 0, 0.012, 0.015, 0.4, [0.7, 0.62, 0.15], em);
     for (const [side, a1, a2] of [[1, p.fa1, p.fa2], [-1, p.ba1, p.ba2]]) {
-      const S = C(tor, T(0, 0.3, side * 0.4), RZ(a1)); box(S, 0, -0.06, 0, 0.12, 0.12, 0.12, [1, 1, 1], em); box(S, 0, -0.2, 0, 0.06, 0.28, 0.06, Y, em);
-      const E = C(S, T(0, -0.34, 0), RZ(a2)); box(E, 0, -0.14, 0, 0.06, 0.26, 0.06, Y, em); box(E, 0, -0.3, 0, 0.1, 0.1, 0.1, Y, em);
+      const S = C(tor, T(0, 0.22, side * 0.4), RZ(a1)); box(S, 0, -0.05, 0, 0.13, 0.12, 0.13, WHT, em); box(S, 0, -0.2, 0, 0.06, 0.28, 0.06, SB.y, em);
+      const E = C(S, T(0, -0.34, 0), RZ(a2)); box(E, 0, -0.14, 0, 0.06, 0.26, 0.06, SB.y, em); box(E, 0.02, -0.3, 0, 0.11, 0.1, 0.1, SB.y, em); box(E, 0.07, -0.34, 0, 0.05, 0.05, 0.1, SB.y, em);
       if (side > 0 && f.prop) PROP[f.prop](C(E, T(0, -0.32, 0), RZ(1.5 + p.prop)), p, f, em);
     }
   }
   function drawPac(f, p, em) {
-    const s = f.scale * (f.giant ? 3.2 : 1);
-    const B = rootM(f, p, s);
-    const root = C(B, T(p.bx, 0.72 - p.drop, 0), RZ(p.rot));
-    const Yc = f.powered ? [0.3, 0.4, 1] : [1, 0.85, 0.1];
-    const m = clamp(p.mouth, 0, 0.9);
-    draw(HEMI, C(root, RZ(m * 0.9), RX(0), SC(1.1, 1.1, 1.1)), Yc, em);
-    draw(HEMI, C(root, RZ(-m * 0.9), RX(Math.PI), SC(1.1, 1.1, 1.1)), Yc, em);
-    box(C(root, RZ(m * 0.9)), 0.18, 0.36, 0.14, 0.1, 0.12, 0.05, [0.05, 0.05, 0.05], em);
-    box(C(root, RZ(m * 0.9)), 0.18, 0.36, -0.14, 0.1, 0.12, 0.05, [0.05, 0.05, 0.05], em);
-    for (const [z, a] of [[0.2, p.fl1], [-0.2, p.bl1]]) { const L = C(root, T(0, -0.5, z), RZ(a)); box(L, 0, -0.1, 0, 0.07, 0.2, 0.07, [0.1, 0.1, 0.1], em); box(L, 0.06, -0.22, 0, 0.22, 0.12, 0.14, [0.9, 0.1, 0.1], em); }
-    for (const [z, a] of [[0.56, p.fa1], [-0.56, p.ba1]]) { const A = C(root, T(0, 0, z), RZ(a)); box(A, 0, -0.14, 0, 0.06, 0.26, 0.06, [0.1, 0.1, 0.1], em); ball(A, 0, -0.3, 0, 0.1, [1, 1, 1], em); }
+    const s = f.scale * (f.giant ? 3.2 : 1), B = rootM(f, p, s);
+    const root = C(B, T(p.bx, 0.74 - p.drop + p.bob, 0), RZ(p.rot));
+    const Yc = f.powered ? [0.3, 0.4, 1] : [1, 0.85, 0.1], m = clamp(p.mouth, 0, 0.9);
+    const top = C(root, RZ(m * 0.9)), bot = C(root, RZ(-m * 0.9));
+    draw(HEMI, C(top, SC(1.12, 1.12, 1.12)), Yc, em); draw(HEMI, C(bot, RX(Math.PI), SC(1.12, 1.12, 1.12)), Yc, em);
+    draw(HEMI, C(top, T(0.01, -0.001, 0), SC(1.0, 0.02, 1.0)), [0.12, 0.03, 0.05], 0); draw(HEMI, C(bot, T(0.01, 0.001, 0), RX(Math.PI), SC(1.0, 0.02, 1.0)), [0.12, 0.03, 0.05], 0);
+    for (const z of [0.2, -0.2]) { ell(top, 0.2, 0.34, z, 0.07, 0.1, 0.05, DK, em); ell(top, 0.24, 0.37, z * 0.9, 0.025, 0.03, 0.02, WHT, 0.5); box(top, 0.16, 0.48, z, 0.08, 0.03, 0.12, DK, em); }
+    for (const [z, a] of [[0.22, p.fl1], [-0.22, p.bl1]]) { const L = C(root, T(0, -0.5, z), RZ(a)); box(L, 0, -0.11, 0, 0.07, 0.22, 0.07, DK, em); box(L, 0.07, -0.25, 0, 0.26, 0.13, 0.16, [0.9, 0.1, 0.1], em); box(L, 0.13, -0.21, 0, 0.12, 0.05, 0.15, [1, 0.35, 0.35], em); }
+    for (const [z, a] of [[0.58, p.fa1], [-0.58, p.ba1]]) { const A = C(root, T(0, 0, z), RZ(a)); box(A, 0, -0.14, 0, 0.06, 0.26, 0.06, DK, em); ball(A, 0, -0.32, 0, 0.11, WHT, em); box(A, 0, -0.22, 0, 0.12, 0.05, 0.12, WHT, em); }
   }
 
 
@@ -670,13 +794,13 @@
 
   const GEN = {
     jab: { dur: 0.26, chain: 'jab2', chainT: 0.11, hits: [H(0.05, 0.1, 0.85, 1.25, 0.45, 3, 3, 0.15, 35)],
-      anim: [K(0, { fa1: 1.0, fa2: 1.8 }), K(0.06, { fa1: 1.6, fa2: 0.1, lean: 0.25, twist: 0.6 }), K(0.26, { fa1: 1.0, fa2: 1.8 })] },
+      anim: [K(0, { fa1: 0.9, fa2: 1.9, twist: 0.1 }), K(0.03, { fa1: 0.8, fa2: 2.1, twist: -0.2, lean: 0.1 }), K(0.07, { fa1: 1.6, fa2: 0.05, lean: 0.3, twist: 0.75, bx: 0.08, chest: 0.1 }), K(0.26, { fa1: 1.0, fa2: 1.8 })] },
     jab2: { dur: 0.26, chain: 'jab3', chainT: 0.11, hits: [H(0.05, 0.1, 0.9, 1.25, 0.45, 3, 3, 0.15, 35)],
       anim: [K(0, { ba1: 1.0, ba2: 1.8, twist: 0.3 }), K(0.06, { ba1: 1.6, ba2: 0.1, lean: 0.25, twist: -0.4 }), K(0.26, {})] },
     jab3: { dur: 0.42, hits: [H(0.07, 0.14, 1.0, 1.0, 0.55, 5, 6, 0.5, 40)],
       anim: [K(0, { fl1: 0.3 }), K(0.07, { fl1: 1.6, fl2: 0, lean: -0.25, fa1: 0.4, ba1: -0.5 }), K(0.2, { fl1: 1.5, fl2: 0 }), K(0.42, {})] },
     ftilt: { dur: 0.38, hits: [H(0.1, 0.18, 1.1, 1.0, 0.55, 8, 6, 0.7, 35)],
-      anim: [K(0, { fl1: 0.3 }), K(0.1, { fl1: 1.5, fl2: -0.1, lean: -0.2, fa1: 0.6, ba1: -0.4 }), K(0.22, { fl1: 1.5, fl2: -0.1 }), K(0.38, {})] },
+      anim: [K(0, { fl1: 0.3 }), K(0.05, { fl1: 0.9, fl2: -1.4, lean: 0.1, twist: -0.3, fa1: 1.2, ba1: 0.2 }), K(0.1, { fl1: 1.55, fl2: -0.05, lean: -0.3, twist: 0.4, fa1: 0.5, ba1: -0.6, bx: 0.1 }), K(0.22, { fl1: 1.5, fl2: -0.1, lean: -0.25 }), K(0.38, {})] },
     utilt: { dur: 0.38, hits: [H(0.08, 0.2, 0.3, 2.2, 0.7, 7, 7, 0.75, 88)],
       anim: [K(0, { fa1: 0.5 }), K(0.1, { fa1: 3.0, fa2: 0.2, head: 0.4, lean: -0.2 }), K(0.2, { fa1: 3.4, fa2: 0 }), K(0.38, {})] },
     dtilt: { dur: 0.3, hits: [H(0.06, 0.13, 1.1, 0.25, 0.5, 6, 5, 0.55, 72)],
@@ -684,15 +808,15 @@
     dash: { dur: 0.48, hits: [H(0.06, 0.24, 0.8, 0.9, 0.6, 9, 7, 0.7, 50)], start: (f) => { f.vx = f.facing * statsOf(f).run * 1.05; }, step: (f, m, dt) => { f.vx *= Math.exp(-4 * dt); },
       anim: [K(0, { lean: 0.4 }), K(0.08, { lean: 0.7, fa1: 1.6, fa2: 0, ba1: 1.4, ba2: 0, fl1: 1, bl1: -1 }), K(0.3, { lean: 0.6 }), K(0.48, {})] },
     fsmash: { dur: 0.62, chargeAt: 0.12, hits: [H(0.19, 0.28, 1.25, 1.15, 0.7, 15, 9, 1.12, 38)], sfx: 'whooshH',
-      anim: [K(0, {}), K(0.12, { fa1: -0.6, fa2: 0.4, lean: -0.3, twist: -0.6, fl1: 0.5 }), K(0.2, { fa1: 1.7, fa2: 0, lean: 0.55, twist: 0.8, fl1: 1.0, bl1: -0.9 }), K(0.36, { fa1: 1.6, lean: 0.5 }), K(0.62, {})] },
+      anim: [K(0, {}), K(0.12, { fa1: -0.7, fa2: 0.5, ba1: 1.2, ba2: 1.4, lean: -0.35, twist: -0.9, chest: -0.15, fl1: 0.5, fl2: -0.6, bl1: -0.4, drop: 0.2, bx: -0.08 }), K(0.2, { fa1: 1.75, fa2: 0, ba1: -0.5, lean: 0.6, twist: 0.95, chest: 0.2, fl1: 1.05, fl2: -0.3, bl1: -0.95, bl2: -0.1, bx: 0.22, drop: 0.12 }), K(0.36, { fa1: 1.6, lean: 0.5, twist: 0.8, bx: 0.2 }), K(0.62, {})] },
     usmash: { dur: 0.62, chargeAt: 0.1, hits: [H(0.17, 0.3, 0.2, 2.3, 0.85, 14, 9, 1.08, 88)], sfx: 'whooshH',
-      anim: [K(0, {}), K(0.1, { drop: 0.4, fa1: 0.2, ba1: 0.2 }), K(0.2, { drop: -0.1, fa1: 3.1, fa2: 0, ba1: 3.1, ba2: 0, head: 0.4, lean: -0.15 }), K(0.36, { fa1: 3.0, ba1: 3.0 }), K(0.62, {})] },
+      anim: [K(0, {}), K(0.1, { drop: 0.42, fa1: 0.1, ba1: 0.1, fa2: 1.2, ba2: 1.2, lean: 0.35, head: -0.2, fl1: 0.9, fl2: -1.4, bl1: 0.6, bl2: -1.3 }), K(0.2, { drop: -0.12, fa1: 3.1, fa2: 0, ba1: 3.1, ba2: 0, head: 0.45, lean: -0.2, chest: -0.2, bob: 0.08 }), K(0.36, { fa1: 3.0, ba1: 3.0, head: 0.35 }), K(0.62, {})] },
     dsmash: { dur: 0.6, chargeAt: 0.1, hits: [H(0.16, 0.24, 1.1, 0.3, 0.6, 13, 9, 1.0, 25), H(0.2, 0.28, -1.1, 0.3, 0.6, 13, 9, 1.0, 25, { back: 1, id: 1 })], sfx: 'whooshH',
       anim: [K(0, {}), K(0.1, { drop: 0.5, lean: 0.4 }), K(0.18, { drop: 0.6, fl1: 1.6, bl1: -1.6, fl2: 0, bl2: 0, fa1: 1.2, ba1: -1.2 }), K(0.36, { drop: 0.6, fl1: 1.5, bl1: -1.5 }), K(0.6, {})] },
     nair: { dur: 0.45, air: true, land: 0.1, hits: [H(0.07, 0.3, 0, 1.0, 0.95, 8, 5, 0.7, 0, { away: 1 })],
       anim: [K(0, {}), K(0.08, { rot: -3.14, fl1: 1.4, fl2: -1.8, bl1: 1.2, bl2: -1.8, fa1: 1, ba1: 1 }), K(0.3, { rot: -6.28, fl1: 1.4, fl2: -1.8, bl1: 1.2, bl2: -1.8 }), K(0.45, { rot: -6.28 })] },
     fair: { dur: 0.45, air: true, land: 0.15, hits: [H(0.1, 0.2, 1.0, 1.1, 0.6, 11, 7, 0.9, 40)],
-      anim: [K(0, { fa1: 3.2, fa2: 0.3, lean: -0.2 }), K(0.12, { fa1: 1.0, fa2: 0, lean: 0.4 }), K(0.2, { fa1: 0.6 }), K(0.45, {})] },
+      anim: [K(0, { fa1: 3.3, fa2: 0.4, lean: -0.25, twist: -0.5, chest: -0.2 }), K(0.12, { fa1: 1.0, fa2: 0, lean: 0.45, twist: 0.6, chest: 0.2, fl1: 0.9, bl1: -0.5 }), K(0.2, { fa1: 0.6, lean: 0.4 }), K(0.45, {})] },
     bair: { dur: 0.42, air: true, land: 0.15, hits: [H(0.1, 0.18, -1.1, 1.0, 0.6, 12, 8, 0.95, 40, { back: 1 })],
       anim: [K(0, {}), K(0.1, { bl1: -1.8, bl2: 0, lean: 0.5, fl1: 0.8, fl2: -1.2, head: 0.3 }), K(0.2, { bl1: -1.8, bl2: 0, lean: 0.5 }), K(0.42, {})] },
     uair: { dur: 0.4, air: true, land: 0.1, hits: [H(0.08, 0.18, 0.1, 2.2, 0.7, 9, 7, 0.85, 85)],
@@ -1525,12 +1649,21 @@
     const d = f.def, t = f.t, st = f.st;
     let p = basePose();
     switch (f.state) {
-      case 'idle': case 'final': case 'respawn': p.drop = 0.06 + Math.sin(t * 2.4) * 0.02; p.fa1 += Math.sin(t * 2.4) * 0.05; p.ba1 -= Math.sin(t * 2.4) * 0.05; break;
-      case 'run': { const ph = t * (6 + statsOf(f).run * 0.9); p.fl1 = Math.sin(ph) * 1.0; p.bl1 = -Math.sin(ph) * 1.0; p.fl2 = -0.3 - Math.max(0, Math.cos(ph)) * 1.2; p.bl2 = -0.3 - Math.max(0, -Math.cos(ph)) * 1.2;
-        p.fa1 = -Math.sin(ph) * 0.9 + 0.2; p.ba1 = Math.sin(ph) * 0.9 + 0.2; p.fa2 = 1.2; p.ba2 = 1.2; p.lean = 0.35; p.drop = 0.08 + Math.abs(Math.cos(ph)) * 0.06; break; }
-      case 'crouch': case 'jumpsq': case 'land': Object.assign(p, { drop: 0.42, lean: 0.35, fl1: 0.9, fl2: -1.5, bl1: 0.5, bl2: -1.4 }); break;
+      case 'idle': case 'final': case 'respawn': { // respiración, peso que se reparte y guardia relajada
+        const br = Math.sin(t * 2.4), sw = Math.sin(t * 0.9);
+        Object.assign(p, { drop: 0.1 + br * 0.025, chest: -0.04 + br * 0.04, bx: sw * 0.025, twist: 0.3 + sw * 0.06, head: -0.04 + br * 0.03, headY: sw * 0.1,
+          fl1: 0.32, fl2: -0.52, bl1: -0.22, bl2: -0.34, fa1: 0.55 + br * 0.06, fa2: 1.25 - br * 0.08, ba1: 0.42 - br * 0.05, ba2: 1.3 });
+        break; }
+      case 'run': { // zancada con rodilla que sube, cadera que rebota 2 veces por ciclo y brazos opuestos
+        const sp = statsOf(f), k = clamp(Math.abs(f.vx) / sp.run, 0.3, 1), ph = t * (7 + sp.run * 0.95);
+        const s1 = Math.sin(ph), c1 = Math.cos(ph);
+        Object.assign(p, { fl1: s1 * 1.05 * k, bl1: -s1 * 1.05 * k, fl2: -0.25 - Math.max(0, -c1) * 1.55 * k - 0.2, bl2: -0.25 - Math.max(0, c1) * 1.55 * k - 0.2,
+          fa1: -s1 * 1.0 * k + 0.25, ba1: s1 * 1.0 * k + 0.25, fa2: 1.35, ba2: 1.35, lean: 0.25 + 0.2 * k, twist: s1 * 0.35 * k, chest: -s1 * 0.05,
+          drop: 0.12, bob: Math.abs(c1) * 0.09 * k, head: -0.12 * k, sy: 1 + Math.abs(c1) * 0.03 });
+        break; }
+      case 'crouch': case 'jumpsq': case 'land': Object.assign(p, { drop: 0.42, lean: 0.35, fl1: 0.9, fl2: -1.5, bl1: 0.5, bl2: -1.4, fa1: 0.9, fa2: 1.6, ba1: 0.6, ba2: 1.6, sy: f.state === 'jumpsq' ? 0.9 : 0.95, sx: 1.04, head: -0.1 }); break;
       case 'air': case 'airdodge':
-        if (f.vy > 0) Object.assign(p, { fl1: 0.9, fl2: -1.3, bl1: 0.2, bl2: -0.8, fa1: 0.9, ba1: 0.6 });
+        if (f.vy > 0) Object.assign(p, { fl1: 1.1, fl2: -1.5, bl1: 0.1, bl2: -0.6, fa1: 2.2 - Math.min(1, f.vy / 12) * 0.6, fa2: 0.6, ba1: 1.2, ba2: 1.2, head: 0.2, sy: 1 + Math.min(0.08, f.vy * 0.006), lean: -0.05 });
         else Object.assign(p, { fl1: 0.4, fl2: -0.5, bl1: -0.3, bl2: -0.4, fa1: 1.5 + Math.sin(t * 9) * 0.2, ba1: 1.3 - Math.sin(t * 9) * 0.2 });
         if (f.flipT > 0) p.rot = -(1 - f.flipT / 0.35) * 6.28;
         if (f.state === 'airdodge') { p.spin = (st / 0.35) * 6.28; p.fl1 = 1.2; p.fl2 = -1.6; }
@@ -1964,6 +2097,7 @@
   }
   function camTarget(t) {
     const ph = G.phase;
+    if (G.camOverride) return [G.camOverride.e, G.camOverride.l]; // solo para pruebas
     if (ph === 'title') return [[Math.sin(t * 0.15) * 8, 6, 26], [0, 2, 0]];
     if (ph === 'select') return [[0, 4.6, 12], [0, 3.6, 0]];
     if (ph === 'stage') return [[Math.sin(t * 0.25) * 6, 6, 24], [0, 2, 0]];
@@ -1982,7 +2116,7 @@
   }
   function renderScene(t) {
     const [e, l] = camTarget(t);
-    const cr = G.inv > 0 || G.cine ? 0.2 : 0.07;
+    const cr = G.camOverride ? 1 : G.inv > 0 || G.cine ? 0.2 : 0.07;
     for (let i = 0; i < 3; i++) { G.cam.e[i] = lerp(G.cam.e[i], e[i], cr); G.cam.l[i] = lerp(G.cam.l[i], l[i], cr); }
     camE = G.cam.e.slice();
     if (G.kick > 0) for (let i = 0; i < 3; i++) camE[i] += (G.cam.l[i] - camE[i]) * Math.min(0.25, G.kick * 0.12);
@@ -2147,7 +2281,7 @@
   setupStage();
   showOv('ov-title');
   requestAnimationFrame(loop);
-  window.__ley = { G, CHARS, SP, FINALS, STAGES, startMatch, toSelect, toStage, dealHit, startFinal, startMove, doSpecial, koOut, simStep, setupStage }; // para pruebas
+  window.__ley = { G, CHARS, moveDef, targetPose, SP, FINALS, STAGES, startMatch, toSelect, toStage, dealHit, startFinal, startMove, doSpecial, koOut, simStep, setupStage }; // para pruebas
 })();
 </script>
 </body>
